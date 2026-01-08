@@ -213,5 +213,5 @@ export const auth = authHandler<AuthParams, AuthData>(
 - `getAuthData()` returns `null` in unauthenticated requests
 - Auth data propagates automatically in service-to-service calls
 - Throw `APIError.unauthenticated()` for invalid credentials
-- Keep auth handlers fast — they run on every authenticated request
+- Keep auth handlers fast - they run on every authenticated request
 

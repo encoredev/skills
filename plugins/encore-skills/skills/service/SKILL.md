@@ -31,7 +31,7 @@ my-service/
 
 ### Single Service (Recommended Start)
 
-Best for new projects — start simple, split later if needed:
+Best for new projects - start simple, split later if needed:
 
 ```
 my-app/
@@ -147,5 +147,5 @@ export default new Service("my-service", {
 - Use `~encore/clients` for cross-service calls (never direct imports)
 - Each service can have its own database
 - Service names should be lowercase, descriptive
-- Don't create services just for code organization — use folders instead
+- Don't create services just for code organization - use folders instead
 

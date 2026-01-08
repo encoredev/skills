@@ -1,16 +1,16 @@
 # Encore Skills
 
-Agent skills for building backend applications with [Encore.ts](https://encore.dev).
+Agent skills for building backend applications with [Encore](https://encore.dev), the backend framework for Go and TypeScript.
 
 ## What These Skills Do
 
-Encore.ts lets you write TypeScript and get cloud infrastructure automatically - databases, Pub/Sub, cron jobs, and more provisioned in your AWS/GCP account from your code.
+Encore lets you write your application and get cloud infrastructure automatically - databases, Pub/Sub, cron jobs, and more.
 
 These skills help AI agents use Encore's declarative patterns correctly:
 
 - **Declarative infrastructure** - define resources in code, Encore provisions them
 - **Flexible deployment** - self-host, or use Encore Cloud to provision in your AWS/GCP account
-- **Type-safe APIs** - request/response validation from TypeScript types
+- **Type-safe APIs** - request/response validation built-in
 - **Service-to-service calls** - automatic type safety across service boundaries
 - **Built-in observability** - tracing, metrics, and logging out of the box
 
@@ -44,6 +44,8 @@ Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to y
 
 ## Available Skills
 
+### TypeScript Skills
+
 | Skill | Description |
 |-------|-------------|
 | [api](plugins/encore-skills/skills/api/SKILL.md) | Create type-safe API endpoints with proper request/response handling |
@@ -53,6 +55,17 @@ Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to y
 | [database](plugins/encore-skills/skills/database/SKILL.md) | Database queries, migrations, and ORM integration |
 | [code-review](plugins/encore-skills/skills/code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
 | [migrate](plugins/encore-skills/skills/migrate/SKILL.md) | Convert Express/Fastify/Node.js apps to Encore |
+
+### Go Skills
+
+| Skill | Description |
+|-------|-------------|
+| [go-api](plugins/encore-skills/skills/go-api/SKILL.md) | Create API endpoints using `//encore:api` annotations |
+| [go-auth](plugins/encore-skills/skills/go-auth/SKILL.md) | Implement authentication with `//encore:authhandler` |
+| [go-infrastructure](plugins/encore-skills/skills/go-infrastructure/SKILL.md) | Declare databases, Pub/Sub, cron jobs, storage, and secrets |
+| [go-service](plugins/encore-skills/skills/go-service/SKILL.md) | Structure services and organize application architecture |
+| [go-database](plugins/encore-skills/skills/go-database/SKILL.md) | Database queries, migrations, and transactions |
+| [go-code-review](plugins/encore-skills/skills/go-code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
 
 ## Repository Structure
 
@@ -65,20 +78,19 @@ encore-skills/
 │       ├── .claude-plugin/
 │       │   └── plugin.json    # Plugin manifest
 │       └── skills/
-│           ├── api/
-│           │   └── SKILL.md
+│           ├── api/                 # TypeScript
 │           ├── auth/
-│           │   └── SKILL.md
 │           ├── code-review/
-│           │   └── SKILL.md
 │           ├── database/
-│           │   └── SKILL.md
 │           ├── infrastructure/
-│           │   └── SKILL.md
 │           ├── migrate/
-│           │   └── SKILL.md
-│           └── service/
-│               └── SKILL.md
+│           ├── service/
+│           ├── go-api/              # Go
+│           ├── go-auth/
+│           ├── go-code-review/
+│           ├── go-database/
+│           ├── go-infrastructure/
+│           └── go-service/
 ├── AGENTS.md
 ├── LICENSE
 └── README.md

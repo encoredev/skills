@@ -7,7 +7,7 @@ description: Declare cloud infrastructure with Encore.ts including databases, Pu
 
 ## Instructions
 
-Encore.ts uses declarative infrastructure — you define resources in code and Encore provisions them automatically.
+Encore.ts uses declarative infrastructure - you define resources in code and Encore provisions them automatically.
 
 ### Critical Rule
 

@@ -271,7 +271,7 @@ const _ = new CronJob("cleanup-sessions", {
 ## Migration Checklist
 
 - [ ] Replace `require` with `import`
-- [ ] Remove `app.listen()` — Encore handles this
+- [ ] Remove `app.listen()` - Encore handles this
 - [ ] Convert routes to `api()` functions
 - [ ] Define TypeScript interfaces for request/response
 - [ ] Replace manual validation with Encore's type validation

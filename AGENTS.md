@@ -1,4 +1,4 @@
-# Encore Skills — Agent Instructions
+# Encore Skills - Agent Instructions
 
 This repository contains skills for building backend applications with Encore.ts.
 
@@ -8,15 +8,28 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 
 ## When to Use These Skills
 
+### TypeScript Skills
+
 | Skill | Trigger Keywords |
 |-------|------------------|
-| `encore-api` | api, endpoint, route, REST, HTTP, webhook, request, response |
-| `encore-auth` | auth, authentication, login, token, jwt, gateway, protect, authorize |
-| `encore-infrastructure` | database, pubsub, topic, cron, bucket, secret, queue |
-| `encore-service` | service, microservice, structure, architecture, organize |
-| `encore-database` | sql, query, migration, drizzle, prisma, postgres |
-| `encore-code-review` | review, audit, check, best practices |
-| `encore-migrate` | migrate, convert, express, fastify, port |
+| `encore-api` | typescript, ts, api, endpoint, route, REST, HTTP, webhook |
+| `encore-auth` | typescript, ts, auth, authentication, login, token, jwt, gateway |
+| `encore-infrastructure` | typescript, ts, database, pubsub, topic, cron, bucket, secret |
+| `encore-service` | typescript, ts, service, microservice, structure, architecture |
+| `encore-database` | typescript, ts, sql, query, migration, drizzle, prisma |
+| `encore-code-review` | typescript, ts, review, audit, check, best practices |
+| `encore-migrate` | migrate, convert, express, fastify, node |
+
+### Go Skills
+
+| Skill | Trigger Keywords |
+|-------|------------------|
+| `encore-go-api` | go, golang, api, endpoint, route, REST, HTTP, webhook |
+| `encore-go-auth` | go, golang, auth, authentication, login, token, jwt |
+| `encore-go-infrastructure` | go, golang, database, pubsub, topic, cron, bucket, secret |
+| `encore-go-service` | go, golang, service, microservice, structure, architecture |
+| `encore-go-database` | go, golang, sql, query, migration, sqldb, postgres |
+| `encore-go-code-review` | go, golang, review, audit, check, best practices |
 
 ## Key Patterns to Remember
 
