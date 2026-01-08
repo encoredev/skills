@@ -1,19 +1,18 @@
 # Encore Skills
 
-Agent skills for building backend applications with [Encore.ts](https://encore.dev) — the TypeScript backend framework that automates cloud infrastructure.
+Agent skills for building backend applications with [Encore.ts](https://encore.dev).
 
-These skills help AI agents write idiomatic Encore code: type-safe APIs, declarative infrastructure, proper service structure, and common migration patterns.
+## What These Skills Do
 
-## Why Skills for Encore?
+Encore.ts lets you write TypeScript and get cloud infrastructure automatically — databases, Pub/Sub, cron jobs, and more provisioned in your AWS/GCP account from your code.
 
-Encore has specific patterns that differ from typical Node.js/Express applications:
+These skills help AI agents use Encore's declarative patterns correctly:
 
-- Infrastructure is declared at package level, not instantiated in functions
-- APIs use a declarative `api()` function, not route handlers
-- Cross-service calls use `~encore/clients`, not direct imports
-- Databases use template literals for automatic SQL escaping
-
-These skills encode that knowledge so agents get it right the first time.
+- **Declarative infrastructure** — define resources in code, Encore provisions them
+- **Flexible deployment** — self-host, or use Encore Cloud to provision in your AWS/GCP account
+- **Type-safe APIs** — request/response validation from TypeScript types
+- **Service-to-service calls** — automatic type safety across service boundaries
+- **Built-in observability** — tracing, metrics, and logging out of the box
 
 ## Installation
 
