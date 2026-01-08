@@ -1,0 +1,7 @@
+{
+  "name": "encore-skills",
+  "version": "1.0.0",
+  "description": "Skills for building type-safe, infrastructure-aware backend applications with Encore.ts",
+  "skills_path": "skills"
+}
+

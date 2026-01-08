@@ -1,0 +1,11 @@
+{
+  "name": "encoredev/skills",
+  "description": "Agent skills for building backend applications with Encore.ts",
+  "plugins": [
+    {
+      "name": "encore-skills",
+      "path": "plugins/encore-skills"
+    }
+  ]
+}
+
