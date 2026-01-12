@@ -1,10 +1,14 @@
 {
   "name": "encoredev/skills",
-  "description": "Agent skills for building backend applications with Encore.ts",
+  "description": "Agent skills for building backend applications with Encore",
+  "owner": {
+    "name": "Encore",
+    "url": "https://encore.dev"
+  },
   "plugins": [
     {
       "name": "encore-skills",
-      "path": "plugins/encore-skills"
+      "source": "./plugins/encore-skills"
     }
   ]
 }
