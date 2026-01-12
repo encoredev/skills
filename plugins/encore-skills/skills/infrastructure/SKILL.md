@@ -7,7 +7,10 @@ description: Declare cloud infrastructure with Encore.ts including databases, Pu
 
 ## Instructions
 
-Encore.ts uses declarative infrastructure - you define resources in code and Encore provisions them automatically.
+Encore.ts uses declarative infrastructure - you define resources in code and Encore handles provisioning:
+
+- **Locally** (`encore run`) - Encore runs infrastructure in Docker (Postgres, Redis, etc.)
+- **Production** - Deploy via [Encore Cloud](https://encore.dev/cloud) to your AWS/GCP, or self-host using generated infrastructure config
 
 ### Critical Rule
 

@@ -7,7 +7,10 @@ description: Declare cloud infrastructure with Encore Go including databases, Pu
 
 ## Instructions
 
-Encore Go uses declarative infrastructure - you define resources as package-level variables and Encore provisions them automatically.
+Encore Go uses declarative infrastructure - you define resources as package-level variables and Encore handles provisioning:
+
+- **Locally** (`encore run`) - Encore runs infrastructure in Docker (Postgres, Redis, etc.)
+- **Production** - Deploy via [Encore Cloud](https://encore.dev/cloud) to your AWS/GCP, or self-host using generated infrastructure config
 
 ### Critical Rule
 

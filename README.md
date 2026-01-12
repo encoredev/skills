@@ -4,15 +4,19 @@ Agent skills for building backend applications with [Encore](https://encore.dev)
 
 ## What These Skills Do
 
-Encore lets you write your application and get cloud infrastructure automatically - databases, Pub/Sub, cron jobs, and more.
+Encore is a backend framework with built-in infrastructure. You declare what you need (databases, Pub/Sub, cron jobs, etc.) in code, and Encore understands how to run it.
 
 These skills help AI agents use Encore's declarative patterns correctly:
 
-- **Declarative infrastructure** - define resources in code, Encore provisions them
-- **Flexible deployment** - self-host, or use Encore Cloud to provision in your AWS/GCP account
+- **Declarative infrastructure** - define resources in code
 - **Type-safe APIs** - request/response validation built-in
 - **Service-to-service calls** - automatic type safety across service boundaries
 - **Built-in observability** - tracing, metrics, and logging out of the box
+
+### How Infrastructure Works
+
+- **Local development** (`encore run`) - Encore provisions Docker containers automatically (Postgres, Redis, etc.)
+- **Production deployment** - Either use [Encore Cloud](https://encore.dev/cloud) to provision in your AWS/GCP account, or self-host using the generated infrastructure configuration
 
 ## Installation
 
