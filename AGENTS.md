@@ -12,11 +12,14 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 
 | Skill | Trigger Keywords |
 |-------|------------------|
+| `encore-getting-started` | new, create, init, setup, start, project, hello world, beginner |
 | `encore-api` | typescript, ts, api, endpoint, route, REST, HTTP, webhook |
 | `encore-auth` | typescript, ts, auth, authentication, login, token, jwt, gateway |
 | `encore-infrastructure` | typescript, ts, database, pubsub, topic, cron, bucket, secret |
 | `encore-service` | typescript, ts, service, microservice, structure, architecture |
 | `encore-database` | typescript, ts, sql, query, migration, drizzle, prisma |
+| `encore-testing` | typescript, ts, test, vitest, unit test, integration |
+| `encore-frontend` | frontend, client, react, nextjs, cors, fetch, generate client |
 | `encore-code-review` | typescript, ts, review, audit, check, best practices |
 | `encore-migrate` | migrate, convert, express, fastify, node |
 
@@ -24,11 +27,13 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 
 | Skill | Trigger Keywords |
 |-------|------------------|
+| `encore-go-getting-started` | go, golang, new, create, init, setup, start, project |
 | `encore-go-api` | go, golang, api, endpoint, route, REST, HTTP, webhook |
 | `encore-go-auth` | go, golang, auth, authentication, login, token, jwt |
 | `encore-go-infrastructure` | go, golang, database, pubsub, topic, cron, bucket, secret |
 | `encore-go-service` | go, golang, service, microservice, structure, architecture |
 | `encore-go-database` | go, golang, sql, query, migration, sqldb, postgres |
+| `encore-go-testing` | go, golang, test, unit test, integration |
 | `encore-go-code-review` | go, golang, review, audit, check, best practices |
 
 ## Key Patterns to Remember

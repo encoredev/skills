@@ -52,11 +52,14 @@ Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to y
 
 | Skill | Description |
 |-------|-------------|
+| [getting-started](plugins/encore-skills/skills/getting-started/SKILL.md) | Create new projects, project structure, first steps |
 | [api](plugins/encore-skills/skills/api/SKILL.md) | Create type-safe API endpoints with proper request/response handling |
 | [auth](plugins/encore-skills/skills/auth/SKILL.md) | Implement authentication with auth handlers, gateways, and protected endpoints |
 | [infrastructure](plugins/encore-skills/skills/infrastructure/SKILL.md) | Declare databases, Pub/Sub, cron jobs, storage, and secrets |
 | [service](plugins/encore-skills/skills/service/SKILL.md) | Structure services and organize application architecture |
 | [database](plugins/encore-skills/skills/database/SKILL.md) | Database queries, migrations, and ORM integration |
+| [testing](plugins/encore-skills/skills/testing/SKILL.md) | Test APIs and services with Vitest |
+| [frontend](plugins/encore-skills/skills/frontend/SKILL.md) | Connect React/Next.js apps, generate clients, configure CORS |
 | [code-review](plugins/encore-skills/skills/code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
 | [migrate](plugins/encore-skills/skills/migrate/SKILL.md) | Convert Express/Fastify/Node.js apps to Encore |
 
@@ -64,11 +67,13 @@ Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to y
 
 | Skill | Description |
 |-------|-------------|
+| [go-getting-started](plugins/encore-skills/skills/go-getting-started/SKILL.md) | Create new projects, project structure, first steps |
 | [go-api](plugins/encore-skills/skills/go-api/SKILL.md) | Create API endpoints using `//encore:api` annotations |
 | [go-auth](plugins/encore-skills/skills/go-auth/SKILL.md) | Implement authentication with `//encore:authhandler` |
 | [go-infrastructure](plugins/encore-skills/skills/go-infrastructure/SKILL.md) | Declare databases, Pub/Sub, cron jobs, storage, and secrets |
 | [go-service](plugins/encore-skills/skills/go-service/SKILL.md) | Structure services and organize application architecture |
 | [go-database](plugins/encore-skills/skills/go-database/SKILL.md) | Database queries, migrations, and transactions |
+| [go-testing](plugins/encore-skills/skills/go-testing/SKILL.md) | Test APIs and services with Go testing |
 | [go-code-review](plugins/encore-skills/skills/go-code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
 
 ## Repository Structure
