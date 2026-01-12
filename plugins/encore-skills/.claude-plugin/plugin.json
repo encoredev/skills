@@ -1,7 +1,6 @@
 {
   "name": "encore-skills",
   "version": "1.0.0",
-  "description": "Skills for building backend applications with Encore (Go and TypeScript)",
-  "skills_directory": "skills"
+  "description": "Skills for building backend applications with Encore (Go and TypeScript)"
 }
 
