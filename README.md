@@ -75,6 +75,7 @@ Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to y
 | [go-database](plugins/encore-skills/skills/go-database/SKILL.md) | Database queries, migrations, and transactions |
 | [go-testing](plugins/encore-skills/skills/go-testing/SKILL.md) | Test APIs and services with Go testing |
 | [go-code-review](plugins/encore-skills/skills/go-code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
+| [frontend](plugins/encore-skills/skills/frontend/SKILL.md) | Connect React/Next.js apps, generate clients, configure CORS |
 
 ## Repository Structure
 
@@ -146,5 +147,3 @@ Concrete code examples.
 ## License
 
 Apache-2.0
-
-# encore-skills-temp

@@ -35,6 +35,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | `encore-go-database` | go, golang, sql, query, migration, sqldb, postgres |
 | `encore-go-testing` | go, golang, test, unit test, integration |
 | `encore-go-code-review` | go, golang, review, audit, check, best practices |
+| `encore-frontend` | frontend, client, react, nextjs, cors, fetch, generate client |
 
 ## Key Patterns to Remember
 
