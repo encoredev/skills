@@ -20,7 +20,7 @@ These skills help AI agents use Encore's declarative patterns correctly:
 
 ## Installation
 
-### Claude Code (via Marketplace)
+### Claude Code
 
 ```bash
 # Add the marketplace
