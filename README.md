@@ -42,7 +42,30 @@ claude plugin install ~/encore-skills
 
 After installation, restart Claude Code. Skills are automatically invoked when relevant.
 
-### Other Agents
+### npx add-skill (All Agents)
+
+Install skills using the `add-skill` CLI tool, which supports Cursor, Claude Code, Codex, OpenCode, and 10+ other agents:
+
+```bash
+# Install all skills
+npx add-skill encoredev/skills
+
+# List available skills
+npx add-skill encoredev/skills --list
+
+# Install specific skills
+npx add-skill encoredev/skills --skill encore-getting-started --skill encore-api
+
+# Install to specific agents
+npx add-skill encoredev/skills -a cursor -a claude-code
+
+# Global installation (all projects)
+npx add-skill encoredev/skills -g
+```
+
+The tool automatically detects which agents you have installed and installs to the appropriate locations.
+
+### Other Agents (Manual)
 
 Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to your agent's documentation, or copy the contents to your agent's skills location.
 
@@ -101,10 +124,13 @@ encore-skills/
 │           ├── go-database/
 │           ├── go-infrastructure/
 │           └── go-service/
+├── skills/                    # Symlinks for add-skill compatibility
 ├── AGENTS.md
 ├── LICENSE
 └── README.md
 ```
+
+The `skills/` directory contains symlinks to the actual skills in `plugins/encore-skills/skills/` for compatibility with `npx add-skill`. The tool's recursive search will also find skills in the `plugins/` directory.
 
 ## Creating New Skills
 
