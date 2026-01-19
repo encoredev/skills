@@ -1,0 +1,17 @@
+{
+  "name": "encore-skills",
+  "owner": {
+    "name": "Encore"
+  },
+  "metadata": {
+    "description": "Agent skills for building backend applications with Encore"
+  },
+  "plugins": [
+    {
+      "name": "encore-skills",
+      "source": "./plugins/encore-skills",
+      "description": "Skills for Go and TypeScript backend development with Encore"
+    }
+  ]
+}
+
