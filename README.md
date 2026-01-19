@@ -67,7 +67,7 @@ The tool automatically detects which agents you have installed and installs to t
 
 ### Other Agents (Manual)
 
-Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to your agent's documentation, or copy the contents to your agent's skills location.
+Reference the `SKILL.md` files in `skills/` according to your agent's documentation, or copy the contents to your agent's skills location.
 
 ## Available Skills
 
@@ -75,30 +75,30 @@ Reference the `SKILL.md` files in `plugins/encore-skills/skills/` according to y
 
 | Skill | Description |
 |-------|-------------|
-| [getting-started](plugins/encore-skills/skills/getting-started/SKILL.md) | Create new projects, project structure, first steps |
-| [api](plugins/encore-skills/skills/api/SKILL.md) | Create type-safe API endpoints with proper request/response handling |
-| [auth](plugins/encore-skills/skills/auth/SKILL.md) | Implement authentication with auth handlers, gateways, and protected endpoints |
-| [infrastructure](plugins/encore-skills/skills/infrastructure/SKILL.md) | Declare databases, Pub/Sub, cron jobs, storage, and secrets |
-| [service](plugins/encore-skills/skills/service/SKILL.md) | Structure services and organize application architecture |
-| [database](plugins/encore-skills/skills/database/SKILL.md) | Database queries, migrations, and ORM integration |
-| [testing](plugins/encore-skills/skills/testing/SKILL.md) | Test APIs and services with Vitest |
-| [frontend](plugins/encore-skills/skills/frontend/SKILL.md) | Connect React/Next.js apps, generate clients, configure CORS |
-| [code-review](plugins/encore-skills/skills/code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
-| [migrate](plugins/encore-skills/skills/migrate/SKILL.md) | Convert Express/Fastify/Node.js apps to Encore |
+| [getting-started](skills/getting-started/SKILL.md) | Create new projects, project structure, first steps |
+| [api](skills/api/SKILL.md) | Create type-safe API endpoints with proper request/response handling |
+| [auth](skills/auth/SKILL.md) | Implement authentication with auth handlers, gateways, and protected endpoints |
+| [infrastructure](skills/infrastructure/SKILL.md) | Declare databases, Pub/Sub, cron jobs, storage, and secrets |
+| [service](skills/service/SKILL.md) | Structure services and organize application architecture |
+| [database](skills/database/SKILL.md) | Database queries, migrations, and ORM integration |
+| [testing](skills/testing/SKILL.md) | Test APIs and services with Vitest |
+| [frontend](skills/frontend/SKILL.md) | Connect React/Next.js apps, generate clients, configure CORS |
+| [code-review](skills/code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
+| [migrate](skills/migrate/SKILL.md) | Convert Express/Fastify/Node.js apps to Encore |
 
 ### Go Skills
 
 | Skill | Description |
 |-------|-------------|
-| [go-getting-started](plugins/encore-skills/skills/go-getting-started/SKILL.md) | Create new projects, project structure, first steps |
-| [go-api](plugins/encore-skills/skills/go-api/SKILL.md) | Create API endpoints using `//encore:api` annotations |
-| [go-auth](plugins/encore-skills/skills/go-auth/SKILL.md) | Implement authentication with `//encore:authhandler` |
-| [go-infrastructure](plugins/encore-skills/skills/go-infrastructure/SKILL.md) | Declare databases, Pub/Sub, cron jobs, storage, and secrets |
-| [go-service](plugins/encore-skills/skills/go-service/SKILL.md) | Structure services and organize application architecture |
-| [go-database](plugins/encore-skills/skills/go-database/SKILL.md) | Database queries, migrations, and transactions |
-| [go-testing](plugins/encore-skills/skills/go-testing/SKILL.md) | Test APIs and services with Go testing |
-| [go-code-review](plugins/encore-skills/skills/go-code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
-| [frontend](plugins/encore-skills/skills/frontend/SKILL.md) | Connect React/Next.js apps, generate clients, configure CORS |
+| [go-getting-started](skills/go-getting-started/SKILL.md) | Create new projects, project structure, first steps |
+| [go-api](skills/go-api/SKILL.md) | Create API endpoints using `//encore:api` annotations |
+| [go-auth](skills/go-auth/SKILL.md) | Implement authentication with `//encore:authhandler` |
+| [go-infrastructure](skills/go-infrastructure/SKILL.md) | Declare databases, Pub/Sub, cron jobs, storage, and secrets |
+| [go-service](skills/go-service/SKILL.md) | Structure services and organize application architecture |
+| [go-database](skills/go-database/SKILL.md) | Database queries, migrations, and transactions |
+| [go-testing](skills/go-testing/SKILL.md) | Test APIs and services with Go testing |
+| [go-code-review](skills/go-code-review/SKILL.md) | Review code for Encore best practices and anti-patterns |
+| [frontend](skills/frontend/SKILL.md) | Connect React/Next.js apps, generate clients, configure CORS |
 
 ## Repository Structure
 
@@ -110,27 +110,27 @@ encore-skills/
 │   └── encore-skills/
 │       ├── .claude-plugin/
 │       │   └── plugin.json    # Plugin manifest
-│       └── skills/
-│           ├── api/                 # TypeScript
-│           ├── auth/
-│           ├── code-review/
-│           ├── database/
-│           ├── infrastructure/
-│           ├── migrate/
-│           ├── service/
-│           ├── go-api/              # Go
-│           ├── go-auth/
-│           ├── go-code-review/
-│           ├── go-database/
-│           ├── go-infrastructure/
-│           └── go-service/
-├── skills/                    # Symlinks for add-skill compatibility
+│       └── skills/            # Symlink to ../../skills
+├── skills/                    # Skills directory (standard location)
+│   ├── api/                   # TypeScript
+│   ├── auth/
+│   ├── code-review/
+│   ├── database/
+│   ├── infrastructure/
+│   ├── migrate/
+│   ├── service/
+│   ├── go-api/                # Go
+│   ├── go-auth/
+│   ├── go-code-review/
+│   ├── go-database/
+│   ├── go-infrastructure/
+│   └── go-service/
 ├── AGENTS.md
 ├── LICENSE
 └── README.md
 ```
 
-The `skills/` directory contains symlinks to the actual skills in `plugins/encore-skills/skills/` for compatibility with `npx add-skill`. The tool's recursive search will also find skills in the `plugins/` directory.
+Skills are stored in the root `skills/` directory (the standard location for `npx add-skill`). The Claude Code plugin references them via a symlink, keeping both installation methods working with a single source of truth.
 
 ## Creating New Skills
 
