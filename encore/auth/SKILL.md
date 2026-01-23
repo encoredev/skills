@@ -121,12 +121,26 @@ export const getOrderWithUser = api(
   { method: "GET", path: "/orders/:id", expose: true, auth: true },
   async ({ id }): Promise<OrderWithUser> => {
     const auth = getAuthData()!;
-    
+
     // Auth is automatically propagated to this call
     const orderUser = await user.getProfile();
-    
+
     return { order: await getOrder(id), user: orderUser };
   }
+);
+```
+
+### Overriding Auth Data
+
+You can explicitly override auth data when making service-to-service calls:
+
+```typescript
+import { user } from "~encore/clients";
+
+// Override auth data for this specific call
+const adminUser = await user.getProfile(
+  {},
+  { authData: { userID: "admin-123", email: "admin@example.com", role: "admin" } }
 );
 ```
 
@@ -204,6 +218,33 @@ export const auth = authHandler<AuthParams, AuthData>(
     };
   }
 );
+```
+
+## Testing with Auth
+
+Mock authentication in tests using Vitest:
+
+```typescript
+import { describe, it, expect, vi } from "vitest";
+import * as auth from "~encore/auth";
+import { getProfile } from "./api";
+
+describe("authenticated endpoints", () => {
+  it("returns profile for authenticated user", async () => {
+    // Mock getAuthData to return test user
+    const spy = vi.spyOn(auth, "getAuthData");
+    spy.mockImplementation(() => ({
+      userID: "test-user-123",
+      email: "test@example.com",
+      role: "user",
+    }));
+
+    const profile = await getProfile();
+    expect(profile.email).toBe("test@example.com");
+
+    spy.mockRestore();
+  });
+});
 ```
 
 ## Guidelines

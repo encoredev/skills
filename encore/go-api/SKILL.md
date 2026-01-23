@@ -59,6 +59,7 @@ func CreateUser(ctx context.Context, params *CreateUserParams) (*User, error) {
 | `auth` | - | Requires authentication |
 | `method` | GET, POST, PUT, PATCH, DELETE | HTTP method |
 | `path` | string | URL path with `:param` for path params |
+| `sensitive` | - | Redacts request/response payloads from traces |
 
 ### Examples
 
@@ -66,6 +67,47 @@ func CreateUser(ctx context.Context, params *CreateUserParams) (*User, error) {
 //encore:api public method=GET path=/health
 //encore:api private method=POST path=/internal/process
 //encore:api auth method=GET path=/profile
+//encore:api public sensitive method=POST path=/auth/login
+```
+
+## Sensitive Data
+
+Mark sensitive fields to redact them from tracing logs:
+
+```go
+type LoginParams struct {
+    Email    string `json:"email"`
+    Password string `json:"password" encore:"sensitive"`
+}
+```
+
+Or mark the entire endpoint as sensitive in the annotation:
+
+```go
+//encore:api public sensitive method=POST path=/auth/login
+func Login(ctx context.Context, params *LoginParams) (*TokenResponse, error) {
+    // Request and response will be redacted from traces
+}
+```
+
+## Custom HTTP Status Codes
+
+Return custom HTTP status codes using the `encore:"httpstatus"` tag:
+
+```go
+type CreateResponse struct {
+    ID     string `json:"id"`
+    Status int    `encore:"httpstatus"`
+}
+
+//encore:api public method=POST path=/items
+func CreateItem(ctx context.Context, params *CreateParams) (*CreateResponse, error) {
+    item := createItem(params)
+    return &CreateResponse{
+        ID:     item.ID,
+        Status: 201,  // Returns HTTP 201 Created
+    }, nil
+}
 ```
 
 ## Request Parameter Sources
@@ -100,6 +142,23 @@ func ListUsers(ctx context.Context, params *ListUsersParams) (*ListResponse, err
 type WebhookParams struct {
     Signature string `header:"X-Webhook-Signature"`
     Payload   string `json:"payload"`
+}
+```
+
+### Cookies
+
+```go
+import "net/http"
+
+type AuthParams struct {
+    SessionCookie *http.Cookie `cookie:"session"`
+    CSRFToken     string       `header:"X-CSRF-Token"`
+}
+
+//encore:api auth method=POST path=/logout
+func Logout(ctx context.Context, params *AuthParams) error {
+    // Access params.SessionCookie.Value
+    return nil
 }
 ```
 

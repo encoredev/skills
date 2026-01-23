@@ -310,6 +310,67 @@ func TestUserCRUD(t *testing.T) {
 }
 ```
 
+### Test Database Isolation
+
+Create isolated, fully-migrated test databases using `et.NewTestDatabase()`:
+
+```go
+import "encore.dev/et"
+
+func TestWithFreshDatabase(t *testing.T) {
+    // Creates a new database with all migrations applied
+    testDB := et.NewTestDatabase(t, db)
+
+    // Use testDB for queries - it's completely isolated
+    _, err := testDB.Exec(ctx, "INSERT INTO users (email) VALUES ($1)", "test@example.com")
+    if err != nil {
+        t.Fatal(err)
+    }
+}
+```
+
+### Service Instance Isolation
+
+By default, service structs are shared across tests for performance. Enable isolation when tests modify service state:
+
+```go
+import "encore.dev/et"
+
+func TestWithServiceIsolation(t *testing.T) {
+    // Enable service instance isolation for this test
+    et.EnableServiceInstanceIsolation()
+
+    // Now this test gets its own service struct instance
+    // preventing state interference with other tests
+}
+```
+
+### Test Tracing Dashboard
+
+View test execution traces in the development dashboard at `http://localhost:9400` while tests run. This helps diagnose failures by showing:
+- Request/response data
+- Database queries
+- Service-to-service calls
+- Errors and stack traces
+
+### Mocking Endpoints and Services
+
+Mock endpoints or entire services for isolated unit testing:
+
+```go
+import "encore.dev/et"
+
+func TestWithMockedEndpoint(t *testing.T) {
+    // Mock a specific endpoint
+    et.MockEndpoint(products.GetPrice, func(ctx context.Context, p *products.PriceParams) (*products.PriceResponse, error) {
+        return &products.PriceResponse{Price: 100}, nil
+    })
+
+    // Mock an entire service
+    et.MockService("products", &mockProductService{})
+}
+```
+
 ### Guidelines
 
 - Use `encore test` to run tests with infrastructure setup
@@ -317,5 +378,7 @@ func TestUserCRUD(t *testing.T) {
 - Test API endpoints by calling them directly as functions
 - Service-to-service calls work normally in tests
 - Use table-driven tests for testing multiple cases
+- Use `et.NewTestDatabase()` for isolated database testing
+- Use `et.EnableServiceInstanceIsolation()` when tests modify service state
 - Don't mock Encore infrastructure - use the real thing
 - Mock external dependencies (third-party APIs, email services, etc.)

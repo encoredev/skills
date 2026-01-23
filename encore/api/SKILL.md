@@ -51,6 +51,58 @@ export const createUser = api(
 | `path` | string | URL path, supports `:param` and `*wildcard` |
 | `expose` | boolean | If true, accessible from outside (default: false) |
 | `auth` | boolean | If true, requires authentication |
+| `sensitive` | boolean | If true, redacts request/response payloads from traces |
+
+## Request/Response Patterns
+
+Encore supports four endpoint configurations:
+
+```typescript
+// Both request and response
+export const createUser = api(
+  { method: "POST", path: "/users", expose: true },
+  async (req: CreateRequest): Promise<CreateResponse> => { ... }
+);
+
+// Response only (no request body)
+export const listUsers = api(
+  { method: "GET", path: "/users", expose: true },
+  async (): Promise<ListResponse> => { ... }
+);
+
+// Request only (no response body)
+export const deleteUser = api(
+  { method: "DELETE", path: "/users/:id", expose: true },
+  async (req: DeleteRequest): Promise<void> => { ... }
+);
+
+// Neither request nor response
+export const ping = api(
+  { method: "GET", path: "/ping", expose: true },
+  async (): Promise<void> => { ... }
+);
+```
+
+## Custom HTTP Status Codes
+
+Include an `HttpStatus` field in your response to return custom status codes:
+
+```typescript
+import { api, HttpStatus } from "encore.dev/api";
+
+interface CreateResponse {
+  id: string;
+  status: HttpStatus;
+}
+
+export const create = api(
+  { method: "POST", path: "/items", expose: true },
+  async (req: CreateRequest): Promise<CreateResponse> => {
+    const item = await createItem(req);
+    return { id: item.id, status: HttpStatus.Created };  // Returns 201
+  }
+);
+```
 
 ## Parameter Types
 
@@ -85,18 +137,45 @@ interface WebhookRequest {
 }
 ```
 
+### Cookies
+
+```typescript
+import { Cookie } from "encore.dev/api";
+
+interface SessionRequest {
+  session?: Cookie<"session">;
+  settings?: Cookie<"user-settings">;
+}
+```
+
 ## Request Validation
 
 Encore validates requests at runtime using TypeScript types. Add constraints for stricter validation:
 
 ```typescript
-import { api, Min, Max, MinLen, MaxLen, IsEmail, IsURL } from "encore.dev/api";
+import { api } from "encore.dev/api";
+import { Min, Max, MinLen, MaxLen, IsEmail, IsURL } from "encore.dev/validate";
 
 interface CreateUserRequest {
   email: string & IsEmail;                    // Must be valid email
   username: string & MinLen<3> & MaxLen<20>;  // 3-20 characters
   age: number & Min<13> & Max<120>;           // Between 13 and 120
   website?: string & IsURL;                   // Optional, must be URL if provided
+}
+```
+
+### Combining Validation Rules
+
+Use `&` for AND logic (must pass all rules) and `|` for OR logic (must pass at least one):
+
+```typescript
+import { IsEmail, IsURL, MinLen, MaxLen } from "encore.dev/validate";
+
+interface ContactRequest {
+  // Must be valid email OR valid URL
+  contact: string & (IsEmail | IsURL);
+  // Must be 5-100 chars AND be a valid URL
+  website: string & MinLen<5> & MaxLen<100> & IsURL;
 }
 ```
 
@@ -110,6 +189,9 @@ interface CreateUserRequest {
 | `MaxLen<N>` | string, array | `tags: string[] & MaxLen<10>` |
 | `IsEmail` | string | `email: string & IsEmail` |
 | `IsURL` | string | `link: string & IsURL` |
+| `StartsWith<S>` | string | `id: string & StartsWith<"usr_">` |
+| `EndsWith<S>` | string | `file: string & EndsWith<".json">` |
+| `MatchesRegexp<R>` | string | `code: string & MatchesRegexp<"^[A-Z]{3}$">` |
 
 ### Validation Error Response
 
@@ -187,6 +269,11 @@ export const app = api.static(
   { expose: true, path: "/!path", dir: "./public", notFound: "./404.html" }
 );
 ```
+
+### Path Syntax
+
+- `*path` - Standard wildcard: matches all paths under the prefix (e.g., `/static/*path`)
+- `!path` - Fallback routing: serves static files at domain root without conflicting with other API endpoints. Use this for SPAs where unmatched routes should serve `index.html`
 
 ## Guidelines
 
