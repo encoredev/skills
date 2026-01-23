@@ -127,18 +127,15 @@ func MyAuthHandler(ctx context.Context, params *Params) (auth.UID, *AuthData, er
 ### JWT Token Validation
 
 ```go
-import (
-    "github.com/golang-jwt/jwt/v5"
-    "encore.dev/config"
-)
+import "github.com/golang-jwt/jwt/v5"
 
 var secrets struct {
-    JWTSecret config.String
+    JWTSecret string
 }
 
 func verifyToken(tokenString string) (*Claims, error) {
     token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(t *jwt.Token) (interface{}, error) {
-        return []byte(secrets.JWTSecret()), nil
+        return []byte(secrets.JWTSecret), nil
     })
     if err != nil {
         return nil, err

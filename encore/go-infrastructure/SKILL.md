@@ -247,15 +247,13 @@ ref := objects.BucketRef[myPerms](Uploads)
 ```go
 package email
 
-import "encore.dev/config"
-
 var secrets struct {
-    SendGridAPIKey config.String
-    SMTPPassword   config.String
+    SendGridAPIKey string
+    SMTPPassword   string
 }
 
 func sendEmail() error {
-    apiKey := secrets.SendGridAPIKey()
+    apiKey := secrets.SendGridAPIKey
     // Use the secret...
 }
 ```
