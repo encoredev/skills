@@ -89,6 +89,43 @@ const _ = new Subscription(orderCreated, "send-confirmation-email", {
 });
 ```
 
+### Message Attributes
+
+Use `Attribute<T>` for fields that should be message attributes (for filtering/ordering):
+
+```typescript
+import { Topic, Attribute } from "encore.dev/pubsub";
+
+interface CartEvent {
+  cartId: Attribute<string>;  // Used for ordering
+  userId: string;
+  action: "add" | "remove";
+  productId: string;
+}
+
+// Ordered topic - events with same cartId delivered in order
+export const cartEvents = new Topic<CartEvent>("cart-events", {
+  deliveryGuarantee: "at-least-once",
+  orderingAttribute: "cartId",
+});
+```
+
+### Topic References
+
+Pass topic access to other code while maintaining static analysis:
+
+```typescript
+import { Publisher } from "encore.dev/pubsub";
+
+// Create a reference with publish permission
+const publisherRef = orderCreated.ref<Publisher>();
+
+// Use the reference
+async function notifyOrder(ref: typeof publisherRef, orderId: string) {
+  await ref.publish({ orderId, userId: "123", total: 99.99 });
+}
+```
+
 ## Cron Jobs
 
 ```typescript
@@ -125,10 +162,10 @@ import { Bucket } from "encore.dev/storage/objects";
 
 // Package level
 export const uploads = new Bucket("user-uploads", {
-  versioned: false,
+  versioned: false,  // Set to true to keep multiple versions of objects
 });
 
-// Public bucket
+// Public bucket (files accessible via public URL)
 export const publicAssets = new Bucket("public-assets", {
   public: true,
   versioned: false,
@@ -139,7 +176,7 @@ export const publicAssets = new Bucket("public-assets", {
 
 ```typescript
 // Upload
-await uploads.upload("path/to/file.jpg", buffer, {
+const attrs = await uploads.upload("path/to/file.jpg", buffer, {
   contentType: "image/jpeg",
 });
 
@@ -149,11 +186,48 @@ const data = await uploads.download("path/to/file.jpg");
 // Check existence
 const exists = await uploads.exists("path/to/file.jpg");
 
+// Get attributes (size, content type, ETag)
+const attrs = await uploads.attrs("path/to/file.jpg");
+
 // Delete
 await uploads.remove("path/to/file.jpg");
 
+// List objects
+for await (const entry of uploads.list({})) {
+  console.log(entry.key, entry.size);
+}
+
 // Public URL (only for public buckets)
 const url = publicAssets.publicUrl("image.jpg");
+```
+
+### Signed URLs
+
+Generate temporary URLs for upload/download without exposing your bucket:
+
+```typescript
+// Signed upload URL (expires in 2 hours)
+const uploadUrl = await uploads.signedUploadUrl("user-uploads/avatar.jpg", { ttl: 7200 });
+
+// Signed download URL
+const downloadUrl = await uploads.signedDownloadUrl("documents/report.pdf", { ttl: 7200 });
+```
+
+### Bucket References
+
+Pass bucket access with specific permissions to other code:
+
+```typescript
+import { Uploader, Downloader } from "encore.dev/storage/objects";
+
+// Create a reference with upload permission only
+const uploaderRef = uploads.ref<Uploader>();
+
+// Create a reference with download permission only
+const downloaderRef = uploads.ref<Downloader>();
+
+// Permission types: Downloader, Uploader, Lister, Attrser, Remover,
+// SignedDownloader, SignedUploader, ReadWriter
 ```
 
 ## Secrets
