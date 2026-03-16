@@ -1,26 +1,27 @@
 ---
 name: encore-migrate
-description: Migrate existing backend applications to Encore. Supports any source language/framework, targeting Encore.ts or Encore Go. Analyzes the existing system, creates a migration plan, and migrates one entity at a time with validation.
+description: Migrate existing backend applications to Encore. Supports any source language/framework, targeting Encore.ts or Encore Go. Groups entities into migration units, creates a hierarchical plan, and migrates one unit at a time with validation.
 ---
 
 # Migrate to Encore
 
-This skill guides migrating any existing backend application to Encore, one entity at a time. It supports any source language or framework and targets both Encore.ts and Encore Go. A `migration-plan.md` file is created at the Encore project root to track progress across sessions, so migration can be paused and resumed at any time. This skill contains no Encore code examples — it delegates all Encore-specific implementation to the appropriate language-specific skills.
+This skill guides migrating any existing backend application to Encore, one migration unit at a time. It supports any source language or framework and targets both Encore.ts and Encore Go. A `migration-plan.md` summary file and `migration-plan/` directory of per-unit detail files are created at the Encore project root to track progress across sessions. This skill contains no Encore code examples — it delegates all Encore-specific implementation to the appropriate language-specific skills.
 
 ## Phase Detection
 
 Before doing anything, determine which phase to enter:
 
 - **No `migration-plan.md` exists** in the Encore project directory → Start at **Phase 1: DISCOVER**
-- **`migration-plan.md` exists with pending entities** (any entity with status `pending`) → Resume at **Phase 3: MIGRATE**
-- **`migration-plan.md` exists with no pending entities** (all entities are `migrated`, `skipped`, or `manual validation needed`) → Go to **Phase 4: COMPLETE**
+- **`migration-plan.md` exists but no `migration-plan/` directory** → Resume at **Phase 2: PLAN** (discovery done, detail files not yet written)
+- **`migration-plan/` directory exists with pending units** (any unit in the summary with status `pending` or `in progress`) → Resume at **Phase 3: MIGRATE**
+- **All units in the summary are `migrated`, `skipped`, or `manual validation needed`** → Go to **Phase 4: COMPLETE**
 
 ### Resuming a Migration (Phase 3)
 
-When `migration-plan.md` already exists and has pending entities:
+When `migration-plan.md` and `migration-plan/` exist with pending units:
 
-1. Read `migration-plan.md` in full
-2. Report current status to the user — for example: "5 of 12 entities migrated, next suggested: payments service (all its dependencies are migrated)"
+1. Read `migration-plan.md` (summary only — do NOT read all detail files)
+2. Report current status to the user — for example: "3 of 7 units migrated, next suggested: billing (all its dependencies are migrated)"
 3. Ask the user what they would like to work on next, offering a suggestion based on the dependency order in the plan
 
 ## Phase 1 — Discover
@@ -48,29 +49,51 @@ Read the source codebase and inventory all entities:
 | Secrets / environment variables | All referenced env vars and secrets, noting which are sensitive |
 | Existing tests | Test files, which entities they cover, test framework used |
 
-### 3. Present the Inventory
+### 3. Group Entities into Migration Units
 
-Present the inventory to the user as a summary table grouped by category. Include counts (e.g., "3 services, 14 endpoints, 2 databases"). For each entity, assess migration complexity:
+Group the discovered entities into migration units using these heuristics in priority order:
 
-- **Low** — direct Encore equivalent exists, straightforward mapping
-- **Medium** — requires restructuring or has partial Encore equivalent
+1. **Existing service boundaries** — If the source app already has services, modules, or packages, use those as the starting point for chunks
+2. **URL path prefixes** — Group endpoints sharing a path prefix (e.g., `/users/*`, `/billing/*`)
+3. **Shared database tables** — Endpoints that read/write the same tables belong together
+4. **Shared types/models** — Endpoints that share request/response types or domain models
+
+**Chunk sizing:** Aim for 5-15 endpoints per migration unit. If a group exceeds ~15 endpoints, suggest splitting it further (e.g., `users-crud` and `users-admin`). If a group has fewer than 3 endpoints, consider merging it with a related chunk.
+
+**Cross-cutting concerns** get their own migration units: auth, secrets, and standalone infrastructure (pub/sub topics, cron jobs not tightly coupled to one service) are separate units since they follow different dependency tiers.
+
+**For monoliths with no clear boundaries:** Fall back to URL path prefix grouping, then ask: "These groupings are based on URL paths — would you like to reorganize them by domain?"
+
+### 4. Present the Migration Units
+
+Present the migration units to the user as a summary table:
+
+| Unit | Endpoints | DB Tables | Other | Complexity |
+|------|-----------|-----------|-------|------------|
+
+Include total counts (e.g., "7 migration units covering 42 endpoints, 3 databases"). For each unit, assess overall migration complexity:
+
+- **Low** — direct Encore equivalents exist, straightforward mapping
+- **Medium** — requires restructuring or has partial Encore equivalents
 - **High** — no direct equivalent, needs redesign or custom solution
 
-### 4. Show Code Previews
+Offer to show the detail of any unit if the user wants to inspect what's inside before confirming.
 
-For 2-3 representative entities (pick a mix of simple and complex), show a short "before and after" preview of what the source code looks like now and what the Encore version will look like. Use the appropriate language-specific skill to inform the preview. This helps the user understand the migration scope before committing. Keep previews brief — one endpoint, one query, or one topic declaration is enough per preview.
+### 5. Show Code Previews
 
-### 5. Confirm with the User
+For 2-3 representative entities (pick a mix of simple and complex from different units), show a short "before and after" preview of what the source code looks like now and what the Encore version will look like. Use the appropriate language-specific skill to inform the preview. Keep previews brief — one endpoint, one query, or one topic declaration is enough per preview.
 
-Ask the user to confirm the inventory is correct. Specifically ask:
+### 6. Confirm with the User
 
-- "Are there any services or modules I missed?"
-- "Are there any endpoints, databases, or other entities that are incorrect?"
+Ask the user to confirm the migration units are correct. Specifically ask:
+
+- "Are there any services, endpoints, or other entities I missed?"
+- "Would you like to split, merge, or rename any of these migration units?"
 - "Is there anything you want to exclude from the migration?"
 
-### 6. Iterate if Needed
+### 7. Iterate if Needed
 
-If the user identifies missing or incorrect entities, update the inventory and re-present it. Repeat until the user confirms the inventory is accurate.
+If the user identifies missing entities or wants to adjust chunk boundaries, update the units and re-present the summary table. Repeat until the user confirms the migration units are accurate.
 
 ## Phase 2 — Plan
 
@@ -87,39 +110,47 @@ Ask the user for:
 
 ### 3. Determine Dependency Order
 
-Order entities for migration based on dependencies. Follow this tier order:
+Order migration units based on dependencies. Follow this tier order:
 
 1. **Secrets / config** — no dependencies, needed by everything
 2. **Databases** — schema and migrations must exist before services can use them
 3. **Auth** — auth handlers are needed before protected endpoints
-4. **Leaf services** — services with no cross-service dependencies
-5. **Dependent services** — services that depend on already-migrated services
+4. **Leaf units** — units with no cross-service dependencies
+5. **Dependent units** — units that depend on already-migrated units
 6. **Pub/Sub topics and subscriptions** — often depend on services being in place
 7. **Cron jobs** — typically depend on service endpoints
 
-Within each tier, suggest the simplest entity first (fewest endpoints, smallest schema, least complexity).
+Within each tier, suggest the simplest unit first (fewest endpoints, smallest schema, least complexity).
 
-### 4. Write migration-plan.md
+### 4. Write migration-plan.md (Summary)
 
-Write the `migration-plan.md` file to the Encore project root using the template defined in the "migration-plan.md Format" section below. Fill in all discovered entities with status `pending`.
+Write the `migration-plan.md` summary file to the Encore project root using the template in the "migration-plan.md Format" section below. Fill in all migration units with status `pending`.
 
-### 5. Propose First Entity Group
+### 5. Write Detail Files
 
-Propose the first entity or entity group to migrate, explaining why it should go first based on the dependency order. Wait for user approval before proceeding to Phase 3.
+Create a `migration-plan/` directory at the Encore project root. Write one detail file per migration unit using the template in the "Detail File Format" section below. Each file is named `migration-plan/<unit-name>.md`.
+
+### 6. Propose First Unit
+
+Propose the first migration unit, explaining why it should go first based on the dependency order. Wait for user approval before proceeding to Phase 3.
 
 ## Phase 3 — Migrate (Loop)
 
-### 1. Identify Next Entity
+### 1. Identify Next Unit
 
-Read `migration-plan.md` and identify the next pending entity group based on the dependency order.
+Read `migration-plan.md` (summary only) and identify the next pending migration unit based on the dependency order.
 
 ### 2. Suggest and Confirm
 
-Suggest the next entity to migrate and explain why this one is next (e.g., "This service has no dependencies on other unmigrated services" or "The database must exist before we can migrate the service that uses it"). Ask the user if they want to proceed with this entity or pick a different one.
+Suggest the next unit to migrate and explain why this one is next (e.g., "This unit has no dependencies on unmigrated units" or "The database must exist before we can migrate the service that uses it"). Ask the user if they want to proceed with this unit or pick a different one.
 
-### 3. Migrate Each Entity
+### 3. Load the Unit Detail
 
-For each entity being migrated:
+Read the detail file for the chosen unit (`migration-plan/<unit-name>.md`). Do NOT read detail files for other units.
+
+### 4. Migrate Each Entity
+
+For each entity in the unit:
 
 #### a. Implement
 
@@ -136,35 +167,39 @@ Invoke the appropriate language-specific skill based on the entity type and targ
 
 #### b. Migrate Tests
 
-If the source entity has associated tests, migrate them using the appropriate testing skill (`encore-testing` or `encore-go-testing`). Adapt test assertions to match Encore API patterns. If the source entity has no tests, note this in the plan.
+If the source entity has associated tests, migrate them using the appropriate testing skill (`encore-testing` or `encore-go-testing`). Adapt test assertions to match Encore API patterns. If the source entity has no tests, note this in the detail file.
 
 #### c. Validate
 
 Apply the three validation layers described in the "Validation" section below. All three layers must be evaluated before marking an entity as migrated.
 
-#### d. Update migration-plan.md
+#### d. Update the Detail File
 
-Update the entity's status in `migration-plan.md` and record validation evidence in the Validation Log table.
+Update the entity's status in the unit's detail file (`migration-plan/<unit-name>.md`) and record validation evidence in that file's Validation Log table.
 
-### 4. Continue or Pause
+#### e. Update the Summary
 
-After completing an entity, ask "What would you like to migrate next?" and suggest the next entity based on dependency order.
+When all entities in a unit are complete, update the unit's status in `migration-plan.md` to `migrated`. If some entities are pending, set the unit status to `in progress`.
 
-### 5. Batching
+### 5. Continue or Pause
 
-The default is one entity at a time. If the user says "keep going", "do them all", or similar, batch multiple entities but still validate each one individually before marking it as migrated.
+After completing a unit, ask "What would you like to migrate next?" and suggest the next unit based on dependency order.
+
+### 6. Batching
+
+The default is one unit at a time. If the user says "keep going", "do them all", or similar, batch multiple units but still validate each entity individually before marking it as migrated.
 
 ## Phase 4 — Complete
 
-When all entities in `migration-plan.md` are `migrated`, `skipped`, or `manual validation needed`:
+When all units in `migration-plan.md` are `migrated`, `skipped`, or `manual validation needed`:
 
-1. **Present a final summary:**
-   - Total entities migrated
-   - Entities marked as `manual validation needed` (list them with reasons)
-   - Entities skipped (list them with reasons)
+1. **Present a final summary** from `migration-plan.md`:
+   - Total units migrated
+   - Units marked as `manual validation needed` — read those specific detail files and list the entities that need attention with reasons
+   - Units skipped (list them with reasons)
 2. **Suggest running the full test suite** one final time to catch any integration issues
 3. **Note any manual validation items** that still need human attention
-4. **Suggest removing `migration-plan.md`** from the project once the user is satisfied with the migration
+4. **Suggest removing `migration-plan.md` and `migration-plan/`** from the project once the user is satisfied with the migration
 
 ## Validation
 
@@ -216,7 +251,7 @@ Ask the user before acting when:
 - **Multiple valid migration strategies exist** — present the options with tradeoffs
 - **Before making any HTTP call that could have side effects** — always ask first
 - **Source code is ambiguous** — when the agent is not confident about what the code does, ask rather than guess
-- **Source system appears to have changed** — if files referenced in `migration-plan.md` no longer exist or have changed significantly
+- **Source system appears to have changed** — if files referenced in a detail file no longer exist or have changed significantly
 
 ## Source System Protection
 
@@ -229,6 +264,37 @@ The source system must never be modified during migration. Follow these rules:
 - **Ask before any HTTP call that mutates state** on the source system (POST, PUT, DELETE)
 
 If the user asks to "clean up" or "remove" the old system, confirm explicitly before taking any action. The source system may still be serving production traffic.
+
+## Edge Cases
+
+### Moving Endpoints Between Units
+
+If the user realizes an endpoint belongs in a different migration unit:
+
+1. Remove the endpoint row from the source unit's detail file
+2. Add it to the target unit's detail file
+3. Update endpoint counts in `migration-plan.md`
+
+### Splitting a Unit Mid-Migration
+
+If a unit turns out to be too large while working on it:
+
+1. Create a new detail file for the split-off portion (`migration-plan/<new-unit>.md`)
+2. Move pending entities to the new file (already-migrated entities stay in the original)
+3. Add the new unit to the `migration-plan.md` summary table
+4. Insert it in the dependency order (same tier, after the original)
+
+### Monolith to Multiple Encore Services
+
+A single migration unit might map to multiple Encore services. The detail file tracks the source grouping, but the "Notes" column can indicate the target Encore service. Ask during migration if the unit maps to one service or should be split across Encore services.
+
+### Source Code Changed Since Discovery
+
+If files referenced in a detail file no longer exist or have changed significantly since discovery:
+
+1. Flag the discrepancy to the user
+2. Ask whether to update the detail file with the new state or skip the affected entities
+3. If updating, re-assess complexity and adjust the plan accordingly
 
 ## Troubleshooting
 
@@ -249,7 +315,7 @@ Common issues during migration and how to resolve them:
 
 ## migration-plan.md Format
 
-Use this exact template when creating the migration plan file. Fill in values from the discovery phase.
+Use this exact template for the summary plan file. Fill in values from the discovery phase.
 
 ```markdown
 # Migration Plan
@@ -265,44 +331,45 @@ Use this exact template when creating the migration plan file. Fill in values fr
 - **URL:** <encore local URL>
 - **Type:** Encore.ts | Encore Go
 
-## Entities
+## Migration Units
 
-### Services
-| Entity | Source | Complexity | Status | Notes |
-|--------|--------|------------|--------|-------|
-
-### Endpoints
-| Entity | Service | Method | Path | Complexity | Status | Notes |
-|--------|---------|--------|------|------------|--------|-------|
-
-### Databases
-| Entity | Type | Complexity | Status | Notes |
-|--------|------|------------|--------|-------|
-
-### Pub/Sub Topics
-| Entity | Complexity | Status | Notes |
-|--------|------------|--------|-------|
-
-### Cron Jobs
-| Entity | Schedule | Complexity | Status | Notes |
-|--------|----------|------------|--------|-------|
-
-### Secrets
-| Entity | Status | Notes |
-|--------|--------|-------|
-
-### Auth
-| Entity | Complexity | Status | Notes |
-|--------|------------|--------|-------|
+| Unit | Endpoints | DB Tables | Other | Complexity | Status |
+|------|-----------|-----------|-------|------------|--------|
 
 ## Dependency Order
-1. <ordered list based on analysis>
+1. <ordered list of migration units>
+```
+
+**Status values:** `pending`, `in progress`, `migrated`, `skipped`, `manual validation needed`
+
+**Complexity values:** `Low` (direct equivalent), `Medium` (requires restructuring), `High` (needs redesign)
+
+## Detail File Format
+
+Create one file per migration unit at `migration-plan/<unit-name>.md`. Use this exact template:
+
+```markdown
+# Migration Unit: <unit-name>
+
+## Source
+- **Files:** <list of source files in this unit>
+- **Depends on:** <other migration units, with their current status>
+
+## Endpoints
+| Endpoint | Method | Path | Status | Notes |
+|----------|--------|------|--------|-------|
+
+## Database
+| Table | Complexity | Status | Notes |
+|-------|------------|--------|-------|
+
+## Tests
+- **Source tests:** <test files and count>
+- **Migrated:** <count of migrated tests>
 
 ## Validation Log
 | Entity | Tests | HTTP Match | Evidence | Status |
 |--------|-------|------------|----------|--------|
 ```
 
-**Status values:** `pending`, `migrated`, `skipped`, `manual validation needed`
-
-**Complexity values:** `Low` (direct equivalent), `Medium` (requires restructuring), `High` (needs redesign)
+Not all sections are required — omit sections that don't apply to a given unit (e.g., a secrets unit won't have Endpoints or Database sections).
