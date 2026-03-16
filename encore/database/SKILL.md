@@ -19,7 +19,7 @@ const db = new SQLDatabase("mydb", {
 
 ## Query Methods
 
-Encore provides three main query methods:
+Encore provides several query methods:
 
 ### `query` - Multiple Rows
 
@@ -40,6 +40,17 @@ const users: User[] = [];
 for await (const row of rows) {
   users.push(row);
 }
+```
+
+### `queryAll` - All Rows as Array
+
+Returns all rows as an array (convenience wrapper around `query`):
+
+```typescript
+const users = await db.queryAll<User>`
+  SELECT id, email, name FROM users WHERE active = true
+`;
+// users is User[]
 ```
 
 ### `queryRow` - Single Row
@@ -73,6 +84,43 @@ await db.exec`
 await db.exec`
   DELETE FROM users WHERE id = ${id}
 `;
+```
+
+### Raw Query Methods
+
+Use raw SQL strings with positional parameters (`$1`, `$2`, etc.) instead of template literals:
+
+```typescript
+// Raw query returning multiple rows
+const rows = await db.rawQuery<User>("SELECT * FROM users WHERE active = $1", true);
+
+// Raw query returning single row
+const user = await db.rawQueryRow<User>("SELECT * FROM users WHERE id = $1", userId);
+
+// Raw query returning all rows as array
+const users = await db.rawQueryAll<User>("SELECT * FROM users WHERE role = $1", "admin");
+
+// Raw exec for INSERT/UPDATE/DELETE
+await db.rawExec("INSERT INTO users (id, email) VALUES ($1, $2)", id, email);
+```
+
+## Database Sharing Across Services
+
+Reference a database owned by another service using `SQLDatabase.named()`:
+
+```typescript
+import { SQLDatabase } from "encore.dev/storage/sqldb";
+
+// In the service that owns the database
+const db = new SQLDatabase("shared-db", {
+  migrations: "./migrations",
+});
+
+// In another service that needs access
+const sharedDb = SQLDatabase.named("shared-db");
+
+// Now you can query the shared database
+const user = await sharedDb.queryRow<User>`SELECT * FROM users WHERE id = ${id}`;
 ```
 
 ## Migrations
@@ -116,7 +164,6 @@ CREATE INDEX idx_users_email ON users(email);
 // db.ts
 import { SQLDatabase } from "encore.dev/storage/sqldb";
 import { drizzle } from "drizzle-orm/node-postgres";
-import * as schema from "./schema";
 
 const db = new SQLDatabase("mydb", {
   migrations: {
@@ -125,7 +172,7 @@ const db = new SQLDatabase("mydb", {
   },
 });
 
-export const orm = drizzle(db.connectionString, { schema });
+export const orm = drizzle(db.connectionString);
 ```
 
 ### Schema

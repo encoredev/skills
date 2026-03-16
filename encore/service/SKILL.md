@@ -140,6 +140,61 @@ export default new Service("my-service", {
 });
 ```
 
+### Middleware Targeting
+
+Control which endpoints middleware applies to:
+
+```typescript
+// Apply to all endpoints
+middleware({ target: { all: true } }, handler);
+
+// Apply only to authenticated endpoints
+middleware({ target: { auth: true } }, handler);
+
+// Apply only to exposed (public) endpoints
+middleware({ target: { expose: true } }, handler);
+
+// Apply to raw endpoints only
+middleware({ target: { isRaw: true } }, handler);
+
+// Apply to streaming endpoints only
+middleware({ target: { isStream: true } }, handler);
+
+// Apply to endpoints with specific tags
+middleware({ target: { tags: ["admin", "internal"] } }, handler);
+```
+
+### Middleware Request Object
+
+The request object provides access to:
+
+```typescript
+const myMiddleware = middleware(
+  { target: { all: true } },
+  async (req, next) => {
+    // For typed and streaming APIs
+    const meta = req.requestMeta;  // { method, path, pathParams }
+
+    // For raw endpoints
+    const rawReq = req.rawRequest;
+    const rawRes = req.rawResponse;
+
+    // For streaming endpoints
+    const stream = req.stream;
+
+    // Custom data to pass to handlers
+    req.data = { startTime: Date.now() };
+
+    const resp = await next(req);
+
+    // Modify response headers
+    resp.header.set("X-Response-Time", `${Date.now() - req.data.startTime}ms`);
+
+    return resp;
+  }
+);
+```
+
 ## Guidelines
 
 - Services cannot be nested within other services

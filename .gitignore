@@ -13,4 +13,5 @@ Thumbs.db
 
 # Misc
 *.log
-
+docs-summaries/*.txt
+docs-summaries/update-skills.md

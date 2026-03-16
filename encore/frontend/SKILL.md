@@ -148,7 +148,7 @@ export default async function UserPage({ params }: { params: { id: string } }) {
 
 Configure CORS in your `encore.app` file:
 
-```cue
+```json
 {
     "id": "my-app",
     "global_cors": {
@@ -173,23 +173,36 @@ Configure CORS in your `encore.app` file:
 
 ### Authentication from Frontend
 
-```typescript
-// With the generated client
-const client = new Client("http://localhost:4000");
-
-// Set auth token
-client.setAuthToken(userToken);
-
-// Now all requests include the Authorization header
-const profile = await client.user.getProfile();
-```
-
-Or manually with fetch:
+For authenticated requests, pass the Authorization header:
 
 ```typescript
+// Using fetch
 const response = await fetch("http://localhost:4000/profile", {
   headers: {
     "Authorization": `Bearer ${token}`,
+  },
+});
+
+// Or include credentials for cookie-based auth
+const response = await fetch("http://localhost:4000/profile", {
+  credentials: "include",
+});
+```
+
+With TanStack Query, configure a default fetcher:
+
+```typescript
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryFn: async ({ queryKey }) => {
+        const response = await fetch(queryKey[0] as string, {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        });
+        if (!response.ok) throw new Error("Request failed");
+        return response.json();
+      },
+    },
   },
 });
 ```
@@ -236,6 +249,7 @@ VITE_API_URL=http://localhost:4000
 - Regenerate the client when your API changes
 - Configure CORS in `encore.app` for production domains
 - Use `allow_origins_with_credentials` for authenticated requests
-- Set auth tokens on the client for protected endpoints
+- Include `Authorization` header for token-based auth
+- Use `credentials: "include"` for cookie-based auth
 - Use environment variables for API URLs (different per environment)
 - The generated client handles errors and types automatically

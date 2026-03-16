@@ -103,6 +103,21 @@ func sendConfirmationEmail(ctx context.Context, event *events.OrderCreatedEvent)
 }
 ```
 
+### Topic References
+
+Pass topic access to library code while maintaining static analysis:
+
+```go
+// Create a reference with publish permission
+ref := pubsub.TopicRef[pubsub.Publisher[*OrderCreatedEvent]](OrderCreated)
+
+// Use the reference in library code
+func publishEvent(ref pubsub.Publisher[*OrderCreatedEvent], event *OrderCreatedEvent) error {
+    _, err := ref.Publish(ctx, event)
+    return err
+}
+```
+
 ## Cron Jobs
 
 ```go
@@ -154,27 +169,77 @@ var PublicAssets = objects.NewBucket("public-assets", objects.BucketConfig{
 ### Operations
 
 ```go
-// Upload
-attrs, err := uploads.Uploads.Upload(ctx, "path/to/file.jpg", bytes.NewReader(data),
-    objects.UploadOptions{
-        ContentType: "image/jpeg",
-    },
-)
+// Upload (streaming pattern)
+writer := Uploads.Upload(ctx, "path/to/file.jpg")
+_, err := io.Copy(writer, dataReader)
+if err != nil {
+    writer.Abort()
+    return err
+}
+err = writer.Close()
 
 // Download
-reader, err := uploads.Uploads.Download(ctx, "path/to/file.jpg")
+reader := Uploads.Download(ctx, "path/to/file.jpg")
+if err := reader.Err(); err != nil {
+    return err
+}
 defer reader.Close()
 data, _ := io.ReadAll(reader)
 
 // Check existence
-attrs, err := uploads.Uploads.Attrs(ctx, "path/to/file.jpg")
-// err == objects.ErrObjectNotFound if doesn't exist
+exists, err := Uploads.Exists(ctx, "path/to/file.jpg")
+
+// Get attributes (size, content type, ETag)
+attrs, err := Uploads.Attrs(ctx, "path/to/file.jpg")
+
+// List objects
+for err, entry := range Uploads.List(ctx, &objects.Query{}) {
+    if err != nil {
+        return err
+    }
+    fmt.Println(entry.Key, entry.Size)
+}
 
 // Delete
-err := uploads.Uploads.Remove(ctx, "path/to/file.jpg")
+err := Uploads.Remove(ctx, "path/to/file.jpg")
 
 // Public URL (only for public buckets)
-url := uploads.PublicAssets.PublicURL("image.jpg")
+url := PublicAssets.PublicURL("image.jpg")
+```
+
+### Signed URLs
+
+Generate temporary URLs for upload/download without exposing your bucket:
+
+```go
+import "time"
+
+// Signed upload URL (expires in 2 hours)
+url, err := Uploads.SignedUploadURL(ctx, "user-uploads/avatar.jpg",
+    objects.WithTTL(time.Duration(7200)*time.Second))
+
+// Signed download URL
+url, err := Uploads.SignedDownloadURL(ctx, "documents/report.pdf",
+    objects.WithTTL(time.Duration(7200)*time.Second))
+```
+
+### Bucket References
+
+Pass bucket access with specific permissions to library code:
+
+```go
+// Create a reference with download permission only
+ref := objects.BucketRef[objects.Downloader](Uploads)
+
+// Create a reference with multiple permissions
+type myPerms interface {
+    objects.Downloader
+    objects.Uploader
+}
+ref := objects.BucketRef[myPerms](Uploads)
+
+// Permission types: Downloader, Uploader, Lister, Attrser, Remover,
+// SignedDownloader, SignedUploader, ReadWriter
 ```
 
 ## Secrets
@@ -182,15 +247,13 @@ url := uploads.PublicAssets.PublicURL("image.jpg")
 ```go
 package email
 
-import "encore.dev/config"
-
 var secrets struct {
-    SendGridAPIKey config.String
-    SMTPPassword   config.String
+    SendGridAPIKey string
+    SMTPPassword   string
 }
 
 func sendEmail() error {
-    apiKey := secrets.SendGridAPIKey()
+    apiKey := secrets.SendGridAPIKey
     // Use the secret...
 }
 ```

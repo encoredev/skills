@@ -127,18 +127,15 @@ func MyAuthHandler(ctx context.Context, params *Params) (auth.UID, *AuthData, er
 ### JWT Token Validation
 
 ```go
-import (
-    "github.com/golang-jwt/jwt/v5"
-    "encore.dev/config"
-)
+import "github.com/golang-jwt/jwt/v5"
 
 var secrets struct {
-    JWTSecret config.String
+    JWTSecret string
 }
 
 func verifyToken(tokenString string) (*Claims, error) {
     token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(t *jwt.Token) (interface{}, error) {
-        return []byte(secrets.JWTSecret()), nil
+        return []byte(secrets.JWTSecret), nil
     })
     if err != nil {
         return nil, err
@@ -194,7 +191,7 @@ func Authenticate(ctx context.Context, params *AuthParams) (auth.UID, *AuthData,
             Message: "no session",
         }
     }
-    
+
     session, err := getSession(ctx, sessionID)
     if err != nil || session.ExpiresAt.Before(time.Now()) {
         return "", nil, &errs.Error{
@@ -202,12 +199,44 @@ func Authenticate(ctx context.Context, params *AuthParams) (auth.UID, *AuthData,
             Message: "session expired",
         }
     }
-    
+
     return auth.UID(session.UserID), &AuthData{
         UserID: session.UserID,
         Email:  session.Email,
         Role:   session.Role,
     }, nil
+}
+```
+
+### Multi-Source Auth (Cookie + Header + Query)
+
+Auth params can extract data from multiple sources:
+
+```go
+import "net/http"
+
+type AuthParams struct {
+    SessionCookie *http.Cookie `cookie:"session"`       // From cookie
+    Authorization string       `header:"Authorization"` // From header
+    ClientID      string       `query:"client_id"`      // From query string
+}
+
+//encore:authhandler
+func Authenticate(ctx context.Context, params *AuthParams) (auth.UID, *AuthData, error) {
+    // Try session cookie first
+    if params.SessionCookie != nil {
+        return authenticateWithSession(ctx, params.SessionCookie.Value)
+    }
+
+    // Fall back to Authorization header
+    if params.Authorization != "" {
+        return authenticateWithToken(ctx, params.Authorization)
+    }
+
+    return "", nil, &errs.Error{
+        Code:    errs.Unauthenticated,
+        Message: "no credentials provided",
+    }
 }
 ```
 
@@ -240,6 +269,46 @@ func GetOrderWithUser(ctx context.Context, params *GetOrderParams) (*OrderWithUs
 }
 ```
 
+## Testing with Auth
+
+Override auth data in tests using `auth.WithContext`:
+
+```go
+package user_test
+
+import (
+    "context"
+    "testing"
+
+    "encore.dev/beta/auth"
+    myauth "myapp/auth"
+    "myapp/user"
+)
+
+func TestGetProfile(t *testing.T) {
+    // Create a context with auth data
+    ctx := auth.WithContext(
+        context.Background(),
+        auth.UID("test-user-123"),
+        &myauth.AuthData{
+            UserID: "test-user-123",
+            Email:  "test@example.com",
+            Role:   "user",
+        },
+    )
+
+    // Call the endpoint with the authenticated context
+    profile, err := user.GetProfile(ctx)
+    if err != nil {
+        t.Fatalf("unexpected error: %v", err)
+    }
+
+    if profile.Email != "test@example.com" {
+        t.Errorf("expected test@example.com, got %s", profile.Email)
+    }
+}
+```
+
 ## Guidelines
 
 - Only one `//encore:authhandler` per application
@@ -248,4 +317,5 @@ func GetOrderWithUser(ctx context.Context, params *GetOrderParams) (*OrderWithUs
 - Use `auth.UserID()` to get the authenticated user ID
 - Use `auth.Data()` and type assert to get full auth data
 - Auth propagates automatically in service-to-service calls
+- Use `auth.WithContext()` to override auth in tests
 - Keep auth handlers fast - they run on every authenticated request

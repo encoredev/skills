@@ -206,12 +206,19 @@ describe("email service", () => {
 
 ### Test Configuration
 
-Create `vitest.config.ts`:
+Create `vite.config.ts` (required for `~encore` imports):
 
 ```typescript
-import { defineConfig } from "vitest/config";
+/// <reference types="vitest" />
+import { defineConfig } from "vite";
+import path from "path";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "~encore": path.resolve(__dirname, "./encore.gen"),
+    },
+  },
   test: {
     globals: true,
     environment: "node",
@@ -222,6 +229,31 @@ export default defineConfig({
   },
 });
 ```
+
+### VS Code Integration
+
+Install the [Vitest extension](https://marketplace.visualstudio.com/items?itemName=vitest.explorer) and add to `.vscode/settings.json`:
+
+```json
+{
+  "vitest.commandLine": "encore test"
+}
+```
+
+**Note:** For VS Code test explorer, disable file-level parallelism to avoid port conflicts:
+
+```typescript
+// vite.config.ts
+export default defineConfig({
+  // ...
+  test: {
+    fileParallelism: false,  // Disable for VS Code
+    // ...
+  },
+});
+```
+
+Re-enable for CI: `encore test --fileParallelism=true`
 
 ### Guidelines
 
