@@ -68,7 +68,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 | `encore-testing` | Test APIs with Vitest |
 | `encore-frontend` | Connect React/Next.js apps |
 | `encore-code-review` | Review code for best practices |
-| `encore-migrate` | Migrate Express/Fastify apps |
+| `encore-migrate` | Migrate existing backends to Encore |
 
 ### Go
 

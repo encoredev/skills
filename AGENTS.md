@@ -21,7 +21,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | `encore-testing` | typescript, ts, test, vitest, unit test, integration |
 | `encore-frontend` | frontend, client, react, nextjs, cors, fetch, generate client |
 | `encore-code-review` | typescript, ts, review, audit, check, best practices |
-| `encore-migrate` | migrate, convert, express, fastify, node |
+| `encore-migrate` | migrate, convert, port, transition, move to encore, migration |
 
 ### Go Skills
 
