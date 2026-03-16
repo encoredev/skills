@@ -1,5 +1,5 @@
 ---
-name: migrate
+name: encore-migrate
 description: Migrate existing backend applications to Encore. Supports any source language/framework, targeting Encore.ts or Encore Go. Analyzes the existing system, creates a migration plan, and migrates one entity at a time with validation.
 ---
 
