@@ -50,9 +50,17 @@ Read the source codebase and inventory all entities:
 
 ### 3. Present the Inventory
 
-Present the inventory to the user as a summary table grouped by category. Include counts (e.g., "3 services, 14 endpoints, 2 databases").
+Present the inventory to the user as a summary table grouped by category. Include counts (e.g., "3 services, 14 endpoints, 2 databases"). For each entity, assess migration complexity:
 
-### 4. Confirm with the User
+- **Low** — direct Encore equivalent exists, straightforward mapping
+- **Medium** — requires restructuring or has partial Encore equivalent
+- **High** — no direct equivalent, needs redesign or custom solution
+
+### 4. Show Code Previews
+
+For 2-3 representative entities (pick a mix of simple and complex), show a short "before and after" preview of what the source code looks like now and what the Encore version will look like. Use the appropriate language-specific skill to inform the preview. This helps the user understand the migration scope before committing. Keep previews brief — one endpoint, one query, or one topic declaration is enough per preview.
+
+### 5. Confirm with the User
 
 Ask the user to confirm the inventory is correct. Specifically ask:
 
@@ -60,7 +68,7 @@ Ask the user to confirm the inventory is correct. Specifically ask:
 - "Are there any endpoints, databases, or other entities that are incorrect?"
 - "Is there anything you want to exclude from the migration?"
 
-### 5. Iterate if Needed
+### 6. Iterate if Needed
 
 If the user identifies missing or incorrect entities, update the inventory and re-present it. Repeat until the user confirms the inventory is accurate.
 
@@ -210,6 +218,35 @@ Ask the user before acting when:
 - **Source code is ambiguous** — when the agent is not confident about what the code does, ask rather than guess
 - **Source system appears to have changed** — if files referenced in `migration-plan.md` no longer exist or have changed significantly
 
+## Source System Protection
+
+The source system must never be modified during migration. Follow these rules:
+
+- **Never modify source files** — read them, don't edit them
+- **Never delete source files** — even after migration is complete
+- **Never write to the source directory** — all output goes to the Encore project
+- **Never run destructive commands against the source system** (drop tables, delete queues, etc.)
+- **Ask before any HTTP call that mutates state** on the source system (POST, PUT, DELETE)
+
+If the user asks to "clean up" or "remove" the old system, confirm explicitly before taking any action. The source system may still be serving production traffic.
+
+## Troubleshooting
+
+Common issues during migration and how to resolve them:
+
+| Problem | Cause | Resolution |
+|---------|-------|------------|
+| Encore app won't start | Missing `encore.service.ts` / `encore.service.go` | Every service directory needs a service declaration file |
+| Import errors across services | Direct imports between services | Use `~encore/clients` (TS) or service client packages (Go) instead |
+| Database migration fails | Incompatible SQL syntax | Check Encore uses PostgreSQL — adapt MySQL/SQLite syntax |
+| Tests fail after migration | Hardcoded URLs or ports | Encore tests call endpoints as functions, not via HTTP |
+| Pub/Sub messages not received | Subscription not registered | Ensure subscription is declared at package level, not inside a function |
+| Auth not applied to endpoints | Missing `auth: true` on endpoint | Add auth configuration to the endpoint declaration |
+| Cron job not firing | Invalid schedule expression | Encore uses standard cron expressions — verify syntax |
+| `encore run` errors on infrastructure | Infrastructure declared inside functions | Move all infrastructure declarations to package level |
+| Source and Encore responses differ | Missing business logic or different error handling | Compare response shapes carefully, check edge cases |
+| Cannot validate endpoint | Auth required or side effects | Ask user for test credentials, or mark as `manual validation needed` |
+
 ## migration-plan.md Format
 
 Use this exact template when creating the migration plan file. Fill in values from the discovery phase.
@@ -231,32 +268,32 @@ Use this exact template when creating the migration plan file. Fill in values fr
 ## Entities
 
 ### Services
-| Entity | Source | Status | Notes |
-|--------|--------|--------|-------|
+| Entity | Source | Complexity | Status | Notes |
+|--------|--------|------------|--------|-------|
 
 ### Endpoints
-| Entity | Service | Method | Path | Status | Notes |
-|--------|---------|--------|------|--------|-------|
+| Entity | Service | Method | Path | Complexity | Status | Notes |
+|--------|---------|--------|------|------------|--------|-------|
 
 ### Databases
-| Entity | Type | Status | Notes |
-|--------|------|--------|-------|
+| Entity | Type | Complexity | Status | Notes |
+|--------|------|------------|--------|-------|
 
 ### Pub/Sub Topics
-| Entity | Status | Notes |
-|--------|--------|-------|
+| Entity | Complexity | Status | Notes |
+|--------|------------|--------|-------|
 
 ### Cron Jobs
-| Entity | Schedule | Status | Notes |
-|--------|----------|--------|-------|
+| Entity | Schedule | Complexity | Status | Notes |
+|--------|----------|------------|--------|-------|
 
 ### Secrets
 | Entity | Status | Notes |
 |--------|--------|-------|
 
 ### Auth
-| Entity | Status | Notes |
-|--------|--------|-------|
+| Entity | Complexity | Status | Notes |
+|--------|------------|--------|-------|
 
 ## Dependency Order
 1. <ordered list based on analysis>
@@ -267,3 +304,5 @@ Use this exact template when creating the migration plan file. Fill in values fr
 ```
 
 **Status values:** `pending`, `migrated`, `skipped`, `manual validation needed`
+
+**Complexity values:** `Low` (direct equivalent), `Medium` (requires restructuring), `High` (needs redesign)
