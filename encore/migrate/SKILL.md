@@ -48,8 +48,48 @@ Read the source codebase and inventory all entities:
 | Auth middleware / handlers | Authentication strategies, token validation, session management |
 | Secrets / environment variables | All referenced env vars and secrets, noting which are sensitive |
 | Existing tests | Test files, which entities they cover, test framework used |
+| Frontend code | React/Vue/Angular components, static HTML, CSS, client-side JS — these are out of scope |
 
-### 3. Group Entities into Migration Units
+### 3. Identify Frontend Code
+
+Full-stack repos and monorepos often mix backend and frontend code. The migration targets backend only — frontend code is out of scope.
+
+**Detect frontend directories and mark them as out of scope.** Common indicators:
+
+| Pattern | Examples |
+|---------|----------|
+| Dedicated frontend directories | `frontend/`, `client/`, `web/`, `app/` (when it contains React/Vue/Angular), `src/components/`, `public/` |
+| Frontend config files | `next.config.js`, `vite.config.ts`, `nuxt.config.ts`, `angular.json`, `.svelte-kit/`, `remix.config.js` |
+| Package dependencies | `react`, `vue`, `@angular/core`, `svelte` in `package.json` |
+
+**Flag framework server-side code that *should* be migrated.** Some frontend frameworks embed backend logic that contains API endpoints, database queries, or server-side business logic:
+
+| Framework | Server-side locations | What to look for |
+|-----------|----------------------|-----------------|
+| Next.js | `pages/api/`, `app/*/route.ts` | API route handlers — these are backend endpoints |
+| Remix | `app/routes/*.tsx` (loader/action exports) | `loader` and `action` functions contain server logic |
+| Nuxt | `server/api/`, `server/routes/` | Server API routes |
+| SvelteKit | `src/routes/+server.ts`, `+page.server.ts` | Server endpoints and load functions |
+| Astro | `src/pages/*.ts` (non-`.astro`) | API endpoints |
+
+When framework server-side code is found, **ask the user what to do with it.** Not all server-side code should move to Encore — sometimes a thin backend layer (BFF, auth proxy, SSR data fetching) should stay in the frontend framework alongside an Encore backend.
+
+Present the user with what was found and ask:
+
+> "I found <N> server-side routes in your <framework> app (e.g., `pages/api/users.ts`, `app/billing/route.ts`). These contain backend logic that *could* be migrated to Encore, but some teams prefer to keep a thin server layer in their frontend framework for things like SSR data fetching or BFF proxying. Would you like to:
+> 1. **Migrate all** server-side routes to Encore
+> 2. **Migrate some** — I'll list them and you pick which ones move
+> 3. **Keep all in <framework>** — only migrate the standalone backend code"
+
+Based on the user's choice:
+
+- **Migrate all:** Extract the backend logic into migration units. Leave frontend rendering code out of scope. Note in the migration plan which source files contain mixed frontend/backend code.
+- **Migrate some:** Present the list of server-side routes and let the user select. Include selected routes in migration units, mark the rest as out of scope.
+- **Keep all:** Mark all framework server-side code as out of scope alongside the frontend. Only standalone backend code (Express routes, standalone API servers, etc.) enters migration units.
+
+**Report to the user:** List all detected frontend directories and the decision made about framework server-side code. Example: "I found a Next.js frontend in `app/` — the React components are out of scope. You chose to migrate 8 of the 12 API routes from `pages/api/` to Encore and keep 4 thin proxy routes in Next.js."
+
+### 4. Group Entities into Migration Units
 
 Group the discovered entities into migration units using these heuristics in priority order:
 
@@ -64,7 +104,7 @@ Group the discovered entities into migration units using these heuristics in pri
 
 **For monoliths with no clear boundaries:** Fall back to URL path prefix grouping, then ask: "These groupings are based on URL paths — would you like to reorganize them by domain?"
 
-### 4. Present the Migration Units
+### 5. Present the Migration Units
 
 Present the migration units to the user as a summary table:
 
@@ -79,11 +119,11 @@ Include total counts (e.g., "7 migration units covering 42 endpoints, 3 database
 
 Offer to show the detail of any unit if the user wants to inspect what's inside before confirming.
 
-### 5. Show Code Previews
+### 6. Show Code Previews
 
 For 2-3 representative entities (pick a mix of simple and complex from different units), show a short "before and after" preview of what the source code looks like now and what the Encore version will look like. Use the appropriate language-specific skill to inform the preview. Keep previews brief — one endpoint, one query, or one topic declaration is enough per preview.
 
-### 6. Confirm with the User
+### 7. Confirm with the User
 
 Ask the user to confirm the migration units are correct. Specifically ask:
 
@@ -91,7 +131,7 @@ Ask the user to confirm the migration units are correct. Specifically ask:
 - "Would you like to split, merge, or rename any of these migration units?"
 - "Is there anything you want to exclude from the migration?"
 
-### 7. Iterate if Needed
+### 8. Iterate if Needed
 
 If the user identifies missing entities or wants to adjust chunk boundaries, update the units and re-present the summary table. Repeat until the user confirms the migration units are accurate.
 
@@ -199,7 +239,8 @@ When all units in `migration-plan.md` are `migrated`, `skipped`, or `manual vali
    - Units skipped (list them with reasons)
 2. **Suggest running the full test suite** one final time to catch any integration issues
 3. **Note any manual validation items** that still need human attention
-4. **Suggest removing `migration-plan.md` and `migration-plan/`** from the project once the user is satisfied with the migration
+4. **If the source system had frontend code**, suggest using the `encore-frontend` skill to reconnect the frontend to the new Encore backend (generate a typed API client, configure CORS, update base URLs)
+5. **Suggest removing `migration-plan.md` and `migration-plan/`** from the project once the user is satisfied with the migration
 
 ## Validation
 
@@ -325,6 +366,12 @@ Use this exact template for the summary plan file. Fill in values from the disco
 - **URL:** <source system local URL>
 - **Framework:** <detected framework>
 - **Language:** <detected language>
+
+## Frontend (Out of Scope)
+- **Detected:** <Yes/No>
+- **Directories:** <list of frontend directories, or "None">
+- **Framework:** <frontend framework if detected, or "N/A">
+- **Note:** <any framework server-side code that WAS included in migration units>
 
 ## Target System
 - **Path:** <encore project path>
