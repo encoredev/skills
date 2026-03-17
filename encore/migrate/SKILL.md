@@ -211,7 +211,44 @@ If the source entity has associated tests, migrate them using the appropriate te
 
 #### c. Validate
 
-Apply the three validation layers described in the "Validation" section below. All three layers must be evaluated before marking an entity as migrated.
+Three validation layers are applied to each entity before it can be marked as `migrated`. Every entity must go through all applicable layers.
+
+##### Layer 1: Test Migration (Primary)
+
+- When migrating an entity, also migrate its associated tests
+- Use the `encore-testing` skill (or `encore-go-testing` for Go) to implement the tests
+- Run the tests — they must pass before the entity can be marked as `migrated`
+- If the source entity had no tests, note "no source tests" in the plan and rely on the other layers
+
+##### Layer 2: HTTP Comparison (Endpoints Only, Best-Effort)
+
+When both systems are running locally, call the same endpoint on both the source system and the Encore app, then compare:
+
+- **HTTP status code** — must match
+- **Response body structure** — keys and shape must match (values may differ for dynamic data like timestamps or IDs)
+
+**Skip this layer when:**
+
+- The endpoint requires auth credentials the agent cannot obtain (ask the user — allow skip)
+
+**If a request to either system fails to connect**, ask the user to start the app before retrying. Do not silently skip — the user may have simply forgotten to start it.
+
+**Always ask the user before making any HTTP call that could have side effects.**
+
+##### Layer 3: Verification-Before-Completion Gate
+
+Before marking ANY entity as `migrated`, the agent MUST have fresh evidence from the current session:
+
+- Test command output showing pass count and exit code, OR
+- HTTP comparison results showing a match, OR
+- Explicit user approval to skip validation
+
+**Rules:**
+
+- No "should work", "looks correct", or "seems fine" — only evidence-backed claims
+- The agent must state exactly what it verified and what the output was
+- If evidence is insufficient, mark the entity as `manual validation needed`, not `migrated`
+- Stale evidence from a previous session does not count — re-run validation if resuming
 
 #### d. Update the Detail File
 
@@ -241,47 +278,6 @@ When all units in `migration-plan.md` are `migrated`, `skipped`, or `manual vali
 3. **Note any manual validation items** that still need human attention
 4. **If the source system had frontend code**, suggest using the `encore-frontend` skill to reconnect the frontend to the new Encore backend (generate a typed API client, configure CORS, update base URLs)
 5. **Suggest removing `migration-plan.md` and `migration-plan/`** from the project once the user is satisfied with the migration
-
-## Validation
-
-Three validation layers are applied to each entity before it can be marked as `migrated`. Every entity must go through all applicable layers.
-
-### Layer 1: Test Migration (Primary)
-
-- When migrating an entity, also migrate its associated tests
-- Use the `encore-testing` skill (or `encore-go-testing` for Go) to implement the tests
-- Run the tests — they must pass before the entity can be marked as `migrated`
-- If the source entity had no tests, note "no source tests" in the plan and rely on the other layers
-
-### Layer 2: HTTP Comparison (Endpoints Only, Best-Effort)
-
-When both systems are running locally, call the same endpoint on both the source system and the Encore app, then compare:
-
-- **HTTP status code** — must match
-- **Response body structure** — keys and shape must match (values may differ for dynamic data like timestamps or IDs)
-
-**Skip this layer when:**
-
-- The endpoint requires auth credentials the agent cannot obtain (ask the user — allow skip)
-- The endpoint has side effects such as creating, updating, or deleting data (ask the user — default to skip)
-- The source system is not running (note in plan, skip)
-
-**Always ask the user before making any HTTP call that could have side effects.**
-
-### Layer 3: Verification-Before-Completion Gate
-
-Before marking ANY entity as `migrated`, the agent MUST have fresh evidence from the current session:
-
-- Test command output showing pass count and exit code, OR
-- HTTP comparison results showing a match, OR
-- Explicit user approval to skip validation
-
-**Rules:**
-
-- No "should work", "looks correct", or "seems fine" — only evidence-backed claims
-- The agent must state exactly what it verified and what the output was
-- If evidence is insufficient, mark the entity as `manual validation needed`, not `migrated`
-- Stale evidence from a previous session does not count — re-run validation if resuming
 
 ## Asking Questions
 
@@ -343,12 +339,9 @@ Common issues during migration and how to resolve them:
 
 | Problem | Cause | Resolution |
 |---------|-------|------------|
-| Encore app won't start | Missing `encore.service.ts` / `encore.service.go` | Every service directory needs a service declaration file |
 | Import errors across services | Direct imports between services | Use `~encore/clients` (TS) or service client packages (Go) instead |
 | Database migration fails | Incompatible SQL syntax | Check Encore uses PostgreSQL — adapt MySQL/SQLite syntax |
-| Tests fail after migration | Hardcoded URLs or ports | Encore tests call endpoints as functions, not via HTTP |
 | Pub/Sub messages not received | Subscription not registered | Ensure subscription is declared at package level, not inside a function |
-| Auth not applied to endpoints | Missing `auth: true` on endpoint | Add auth configuration to the endpoint declaration |
 | Cron job not firing | Invalid schedule expression | Encore uses standard cron expressions — verify syntax |
 | `encore run` errors on infrastructure | Infrastructure declared inside functions | Move all infrastructure declarations to package level |
 | Source and Encore responses differ | Missing business logic or different error handling | Compare response shapes carefully, check edge cases |
