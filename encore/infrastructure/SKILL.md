@@ -1,6 +1,6 @@
 ---
 name: encore-infrastructure
-description: Declare databases, Pub/Sub, cron jobs, and secrets with Encore.ts.
+description: Declare databases, Pub/Sub, cron jobs, caching, object storage, and secrets with Encore.ts.
 ---
 
 # Encore Infrastructure Declaration
@@ -228,6 +228,154 @@ const downloaderRef = uploads.ref<Downloader>();
 
 // Permission types: Downloader, Uploader, Lister, Attrser, Remover,
 // SignedDownloader, SignedUploader, ReadWriter
+```
+
+## Caching (Redis)
+
+### Cache Clusters
+
+```typescript
+import { CacheCluster } from "encore.dev/storage/cache";
+
+// Package level
+const cluster = new CacheCluster("my-cache", {
+  evictionPolicy: "allkeys-lru",
+});
+```
+
+Reference a cluster defined in another service:
+
+```typescript
+const cluster = CacheCluster.named("my-cache");
+```
+
+Eviction policies: `"allkeys-lru"` (default), `"noeviction"`, `"allkeys-lfu"`, `"allkeys-random"`, `"volatile-lru"`, `"volatile-lfu"`, `"volatile-ttl"`, `"volatile-random"`.
+
+### Keyspace Types
+
+Each keyspace has a key type (used to generate the Redis key) and a value type.
+
+```typescript
+import {
+  StringKeyspace,
+  IntKeyspace,
+  FloatKeyspace,
+  StructKeyspace,
+  StringListKeyspace,
+  NumberListKeyspace,
+  StringSetKeyspace,
+  NumberSetKeyspace,
+  expireIn,
+} from "encore.dev/storage/cache";
+
+// String values
+const tokens = new StringKeyspace<{ tokenId: string }>(cluster, {
+  keyPattern: "token/:tokenId",
+  defaultExpiry: expireIn(3600 * 1000), // 1 hour in ms
+});
+
+await tokens.set({ tokenId: "abc" }, "value");
+const val = await tokens.get({ tokenId: "abc" }); // undefined on miss
+await tokens.delete({ tokenId: "abc" });
+
+// Integer values (supports increment/decrement)
+const counters = new IntKeyspace<{ userId: string }>(cluster, {
+  keyPattern: "requests/:userId",
+  defaultExpiry: expireIn(10 * 1000),
+});
+
+const count = await counters.increment({ userId: "user123" }, 1);
+await counters.decrement({ userId: "user123" }, 1);
+
+// Float values
+const scores = new FloatKeyspace<{ oddsId: string }>(cluster, {
+  keyPattern: "odds/:oddsId",
+});
+
+// Structured data (stored as JSON)
+interface UserProfile {
+  name: string;
+  email: string;
+}
+
+const profiles = new StructKeyspace<{ userId: string }, UserProfile>(cluster, {
+  keyPattern: "profile/:userId",
+  defaultExpiry: expireIn(3600 * 1000),
+});
+
+await profiles.set({ userId: "123" }, { name: "Alice", email: "alice@example.com" });
+
+// Lists
+const recentItems = new StringListKeyspace<{ userId: string }>(cluster, {
+  keyPattern: "recent/:userId",
+});
+
+await recentItems.pushRight({ userId: "user123" }, "item1", "item2");
+const items = await recentItems.getRange({ userId: "user123" }, 0, -1);
+
+// Sets
+const tags = new StringSetKeyspace<{ articleId: string }>(cluster, {
+  keyPattern: "tags/:articleId",
+});
+
+await tags.add({ articleId: "post1" }, "typescript", "encore", "backend");
+const hasTag = await tags.contains({ articleId: "post1" }, "typescript");
+```
+
+### Key Patterns with Multiple Fields
+
+```typescript
+interface ResourceKey {
+  userId: string;
+  resourcePath: string;
+}
+
+const resourceRequests = new IntKeyspace<ResourceKey>(cluster, {
+  keyPattern: "requests/:userId/:resourcePath",
+  defaultExpiry: expireIn(10 * 1000),
+});
+```
+
+### Expiry Options
+
+```typescript
+import {
+  expireIn,          // milliseconds
+  expireInSeconds,
+  expireInMinutes,
+  expireInHours,
+  expireDailyAt,     // specific UTC time each day
+  neverExpire,
+  keepTTL,           // keep existing TTL when updating
+} from "encore.dev/storage/cache";
+```
+
+### Write Options
+
+```typescript
+// Override default expiry
+await keyspace.set(key, value, { expiry: expireInMinutes(30) });
+
+// Keep existing TTL
+await keyspace.set(key, value, { expiry: keepTTL });
+
+// Only set if key doesn't exist (throws CacheKeyExists otherwise)
+await keyspace.setIfNotExists(key, value);
+
+// Only set if key already exists (throws CacheMiss otherwise)
+await keyspace.replace(key, value);
+```
+
+### Error Handling
+
+```typescript
+import { CacheMiss, CacheKeyExists } from "encore.dev/storage/cache";
+
+// get() returns undefined on miss (does not throw)
+const value = await keyspace.get(key);
+
+// replace() throws CacheMiss if key doesn't exist
+// setIfNotExists() throws CacheKeyExists if key already exists
 ```
 
 ## Secrets
