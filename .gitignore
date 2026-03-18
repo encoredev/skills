@@ -11,6 +11,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Docs
+docs/
+
 # Misc
 *.log
 docs-summaries/*.txt
