@@ -1,6 +1,7 @@
 ---
 name: encore-go-getting-started
-description: Get started with Encore Go.
+description: Bootstrap a brand-new Encore Go project from zero. Only for first-time CLI install and `encore app create` — not for architecture or feature questions.
+when_to_use: User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create` for a Go app, scaffold a hello-world Go service, or run their very first `encore run`. SKIP if the user already has an Encore Go project and is asking about architecture, services, endpoints, or specific features — those go to `encore-go-service`, `encore-go-api`, `encore-go-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world Go", "just starting out".
 ---
 
 # Getting Started with Encore Go
@@ -172,5 +173,5 @@ func getItem(ctx context.Context, id int) (*Item, error) {
 
 - Add more endpoints (see `encore-go-api` skill)
 - Add authentication (see `encore-go-auth` skill)
-- Add infrastructure like Pub/Sub, cron jobs (see `encore-go-infrastructure` skill)
+- Add Pub/Sub topics (`encore-go-pubsub`), cron jobs (`encore-go-cron`), buckets (`encore-go-bucket`), secrets (`encore-go-secret`), or caching (`encore-go-cache`)
 - Deploy to Encore Cloud: `encore app link` then `git push encore`

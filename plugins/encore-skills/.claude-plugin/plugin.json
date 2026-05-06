@@ -1,5 +1,5 @@
 {
   "name": "encore-skills",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Skills for building backend applications with Encore (Go and TypeScript)"
 }

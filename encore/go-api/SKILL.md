@@ -1,6 +1,7 @@
 ---
 name: encore-go-api
-description: Create API endpoints with Encore Go.
+description: Define typed API endpoints in Encore Go using `//encore:api` annotations. Covers typed request/response structs, path/query/header/cookie params, and error returns. For raw endpoints (`//encore:api raw`) and inbound webhooks, use `encore-go-webhook` instead.
+when_to_use: User wants to define an endpoint, route, or REST handler in their own Go service — anything with a typed JSON request/response shape. Mentions of an endpoint, GET/POST/PUT/PATCH/DELETE, paths like `/orders` or `/users/:id`, request body, query parameters (`query:"name"` tag), path parameters, headers (`header:"Name"` tag), HTTP status codes, request validation, `errs.NotFound` / 4xx-5xx errors, or `//encore:api public`. Trigger phrases: "POST endpoint at /orders", "typed Go endpoint", "GET /users/:id", "request validation", "return 404", "JSON response shape".
 ---
 
 # Encore Go API Endpoints
@@ -159,21 +160,6 @@ type AuthParams struct {
 func Logout(ctx context.Context, params *AuthParams) error {
     // Access params.SessionCookie.Value
     return nil
-}
-```
-
-## Raw Endpoints
-
-Use `//encore:api raw` for webhooks or direct HTTP access:
-
-```go
-import "net/http"
-
-//encore:api public raw path=/webhooks/stripe method=POST
-func StripeWebhook(w http.ResponseWriter, req *http.Request) {
-    sig := req.Header.Get("Stripe-Signature")
-    // Handle raw request...
-    w.WriteHeader(http.StatusOK)
 }
 ```
 

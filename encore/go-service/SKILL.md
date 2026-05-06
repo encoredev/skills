@@ -1,6 +1,7 @@
 ---
 name: encore-go-service
-description: Structure services with Encore Go.
+description: Plan how to split an Encore Go application into services and lay out its directory structure. Architecture and decomposition, not first-time CLI install (that's `encore-go-getting-started`).
+when_to_use: User is deciding monolith vs. microservices in Go, weighing "one service or several", drawing service boundaries, planning a multi-service system (e.g. orders + payments + inventory + shipping), creating a Go package as an Encore service, naming directories/folders, designing systems-of-services hierarchies, or asking for a Go project layout recommendation. Trigger phrases: "lay out the directories", "directory structure", "service boundaries", "one service or several", "monolith vs microservices", "where to put", "systems of services", "Go package layout".
 ---
 
 # Encore Go Service Structure

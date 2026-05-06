@@ -12,29 +12,39 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 
 | Skill | Trigger Keywords |
 |-------|------------------|
-| `encore-getting-started` | new, create, init, setup, start, project, hello world, beginner |
-| `encore-api` | typescript, ts, api, endpoint, route, REST, HTTP, webhook |
-| `encore-auth` | typescript, ts, auth, authentication, login, token, jwt, gateway |
-| `encore-infrastructure` | typescript, ts, database, pubsub, topic, cron, bucket, secret |
-| `encore-service` | typescript, ts, service, microservice, structure, architecture |
-| `encore-database` | typescript, ts, sql, query, migration, drizzle, prisma |
-| `encore-testing` | typescript, ts, test, vitest, unit test, integration |
+| `encore-getting-started` | brand new, first time, install CLI, encore app create, hello world |
+| `encore-api` | typed endpoint, route, REST, GET/POST, request/response, validation |
+| `encore-webhook` | webhook, /webhooks/*, raw HTTP, api.raw, Stripe, GitHub, signature |
+| `encore-auth` | auth, login, bearer token, JWT, Authorization header, 401, 403 |
+| `encore-database` | postgres, table, sql, query, migration, drizzle, prisma, schema |
+| `encore-pubsub` | pub/sub, topic, subscription, broadcast, event, queue, fan out |
+| `encore-cron` | cron, schedule, daily, hourly, periodic, batch job, every N |
+| `encore-bucket` | bucket, object storage, S3, GCS, file upload, image upload, blob |
+| `encore-cache` | cache, redis, key-value, TTL, rate limit, leaderboard, expire |
+| `encore-secret` | secret, API key, credentials, signing key, encore secret set |
+| `encore-service` | service, microservice, structure, architecture, lay out, monolith |
+| `encore-testing` | test, vitest, unit test, integration, encore test, isolated database |
 | `encore-frontend` | frontend, client, react, nextjs, cors, fetch, generate client |
-| `encore-code-review` | typescript, ts, review, audit, check, best practices |
-| `encore-migrate` | migrate, convert, port, transition, move to encore, migration |
+| `encore-code-review` | review, audit, anti-pattern, best practices, before merge |
+| `encore-migrate` | migrate, convert, port, transition, express, fastify, hono |
 
 ### Go Skills
 
 | Skill | Trigger Keywords |
 |-------|------------------|
-| `encore-go-getting-started` | go, golang, new, create, init, setup, start, project |
-| `encore-go-api` | go, golang, api, endpoint, route, REST, HTTP, webhook |
-| `encore-go-auth` | go, golang, auth, authentication, login, token, jwt |
-| `encore-go-infrastructure` | go, golang, database, pubsub, topic, cron, bucket, secret |
-| `encore-go-service` | go, golang, service, microservice, structure, architecture |
-| `encore-go-database` | go, golang, sql, query, migration, sqldb, postgres |
-| `encore-go-testing` | go, golang, test, unit test, integration |
-| `encore-go-code-review` | go, golang, review, audit, check, best practices |
+| `encore-go-getting-started` | brand new Go, first time, install CLI, encore app create, hello world |
+| `encore-go-api` | go, typed endpoint, //encore:api, route, REST, GET/POST, request/response |
+| `encore-go-webhook` | go, webhook, /webhooks/*, //encore:api raw, Stripe, GitHub, signature |
+| `encore-go-auth` | go, auth, login, bearer token, JWT, Authorization header, 401, 403 |
+| `encore-go-database` | go, postgres, table, sql, query, migration, sqldb |
+| `encore-go-pubsub` | go, pub/sub, topic, subscription, broadcast, event, queue, fan out |
+| `encore-go-cron` | go, cron, schedule, daily, hourly, periodic, batch job, every N |
+| `encore-go-bucket` | go, bucket, object storage, S3, GCS, file upload, image upload, blob |
+| `encore-go-cache` | go, cache, redis, key-value, TTL, rate limit, leaderboard, expire |
+| `encore-go-secret` | go, secret, API key, credentials, secrets struct, encore secret set |
+| `encore-go-service` | go, service, microservice, structure, architecture, lay out |
+| `encore-go-testing` | go, test, *_test.go, encore test, isolated database |
+| `encore-go-code-review` | go, review, audit, anti-pattern, best practices, before merge |
 | `encore-frontend` | frontend, client, react, nextjs, cors, fetch, generate client |
 
 ## Key Patterns to Remember

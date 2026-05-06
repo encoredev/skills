@@ -1,6 +1,7 @@
 ---
 name: encore-getting-started
-description: Get started with Encore.ts - create and run your first app.
+description: Bootstrap a brand-new Encore.ts project from zero. Only for first-time CLI install and `encore app create` — not for architecture or feature questions.
+when_to_use: User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create`, scaffold a hello-world app, or run their very first `encore run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features — those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world", "just starting out".
 ---
 
 # Getting Started with Encore.ts
@@ -141,5 +142,5 @@ CREATE TABLE items (
 
 - Add more endpoints (see `encore-api` skill)
 - Add authentication (see `encore-auth` skill)
-- Add infrastructure like Pub/Sub, cron jobs (see `encore-infrastructure` skill)
+- Add Pub/Sub topics (`encore-pubsub`), cron jobs (`encore-cron`), buckets (`encore-bucket`), secrets (`encore-secret`), or caching (`encore-cache`)
 - Deploy to Encore Cloud: `encore app link` then `git push encore`

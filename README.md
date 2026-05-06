@@ -59,12 +59,17 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 | Skill | Description |
 |-------|-------------|
-| `encore-getting-started` | Get started with Encore.ts |
-| `encore-api` | Create type-safe API endpoints |
-| `encore-auth` | Implement authentication |
-| `encore-infrastructure` | Declare databases, Pub/Sub, cron jobs, secrets |
-| `encore-service` | Structure and organize services |
-| `encore-database` | Database queries, migrations, ORM integration |
+| `encore-getting-started` | Bootstrap a brand-new Encore.ts project |
+| `encore-api` | Define typed API endpoints (`api(...)`) |
+| `encore-webhook` | Receive inbound webhooks via `api.raw(...)` |
+| `encore-auth` | Protect endpoints with authentication |
+| `encore-database` | Postgres queries, migrations, ORM integration |
+| `encore-pubsub` | Pub/Sub topics and subscriptions |
+| `encore-cron` | Scheduled / periodic jobs |
+| `encore-bucket` | Object storage (file uploads, images, blobs) |
+| `encore-cache` | Redis-backed caching with typed keyspaces |
+| `encore-secret` | API keys, credentials, signing secrets |
+| `encore-service` | Plan service boundaries and layout |
 | `encore-testing` | Test APIs with Vitest |
 | `encore-frontend` | Connect React/Next.js apps |
 | `encore-code-review` | Review code for best practices |
@@ -74,12 +79,17 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 | Skill | Description |
 |-------|-------------|
-| `encore-go-getting-started` | Get started with Encore Go |
-| `encore-go-api` | Create API endpoints |
-| `encore-go-auth` | Implement authentication |
-| `encore-go-infrastructure` | Declare infrastructure |
-| `encore-go-service` | Structure services |
-| `encore-go-database` | Database queries and migrations |
+| `encore-go-getting-started` | Bootstrap a brand-new Encore Go project |
+| `encore-go-api` | Define typed API endpoints (`//encore:api`) |
+| `encore-go-webhook` | Receive inbound webhooks via `//encore:api raw` |
+| `encore-go-auth` | Protect endpoints with authentication |
+| `encore-go-database` | Postgres queries and migrations |
+| `encore-go-pubsub` | Pub/Sub topics and subscriptions |
+| `encore-go-cron` | Scheduled / periodic jobs |
+| `encore-go-bucket` | Object storage (file uploads, images, blobs) |
+| `encore-go-cache` | Redis-backed caching with typed keyspaces |
+| `encore-go-secret` | API keys, credentials, signing secrets |
+| `encore-go-service` | Plan service boundaries and layout |
 | `encore-go-testing` | Test APIs and services |
 | `encore-go-code-review` | Review code for best practices |
 

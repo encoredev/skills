@@ -1,6 +1,7 @@
 ---
 name: encore-go-auth
-description: Implement authentication with Encore Go.
+description: Protect Encore Go endpoints with authentication and authorize callers. Covers `auth.AuthHandler`, `auth.UserID`, the `Authorization` header, and `//encore:api auth`.
+when_to_use: User wants to require login on a Go endpoint, restrict an endpoint to authenticated/signed-in users, validate a bearer token / JWT / API key from an `Authorization` header, read the current user inside a handler (`auth.UserID()` / `auth.Data()`), define an `auth.AuthHandler`, return `errs.Unauthenticated` from a handler, or use `//encore:api auth` on a handler. Trigger phrases: "protect this endpoint", "only authenticated users", "require login", "Authorization header", "bearer token", "401", "403", "who is calling", "current user".
 ---
 
 # Encore Go Authentication
