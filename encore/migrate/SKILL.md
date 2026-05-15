@@ -1,7 +1,8 @@
 ---
 name: encore-migrate
 description: Migrate an existing backend application to Encore. Supports any source framework, targets Encore.ts or Encore Go. Drives a structured DISCOVER → PLAN → MIGRATE workflow with `migration-plan.md` tracking.
-when_to_use: User wants to convert an existing app from Express, Fastify, Hono, Koa, NestJS, Restify, gin, Echo, Chi, Fiber, FastAPI, Flask, Django, Rails, Spring Boot, or vanilla Node.js / Go to Encore. Trigger phrases: "convert from Express", "port to Encore", "migrate this Fastify app", "rewrite my Hono backend", "switch from FastAPI to Encore", "I have an existing X app I'd like to convert".
+when_to_use: >-
+  User wants to convert an existing app from Express, Fastify, Hono, Koa, NestJS, Restify, gin, Echo, Chi, Fiber, FastAPI, Flask, Django, Rails, Spring Boot, or vanilla Node.js / Go to Encore. Trigger phrases: "convert from Express", "port to Encore", "migrate this Fastify app", "rewrite my Hono backend", "switch from FastAPI to Encore", "I have an existing X app I'd like to convert".
 ---
 
 # Migrate to Encore

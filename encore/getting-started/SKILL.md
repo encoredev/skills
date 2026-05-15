@@ -1,7 +1,8 @@
 ---
 name: encore-getting-started
 description: Bootstrap a brand-new Encore.ts project from zero. Only for first-time CLI install and `encore app create` — not for architecture or feature questions.
-when_to_use: User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create`, scaffold a hello-world app, or run their very first `encore run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features — those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world", "just starting out".
+when_to_use: >-
+  User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create`, scaffold a hello-world app, or run their very first `encore run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features — those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world", "just starting out".
 ---
 
 # Getting Started with Encore.ts

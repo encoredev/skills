@@ -1,7 +1,8 @@
 ---
 name: encore-go-getting-started
 description: Bootstrap a brand-new Encore Go project from zero. Only for first-time CLI install and `encore app create` — not for architecture or feature questions.
-when_to_use: User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create` for a Go app, scaffold a hello-world Go service, or run their very first `encore run`. SKIP if the user already has an Encore Go project and is asking about architecture, services, endpoints, or specific features — those go to `encore-go-service`, `encore-go-api`, `encore-go-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world Go", "just starting out".
+when_to_use: >-
+  User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create` for a Go app, scaffold a hello-world Go service, or run their very first `encore run`. SKIP if the user already has an Encore Go project and is asking about architecture, services, endpoints, or specific features — those go to `encore-go-service`, `encore-go-api`, `encore-go-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world Go", "just starting out".
 ---
 
 # Getting Started with Encore Go

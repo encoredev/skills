@@ -4,14 +4,44 @@
     "name": "Encore"
   },
   "metadata": {
-    "description": "Agent skills for building backend applications with Encore"
+    "description": "Agent skills for building backend applications with Encore",
+    "pluginRoot": "./plugins"
   },
   "plugins": [
     {
       "name": "encore-skills",
-      "source": "./plugins/encore-skills",
-      "description": "Skills for Go and TypeScript backend development with Encore"
+      "source": "./encore-skills",
+      "description": "Skills for Go and TypeScript backend development with Encore",
+      "skills": [
+        "./skills/api",
+        "./skills/auth",
+        "./skills/bucket",
+        "./skills/cache",
+        "./skills/code-review",
+        "./skills/cron",
+        "./skills/database",
+        "./skills/frontend",
+        "./skills/getting-started",
+        "./skills/go-api",
+        "./skills/go-auth",
+        "./skills/go-bucket",
+        "./skills/go-cache",
+        "./skills/go-code-review",
+        "./skills/go-cron",
+        "./skills/go-database",
+        "./skills/go-getting-started",
+        "./skills/go-pubsub",
+        "./skills/go-secret",
+        "./skills/go-service",
+        "./skills/go-testing",
+        "./skills/go-webhook",
+        "./skills/migrate",
+        "./skills/pubsub",
+        "./skills/secret",
+        "./skills/service",
+        "./skills/testing",
+        "./skills/webhook"
+      ]
     }
   ]
 }
-

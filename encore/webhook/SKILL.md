@@ -1,7 +1,8 @@
 ---
 name: encore-webhook
 description: Receive inbound webhooks from external services (Stripe, GitHub, Slack, Twilio, etc.) using `api.raw(...)` from `encore.dev/api`. The right skill any time the user names a third-party provider that POSTs events to a URL you own.
-when_to_use: User mentions a webhook, a /webhooks/* path, raw HTTP, `api.raw()`, accepting external callbacks, verifying webhook signatures (Stripe-Signature, X-Hub-Signature-256), reading the raw request body, parsing form-encoded payloads, or any time the user names a third-party provider that posts events — Stripe, GitHub, GitLab, Bitbucket, Shopify, Twilio, SendGrid, Mailgun, Auth0, Clerk, Slack, Discord, PayPal, Square. Use `encore-api` instead for typed JSON endpoints in your own service. Trigger phrases: "Stripe webhook", "GitHub webhook", "/webhooks/stripe", "raw HTTP endpoint", "api.raw", "verify the signature", "inbound webhook", "external callback".
+when_to_use: >-
+  User mentions a webhook, a /webhooks/* path, raw HTTP, `api.raw()`, accepting external callbacks, verifying webhook signatures (Stripe-Signature, X-Hub-Signature-256), reading the raw request body, parsing form-encoded payloads, or any time the user names a third-party provider that posts events — Stripe, GitHub, GitLab, Bitbucket, Shopify, Twilio, SendGrid, Mailgun, Auth0, Clerk, Slack, Discord, PayPal, Square. Use `encore-api` instead for typed JSON endpoints in your own service. Trigger phrases: "Stripe webhook", "GitHub webhook", "/webhooks/stripe", "raw HTTP endpoint", "api.raw", "verify the signature", "inbound webhook", "external callback".
 ---
 
 # Encore Webhook Endpoints

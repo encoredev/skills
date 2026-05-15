@@ -1,7 +1,9 @@
 ---
 name: encore-cron
-description: Schedule periodic / recurring work in Encore.ts using `CronJob` from `encore.dev/cron`. Covers `every: "1h"` interval syntax and `schedule: "0 9 * * 1"` cron expressions.
-when_to_use: User wants to run a job on a schedule — anything with the words schedule, scheduled, daily, hourly, weekly, periodic, recurring, every N minutes/hours, "at HH:MM UTC", midnight, batch job, aggregation job, nightly, cleanup job, or background work that runs on a timer rather than in response to a request. Trigger phrases: "every day at 02:00 UTC", "daily aggregation", "run hourly", "scheduled task", "cron", "nightly cleanup", "on a schedule".
+description: >-
+  Schedule periodic / recurring work in Encore.ts using `CronJob` from `encore.dev/cron`. Covers `every: "1h"` interval syntax and `schedule: "0 9 * * 1"` cron expressions.
+when_to_use: >-
+  User wants to run a job on a schedule — anything with the words schedule, scheduled, daily, hourly, weekly, periodic, recurring, every N minutes/hours, "at HH:MM UTC", midnight, batch job, aggregation job, nightly, cleanup job, or background work that runs on a timer rather than in response to a request. Trigger phrases: "every day at 02:00 UTC", "daily aggregation", "run hourly", "scheduled task", "cron", "nightly cleanup", "on a schedule".
 ---
 
 # Encore Cron Jobs

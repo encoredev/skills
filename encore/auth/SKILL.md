@@ -1,7 +1,9 @@
 ---
 name: encore-auth
-description: Protect Encore.ts endpoints with authentication and authorize callers. Covers `authHandler`, `Gateway`, `getAuthData`, and `auth: true`.
-when_to_use: User wants to require login on an endpoint, restrict an endpoint to authenticated/signed-in users, validate a bearer token / JWT / API key from an Authorization header, read the current user inside a handler (`getAuthData`), set up an `authHandler<AuthParams, AuthData>` or `Gateway`, return 401/403 from a handler, or set `auth: true` on `api(...)`. Trigger phrases: "protect this endpoint", "only authenticated users", "require login", "Authorization header", "bearer token", "401", "403", "who is calling", "current user".
+description: >-
+  Protect Encore.ts endpoints with authentication and authorize callers. Covers `authHandler`, `Gateway`, `getAuthData`, and `auth: true`.
+when_to_use: >-
+  User wants to require login on an endpoint, restrict an endpoint to authenticated/signed-in users, validate a bearer token / JWT / API key from an Authorization header, read the current user inside a handler (`getAuthData`), set up an `authHandler<AuthParams, AuthData>` or `Gateway`, return 401/403 from a handler, or set `auth: true` on `api(...)`. Trigger phrases: "protect this endpoint", "only authenticated users", "require login", "Authorization header", "bearer token", "401", "403", "who is calling", "current user".
 ---
 
 # Encore Authentication
