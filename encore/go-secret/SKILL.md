@@ -1,7 +1,8 @@
 ---
 name: encore-go-secret
 description: Manage API keys, credentials, and other secrets in Encore Go using a package-level `secrets` struct.
-when_to_use: User wants to load a private credential into a Go service without committing it to the repo — third-party API keys (Stripe, OpenAI, Twilio, SendGrid), database passwords, signing keys, OAuth client secrets, JWT signing keys, webhook signing secrets. Covers the `var secrets struct{...}` declaration, accessing secrets as struct fields, setting values via `encore secret set`, and `.secrets.local.cue` overrides. Trigger phrases: "API key", "third-party token", "credentials", "without committing", "private key", "signing secret", "secret manager", "encore secret set".
+when_to_use: >-
+  User wants to load a private credential into a Go service without committing it to the repo — third-party API keys (Stripe, OpenAI, Twilio, SendGrid), database passwords, signing keys, OAuth client secrets, JWT signing keys, webhook signing secrets. Covers the `var secrets struct{...}` declaration, accessing secrets as struct fields, setting values via `encore secret set`, and `.secrets.local.cue` overrides. Trigger phrases: "API key", "third-party token", "credentials", "without committing", "private key", "signing secret", "secret manager", "encore secret set".
 ---
 
 # Encore Go Secrets

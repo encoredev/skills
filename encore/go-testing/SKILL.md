@@ -1,7 +1,8 @@
 ---
 name: encore-go-testing
 description: Write or run automated tests for Encore Go code with `encore test` and the standard library `testing` package. Covers isolated per-test databases, calling handlers directly, and `*testing.T` patterns.
-when_to_use: User wants to add/write/fix a test in Go, write a `*_test.go` file, test an endpoint or service, set up `encore test`, configure isolated test databases, write `t.Cleanup`/`t.Helper` for db cleanup, mock external dependencies, or assert on API request/response behaviour. Trigger phrases: "write a Go test", "add tests for", "go test", "encore test", "test the endpoint", "test the service", "integration test", "isolated database".
+when_to_use: >-
+  User wants to add/write/fix a test in Go, write a `*_test.go` file, test an endpoint or service, set up `encore test`, configure isolated test databases, write `t.Cleanup`/`t.Helper` for db cleanup, mock external dependencies, or assert on API request/response behaviour. Trigger phrases: "write a Go test", "add tests for", "go test", "encore test", "test the endpoint", "test the service", "integration test", "isolated database".
 ---
 
 # Testing Encore Go Applications

@@ -1,7 +1,8 @@
 ---
 name: encore-service
 description: Plan how to split an Encore.ts application into services and lay out its directory structure. Architecture and decomposition, not first-time CLI install (that's `encore-getting-started`).
-when_to_use: User is deciding monolith vs. microservices, weighing "one service or several", drawing service boundaries, planning a multi-service system (e.g. orders + payments + inventory + shipping), creating an `encore.service.ts`, naming directories/folders, designing systems-of-services hierarchies, or asking for an application architecture / project layout recommendation. Trigger phrases: "lay out the directories", "directory structure", "service boundaries", "one service or several", "monolith vs microservices", "where to put", "systems of services".
+when_to_use: >-
+  User is deciding monolith vs. microservices, weighing "one service or several", drawing service boundaries, planning a multi-service system (e.g. orders + payments + inventory + shipping), creating an `encore.service.ts`, naming directories/folders, designing systems-of-services hierarchies, or asking for an application architecture / project layout recommendation. Trigger phrases: "lay out the directories", "directory structure", "service boundaries", "one service or several", "monolith vs microservices", "where to put", "systems of services".
 ---
 
 # Encore Service Structure

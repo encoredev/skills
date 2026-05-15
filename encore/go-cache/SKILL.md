@@ -1,7 +1,8 @@
 ---
 name: encore-go-cache
 description: Cache data in Redis from Encore Go using `cache.NewCluster` and typed keyspaces from `encore.dev/storage/cache`. Type-safe key/value access with TTLs, atomic increments, and per-keyspace data shapes.
-when_to_use: User wants to cache values in a Go service, store ephemeral state, rate-limit by counter, build a leaderboard, speed up a hot read, or store short-lived tokens. Covers `cache.NewCluster`, `cache.NewStringKeyspace`, `cache.NewIntKeyspace`, `cache.NewStructKeyspace`, list/set keyspaces, TTL helpers (`cache.ExpireIn`, `cache.ExpireDailyAt`, `cache.NeverExpire`), atomic `Increment`/`Decrement`, `SetIfNotExists`, `Replace`, eviction policies, and `cache.Miss`/`cache.KeyExists` errors. Trigger phrases: "cache this", "Redis", "key-value store", "rate limit", "TTL", "expire after", "in-memory store", "session token store", "leaderboard counter".
+when_to_use: >-
+  User wants to cache values in a Go service, store ephemeral state, rate-limit by counter, build a leaderboard, speed up a hot read, or store short-lived tokens. Covers `cache.NewCluster`, `cache.NewStringKeyspace`, `cache.NewIntKeyspace`, `cache.NewStructKeyspace`, list/set keyspaces, TTL helpers (`cache.ExpireIn`, `cache.ExpireDailyAt`, `cache.NeverExpire`), atomic `Increment`/`Decrement`, `SetIfNotExists`, `Replace`, eviction policies, and `cache.Miss`/`cache.KeyExists` errors. Trigger phrases: "cache this", "Redis", "key-value store", "rate limit", "TTL", "expire after", "in-memory store", "session token store", "leaderboard counter".
 ---
 
 # Encore Go Caching (Redis)

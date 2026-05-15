@@ -1,7 +1,8 @@
 ---
 name: encore-code-review
 description: Review existing Encore.ts code for best practices and common anti-patterns.
-when_to_use: User is reviewing a pull request, auditing existing code, or checking for Encore-specific anti-patterns before merging — infrastructure declared inside functions, missing service files, wrong import paths, raw `Error` thrown instead of `APIError`, untyped APIs. SKIP for greenfield code being actively written. Trigger phrases: "audit", "review", "before merge", "PR review", "anti-patterns", "code smell", "lint this".
+when_to_use: >-
+  User is reviewing a pull request, auditing existing code, or checking for Encore-specific anti-patterns before merging — infrastructure declared inside functions, missing service files, wrong import paths, raw `Error` thrown instead of `APIError`, untyped APIs. SKIP for greenfield code being actively written. Trigger phrases: "audit", "review", "before merge", "PR review", "anti-patterns", "code smell", "lint this".
 ---
 
 # Encore Code Review

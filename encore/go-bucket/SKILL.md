@@ -1,7 +1,8 @@
 ---
 name: encore-go-bucket
 description: Store unstructured files in Encore Go using `objects.NewBucket` from `encore.dev/storage/objects` — uploads, images, documents, blobs.
-when_to_use: User wants to upload, download, list, or delete files from an Encore Go service — profile pictures, avatars, document uploads, image storage, media assets, generated reports, blob data. Covers public vs private buckets, signed upload/download URLs, bucket references with permission types (Uploader, Downloader, Lister, Attrser, Remover), and operations like `Upload`, `Download`, `List`, `SignedUploadURL`. Trigger phrases: "object storage", "bucket", "S3", "GCS", "blob", "user uploads", "profile picture", "image upload", "store a file", "file storage".
+when_to_use: >-
+  User wants to upload, download, list, or delete files from an Encore Go service — profile pictures, avatars, document uploads, image storage, media assets, generated reports, blob data. Covers public vs private buckets, signed upload/download URLs, bucket references with permission types (Uploader, Downloader, Lister, Attrser, Remover), and operations like `Upload`, `Download`, `List`, `SignedUploadURL`. Trigger phrases: "object storage", "bucket", "S3", "GCS", "blob", "user uploads", "profile picture", "image upload", "store a file", "file storage".
 ---
 
 # Encore Go Object Storage

@@ -1,7 +1,8 @@
 ---
 name: encore-go-database
 description: Work with PostgreSQL in Encore Go using `sqldb.NewDatabase` from `encore.dev/storage/sqldb` — schema migrations and SQL queries.
-when_to_use: User wants to add a database table, write a migration, run a SQL query, insert/update/delete rows, or design a relational schema in an Encore Go service. Covers `sqldb.NewDatabase`, `db.QueryRow(ctx, ...)`, `db.Query(ctx, ...)`, `db.Exec(ctx, ...)`, `db.Stdlib()` for ORM integration, the `migrations/` directory, `*.up.sql` files, and sequential migration numbering. Trigger phrases: "Postgres table", "user_sessions table", "SQL", "migration", "QueryRow", "INSERT", "SELECT", "schema", "sqldb".
+when_to_use: >-
+  User wants to add a database table, write a migration, run a SQL query, insert/update/delete rows, or design a relational schema in an Encore Go service. Covers `sqldb.NewDatabase`, `db.QueryRow(ctx, ...)`, `db.Query(ctx, ...)`, `db.Exec(ctx, ...)`, `db.Stdlib()` for ORM integration, the `migrations/` directory, `*.up.sql` files, and sequential migration numbering. Trigger phrases: "Postgres table", "user_sessions table", "SQL", "migration", "QueryRow", "INSERT", "SELECT", "schema", "sqldb".
 ---
 
 # Encore Go Database Operations

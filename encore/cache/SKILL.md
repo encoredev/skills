@@ -1,7 +1,8 @@
 ---
 name: encore-cache
 description: Cache data in Redis from Encore.ts using `CacheCluster` and typed keyspaces from `encore.dev/storage/cache`. Type-safe key/value access with TTLs, atomic increments, and per-keyspace data shapes.
-when_to_use: User wants to cache values, store ephemeral state, rate-limit by counter, build a leaderboard, speed up a hot read, or store short-lived tokens. Covers `CacheCluster`, `StringKeyspace`, `IntKeyspace`, `FloatKeyspace`, `StructKeyspace`, list and set keyspaces, TTL helpers (`expireIn`, `expireDailyAt`, `neverExpire`, `keepTTL`), atomic `increment`/`decrement`, `setIfNotExists`, `replace`, eviction policies, and `CacheMiss`/`CacheKeyExists` errors. Trigger phrases: "cache this", "Redis", "key-value store", "rate limit", "TTL", "expire after", "in-memory store", "session token store", "leaderboard counter".
+when_to_use: >-
+  User wants to cache values, store ephemeral state, rate-limit by counter, build a leaderboard, speed up a hot read, or store short-lived tokens. Covers `CacheCluster`, `StringKeyspace`, `IntKeyspace`, `FloatKeyspace`, `StructKeyspace`, list and set keyspaces, TTL helpers (`expireIn`, `expireDailyAt`, `neverExpire`, `keepTTL`), atomic `increment`/`decrement`, `setIfNotExists`, `replace`, eviction policies, and `CacheMiss`/`CacheKeyExists` errors. Trigger phrases: "cache this", "Redis", "key-value store", "rate limit", "TTL", "expire after", "in-memory store", "session token store", "leaderboard counter".
 ---
 
 # Encore Caching (Redis)

@@ -1,7 +1,8 @@
 ---
 name: encore-api
 description: Define typed API endpoints in Encore.ts using `api(...)` from `encore.dev/api`. Covers typed request/response interfaces, path/query/header/cookie params, request validation, and `APIError`. For raw endpoints (`api.raw()`) and inbound webhooks, use `encore-webhook` instead.
-when_to_use: User wants to define an endpoint, route, or REST handler in their own service — anything with a typed JSON request/response shape. Mentions of an endpoint, GET/POST/PUT/PATCH/DELETE, paths like `/orders` or `/users/:id`, request body, query parameters (`Query<>`), path parameters, headers (`Header<>`), cookies (`Cookie<>`), HTTP status codes (`HttpStatus`), request validation (`Min`, `MaxLen`, `IsEmail`, `IsURL`), `APIError.notFound` / 4xx-5xx errors, or `expose: true`. Trigger phrases: "POST endpoint at /orders", "typed endpoint", "GET /users/:id", "request validation", "return 404", "JSON response shape".
+when_to_use: >-
+  User wants to define an endpoint, route, or REST handler in their own service — anything with a typed JSON request/response shape. Mentions of an endpoint, GET/POST/PUT/PATCH/DELETE, paths like `/orders` or `/users/:id`, request body, query parameters (`Query<>`), path parameters, headers (`Header<>`), cookies (`Cookie<>`), HTTP status codes (`HttpStatus`), request validation (`Min`, `MaxLen`, `IsEmail`, `IsURL`), `APIError.notFound` / 4xx-5xx errors, or `expose: true`. Trigger phrases: "POST endpoint at /orders", "typed endpoint", "GET /users/:id", "request validation", "return 404", "JSON response shape".
 ---
 
 # Encore API Endpoints
