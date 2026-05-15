@@ -1,6 +1,7 @@
 ---
 name: encore-api
-description: Create type-safe API endpoints with Encore.ts.
+description: Define typed API endpoints in Encore.ts using `api(...)` from `encore.dev/api`. Covers typed request/response interfaces, path/query/header/cookie params, request validation, and `APIError`. For raw endpoints (`api.raw()`) and inbound webhooks, use `encore-webhook` instead.
+when_to_use: User wants to define an endpoint, route, or REST handler in their own service — anything with a typed JSON request/response shape. Mentions of an endpoint, GET/POST/PUT/PATCH/DELETE, paths like `/orders` or `/users/:id`, request body, query parameters (`Query<>`), path parameters, headers (`Header<>`), cookies (`Cookie<>`), HTTP status codes (`HttpStatus`), request validation (`Min`, `MaxLen`, `IsEmail`, `IsURL`), `APIError.notFound` / 4xx-5xx errors, or `expose: true`. Trigger phrases: "POST endpoint at /orders", "typed endpoint", "GET /users/:id", "request validation", "return 404", "JSON response shape".
 ---
 
 # Encore API Endpoints
@@ -205,22 +206,6 @@ Invalid requests return 400 with details:
 }
 ```
 
-## Raw Endpoints
-
-Use `api.raw` for webhooks or when you need direct request/response access:
-
-```typescript
-export const stripeWebhook = api.raw(
-  { expose: true, path: "/webhooks/stripe", method: "POST" },
-  async (req, res) => {
-    const sig = req.headers["stripe-signature"];
-    // Handle raw request...
-    res.writeHead(200);
-    res.end();
-  }
-);
-```
-
 ## Error Handling
 
 Use `APIError` for proper HTTP error responses:
@@ -280,7 +265,7 @@ export const app = api.static(
 - Always use `import` not `require`
 - Define explicit interfaces for type safety
 - Use `expose: true` only for public endpoints
-- Use `api.raw` for webhooks, `api` for everything else
 - Throw `APIError` instead of returning error objects
+- For inbound webhooks (Stripe, GitHub, etc.) use `api.raw` — see the `encore-webhook` skill
 - Path parameters are automatically extracted from the path pattern
 - Use validation constraints (`Min`, `MaxLen`, etc.) for user input
