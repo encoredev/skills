@@ -55,6 +55,12 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 ## Available Skills
 
+### Architecture
+
+| Skill | Description |
+|-------|-------------|
+| `encore-architecture` | Design service boundaries, data ownership, and communication |
+
 ### TypeScript
 
 | Skill | Description |
@@ -69,7 +75,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 | `encore-bucket` | Object storage (file uploads, images, blobs) |
 | `encore-cache` | Redis-backed caching with typed keyspaces |
 | `encore-secret` | API keys, credentials, signing secrets |
-| `encore-service` | Plan service boundaries and layout |
+| `encore-service` | Implement services and project layout |
 | `encore-testing` | Test APIs with Vitest |
 | `encore-frontend` | Connect React/Next.js apps |
 | `encore-code-review` | Review code for best practices |
@@ -89,7 +95,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 | `encore-go-bucket` | Object storage (file uploads, images, blobs) |
 | `encore-go-cache` | Redis-backed caching with typed keyspaces |
 | `encore-go-secret` | API keys, credentials, signing secrets |
-| `encore-go-service` | Plan service boundaries and layout |
+| `encore-go-service` | Implement services and project layout |
 | `encore-go-testing` | Test APIs and services |
 | `encore-go-code-review` | Review code for best practices |
 

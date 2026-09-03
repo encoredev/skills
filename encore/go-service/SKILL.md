@@ -1,8 +1,8 @@
 ---
 name: encore-go-service
-description: Plan how to split an Encore Go application into services and lay out its directory structure. Architecture and decomposition, not first-time CLI install (that's `encore-go-getting-started`).
+description: Implement Encore Go services and lay out an application using service packages, internal subpackages, systems, and typed service calls. For service boundaries and architecture decisions, use `encore-architecture`.
 when_to_use: >-
-  User is deciding monolith vs. microservices in Go, weighing "one service or several", drawing service boundaries, planning a multi-service system (e.g. orders + payments + inventory + shipping), creating a Go package as an Encore service, naming directories/folders, designing systems-of-services hierarchies, or asking for a Go project layout recommendation. Trigger phrases: "lay out the directories", "directory structure", "service boundaries", "one service or several", "monolith vs microservices", "where to put", "systems of services", "Go package layout".
+  User wants to create or modify an Encore Go service package, implement an already-chosen service layout, organize packages and directories, group services into system folders, or call another service. Trigger phrases: "create a Go service", "service package", "lay out these services", "Go package layout", "internal package", "call another service".
 ---
 
 # Encore Go Service Structure
@@ -45,9 +45,9 @@ user/
 
 ## Application Patterns
 
-### Single Service (Recommended Start)
+### Single Service
 
-Best for new projects - start simple, split later if needed:
+An application can define its APIs in one root service package:
 
 ```
 my-app/
@@ -61,7 +61,7 @@ my-app/
 
 ### Multi-Service
 
-For distributed systems with clear domain boundaries:
+Each service lives in its own package:
 
 ```
 my-app/
@@ -115,7 +115,7 @@ package order
 
 import (
     "context"
-    "myapp/user"  // Import the user service
+    "encore.app/user"  // Import the user service
 )
 
 //encore:api auth method=GET path=/orders/:id
@@ -134,19 +134,6 @@ func GetOrderWithUser(ctx context.Context, params *GetOrderParams) (*OrderWithUs
     return &OrderWithUser{Order: order, User: orderUser}, nil
 }
 ```
-
-## When to Split Services
-
-Split when you have:
-
-| Signal | Action |
-|--------|--------|
-| Different scaling needs | Split (e.g., auth vs analytics) |
-| Different deployment cycles | Split |
-| Clear domain boundaries | Split |
-| Shared database tables | Keep together |
-| Tightly coupled logic | Keep together |
-| Just organizing code | Use sub-packages, not services |
 
 ## Internal Helpers (Non-Service Packages)
 
@@ -169,8 +156,8 @@ my-app/
 
 - A package becomes a service when it has `//encore:api` endpoints
 - Services cannot be nested within other services
-- Start with one service, split when there's a clear reason
 - Cross-service calls look like regular function calls
 - Each service can have its own database
 - Package names should be lowercase, descriptive
 - Don't create services just for code organization - use sub-packages instead
+- Use `encore-architecture` when the service boundaries have not been decided
