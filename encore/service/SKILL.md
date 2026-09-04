@@ -1,8 +1,8 @@
 ---
 name: encore-service
-description: Plan how to split an Encore.ts application into services and lay out its directory structure. Architecture and decomposition, not first-time CLI install (that's `encore-getting-started`).
+description: Implement Encore.ts services and lay out an application using `encore.service.ts`, service directories, systems, and `~encore/clients`. For service boundaries and architecture decisions, use `encore-architecture`.
 when_to_use: >-
-  User is deciding monolith vs. microservices, weighing "one service or several", drawing service boundaries, planning a multi-service system (e.g. orders + payments + inventory + shipping), creating an `encore.service.ts`, naming directories/folders, designing systems-of-services hierarchies, or asking for an application architecture / project layout recommendation. Trigger phrases: "lay out the directories", "directory structure", "service boundaries", "one service or several", "monolith vs microservices", "where to put", "systems of services".
+  User wants to add or modify an Encore.ts service or microservice, implement an already-chosen service layout, organize service files and directories, group services into system folders, or call another service. Trigger phrases: "add a service", "create a service", "add a microservice", "encore.service.ts", "lay out these services", "service directory", "systems folder", "~encore/clients".
 ---
 
 # Encore Service Structure
@@ -31,9 +31,9 @@ my-service/
 
 ## Application Patterns
 
-### Single Service (Recommended Start)
+### Single Service
 
-Best for new projects - start simple, split later if needed:
+A service can be defined at the application root:
 
 ```
 my-app/
@@ -48,7 +48,7 @@ my-app/
 
 ### Multi-Service
 
-For distributed systems with clear domain boundaries:
+Each service lives in its own directory:
 
 ```
 my-app/
@@ -110,98 +110,11 @@ export const getOrderWithUser = api(
 );
 ```
 
-## When to Split Services
-
-Split when you have:
-
-| Signal | Action |
-|--------|--------|
-| Different scaling needs | Split (e.g., auth vs analytics) |
-| Different deployment cycles | Split |
-| Clear domain boundaries | Split |
-| Shared database tables | Keep together |
-| Tightly coupled logic | Keep together |
-| Just organizing code | Use folders, not services |
-
-## Service with Middleware
-
-```typescript
-import { Service } from "encore.dev/service";
-import { middleware } from "encore.dev/api";
-
-const loggingMiddleware = middleware(
-  { target: { all: true } },
-  async (req, next) => {
-    console.log(`Request: ${req.requestMeta?.path}`);
-    return next(req);
-  }
-);
-
-export default new Service("my-service", {
-  middlewares: [loggingMiddleware],
-});
-```
-
-### Middleware Targeting
-
-Control which endpoints middleware applies to:
-
-```typescript
-// Apply to all endpoints
-middleware({ target: { all: true } }, handler);
-
-// Apply only to authenticated endpoints
-middleware({ target: { auth: true } }, handler);
-
-// Apply only to exposed (public) endpoints
-middleware({ target: { expose: true } }, handler);
-
-// Apply to raw endpoints only
-middleware({ target: { isRaw: true } }, handler);
-
-// Apply to streaming endpoints only
-middleware({ target: { isStream: true } }, handler);
-
-// Apply to endpoints with specific tags
-middleware({ target: { tags: ["admin", "internal"] } }, handler);
-```
-
-### Middleware Request Object
-
-The request object provides access to:
-
-```typescript
-const myMiddleware = middleware(
-  { target: { all: true } },
-  async (req, next) => {
-    // For typed and streaming APIs
-    const meta = req.requestMeta;  // { method, path, pathParams }
-
-    // For raw endpoints
-    const rawReq = req.rawRequest;
-    const rawRes = req.rawResponse;
-
-    // For streaming endpoints
-    const stream = req.stream;
-
-    // Custom data to pass to handlers
-    req.data = { startTime: Date.now() };
-
-    const resp = await next(req);
-
-    // Modify response headers
-    resp.header.set("X-Response-Time", `${Date.now() - req.data.startTime}ms`);
-
-    return resp;
-  }
-);
-```
-
 ## Guidelines
 
 - Services cannot be nested within other services
-- Start with one service, split when there's a clear reason
 - Use `~encore/clients` for cross-service calls (never direct imports)
 - Each service can have its own database
 - Service names should be lowercase, descriptive
 - Don't create services just for code organization - use folders instead
+- Use `encore-architecture` when the service boundaries have not been decided
