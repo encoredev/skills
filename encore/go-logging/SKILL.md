@@ -1,11 +1,11 @@
 ---
 name: encore-go-logging
-description: Add or improve structured logging in Encore Go using `encore.dev/rlog`. Covers log placement, levels, stable messages and fields, errors, logging contexts, sensitive data, and log volume.
+description: Add or improve structured logging in Encore.go using `encore.dev/rlog`. Covers log placement, levels, stable messages and fields, errors, logging contexts, sensitive data, and log volume.
 when_to_use: >-
-  User is adding, changing, or reviewing application logs in an Encore Go service. Mentions structured logging, `encore.dev/rlog`, `rlog.Info`, `rlog.Error`, log fields, log levels, noisy or duplicate logs, production debugging, or what to log. Trigger phrases: "add Go logging", "improve these logs", "which log level", "structured log fields", "reduce log volume", "log this error".
+  User is adding, changing, or reviewing application logs in an Encore.go service. Mentions structured logging, `encore.dev/rlog`, `rlog.Info`, `rlog.Error`, log fields, log levels, noisy or duplicate logs, production debugging, or what to log. Trigger phrases: "add Go logging", "improve these logs", "which log level", "structured log fields", "reduce log volume", "log this error".
 ---
 
-# Encore Go structured logging
+# Encore.go structured logging
 
 Use `encore.dev/rlog` for application events that need structured fields or trace integration. Preserve an application's established field names and event conventions when they are consistent with this guidance.
 
@@ -59,7 +59,7 @@ Encore's runtime fields use snake_case. Field names beginning with `encore_` are
 
 ## Choose a level
 
-Encore Go provides `Error`, `Warn`, `Info`, and `Debug`. It does not expose a `Trace` function through `rlog`.
+Encore.go provides `Error`, `Warn`, `Info`, and `Debug`. It does not expose a `Trace` function through `rlog`.
 
 - `Error`: an unexpected failure prevented an operation from completing
 - `Warn`: the application recovered or continued in a degraded state
@@ -119,4 +119,4 @@ Log selected metadata from large values rather than complete provider responses,
 
 When reviewing an existing application, check loops, Pub/Sub subscribers, middleware, and frequently called helpers first. A small number of these call sites often produces most of the log volume.
 
-See the [Encore Go logging guide](https://encore.dev/docs/go/observability/logging) and [`rlog` package reference](https://pkg.go.dev/encore.dev/rlog).
+See the [Encore.go logging guide](https://encore.dev/docs/go/observability/logging) and [`rlog` package reference](https://pkg.go.dev/encore.dev/rlog).
