@@ -19,6 +19,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | Skill | Trigger Keywords |
 |-------|------------------|
 | `encore-getting-started` | brand new, first time, install CLI, encore app create, hello world |
+| `encore-logging` | structured logging, log.info, log.error, log fields, log levels, noisy logs |
 | `encore-api` | typed endpoint, route, REST, GET/POST, request/response, validation |
 | `encore-webhook` | webhook, /webhooks/*, raw HTTP, api.raw, Stripe, GitHub, signature |
 | `encore-auth` | auth, login, bearer token, JWT, Authorization header, 401, 403 |
@@ -39,6 +40,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | Skill | Trigger Keywords |
 |-------|------------------|
 | `encore-go-getting-started` | brand new Go, first time, install CLI, encore app create, hello world |
+| `encore-go-logging` | go, structured logging, rlog.Info, rlog.Error, log fields, noisy logs |
 | `encore-go-api` | go, typed endpoint, //encore:api, route, REST, GET/POST, request/response |
 | `encore-go-webhook` | go, webhook, /webhooks/*, //encore:api raw, Stripe, GitHub, signature |
 | `encore-go-auth` | go, auth, login, bearer token, JWT, Authorization header, 401, 403 |
