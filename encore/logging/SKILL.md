@@ -1,5 +1,5 @@
 ---
-name: encore-ts-logging
+name: encore-logging
 description: Add or improve structured logging in Encore.ts using `encore.dev/log`. Covers log placement, levels, stable messages and fields, errors, contextual loggers, sensitive data, and log volume.
 when_to_use: >-
   User is adding, changing, or reviewing application logs in an Encore.ts service. Mentions structured logging, `encore.dev/log`, `log.info`, `log.error`, log fields, log levels, noisy or duplicate logs, production debugging, or what to log. Trigger phrases: "add logging", "improve these logs", "which log level", "structured log fields", "reduce log volume", "log this error".

@@ -22,7 +22,7 @@
         "./skills/database",
         "./skills/frontend",
         "./skills/getting-started",
-        "./skills/ts-logging",
+        "./skills/logging",
         "./skills/go-api",
         "./skills/go-auth",
         "./skills/go-bucket",
