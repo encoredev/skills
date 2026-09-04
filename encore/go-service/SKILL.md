@@ -1,15 +1,15 @@
 ---
 name: encore-go-service
-description: Implement Encore Go services and lay out an application using service packages, internal subpackages, systems, and typed service calls. For service boundaries and architecture decisions, use `encore-architecture`.
+description: Implement Encore.go services and lay out an application using service packages, internal subpackages, systems, and typed service calls. For service boundaries and architecture decisions, use `encore-architecture`.
 when_to_use: >-
-  User wants to create or modify an Encore Go service package, implement an already-chosen service layout, organize packages and directories, group services into system folders, or call another service. Trigger phrases: "create a Go service", "service package", "lay out these services", "Go package layout", "internal package", "call another service".
+  User wants to add or modify an Encore.go service or microservice, implement an already-chosen service layout, organize packages and directories, group services into system folders, or call another service. Trigger phrases: "add a Go service", "create a Go service", "add a microservice", "service package", "lay out these services", "Go package layout", "internal package", "call another service".
 ---
 
-# Encore Go Service Structure
+# Encore.go Service Structure
 
 ## Instructions
 
-In Encore Go, **each package with an API endpoint is automatically a service**. No special configuration needed.
+In Encore.go, **each package with an API endpoint is automatically a service**. No special configuration needed.
 
 ### Creating a Service
 

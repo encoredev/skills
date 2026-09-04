@@ -1,13 +1,13 @@
 ---
 name: encore-architecture
-description: Design or revise the service architecture of an Encore application in Go or TypeScript. Covers service boundaries, data ownership, synchronous calls versus Pub/Sub, process allocation, public and private interfaces, and evolving a monolith.
+description: Design or revise the service architecture of an Encore.go or Encore.ts application. Covers service boundaries, data ownership, synchronous calls versus Pub/Sub, process allocation, public and private interfaces, and evolving a monolith.
 when_to_use: >-
   User is deciding how many Encore services to create, where service boundaries belong, whether to split or merge services, which service owns data, or whether services should communicate through APIs or Pub/Sub. Also use for architecture reviews and plans to break up a monolith. Trigger phrases: "design the architecture", "service boundaries", "one service or several", "monolith vs microservices", "split this service", "who owns this database", "API or Pub/Sub", "distributed monolith", "chatty services".
 ---
 
 # Encore application architecture
 
-Design the logical application before choosing directories and declarations. Apply the same architectural reasoning to Encore.ts and Encore Go; use `encore-service` or `encore-go-service` for language-specific implementation.
+Design the logical application before choosing directories and declarations. Apply the same architectural reasoning to Encore.ts and Encore.go; use `encore-service` or `encore-go-service` for language-specific implementation.
 
 ## Read the application
 
@@ -58,7 +58,7 @@ Use Pub/Sub when the caller need not wait, several consumers react independently
 
 Keep immediate request/response workflows synchronous. Keep event consumers independent rather than recreating a synchronous call chain through ordered events.
 
-When a database change and event publication must remain consistent, design for failure between them. Encore Go provides a transactional Pub/Sub outbox; other cases require an application-specific consistency mechanism.
+When a database change and event publication must remain consistent, design for failure between them. Encore.go provides a transactional Pub/Sub outbox; other cases require an application-specific consistency mechanism.
 
 ## Define interfaces and authorization
 

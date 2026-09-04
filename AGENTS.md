@@ -28,7 +28,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | `encore-bucket` | bucket, object storage, S3, GCS, file upload, image upload, blob |
 | `encore-cache` | cache, redis, key-value, TTL, rate limit, leaderboard, expire |
 | `encore-secret` | secret, API key, credentials, signing key, encore secret set |
-| `encore-service` | encore.service.ts, service directory, systems folder, ~encore/clients |
+| `encore-service` | add service, create service, microservice, encore.service.ts, service directory, lay out, systems folder, ~encore/clients |
 | `encore-testing` | test, vitest, unit test, integration, encore test, isolated database |
 | `encore-frontend` | frontend, client, react, nextjs, cors, fetch, generate client |
 | `encore-code-review` | review, audit, anti-pattern, best practices, before merge |
@@ -48,7 +48,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | `encore-go-bucket` | go, bucket, object storage, S3, GCS, file upload, image upload, blob |
 | `encore-go-cache` | go, cache, redis, key-value, TTL, rate limit, leaderboard, expire |
 | `encore-go-secret` | go, secret, API key, credentials, secrets struct, encore secret set |
-| `encore-go-service` | go, service package, project layout, internal package, cross-service call |
+| `encore-go-service` | add Go service, create Go service, microservice, service package, project layout, internal package, cross-service call |
 | `encore-go-testing` | go, test, *_test.go, encore test, isolated database |
 | `encore-go-code-review` | go, review, audit, anti-pattern, best practices, before merge |
 | `encore-frontend` | frontend, client, react, nextjs, cors, fetch, generate client |

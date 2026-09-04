@@ -2,7 +2,7 @@
 name: encore-service
 description: Implement Encore.ts services and lay out an application using `encore.service.ts`, service directories, systems, and `~encore/clients`. For service boundaries and architecture decisions, use `encore-architecture`.
 when_to_use: >-
-  User wants to create or modify an Encore.ts service definition, implement an already-chosen service layout, organize service files and directories, group services into system folders, or call another service. Trigger phrases: "create a service", "encore.service.ts", "lay out these services", "service directory", "systems folder", "~encore/clients".
+  User wants to add or modify an Encore.ts service or microservice, implement an already-chosen service layout, organize service files and directories, group services into system folders, or call another service. Trigger phrases: "add a service", "create a service", "add a microservice", "encore.service.ts", "lay out these services", "service directory", "systems folder", "~encore/clients".
 ---
 
 # Encore Service Structure
