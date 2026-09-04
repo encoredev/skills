@@ -1,16 +1,16 @@
 ---
 name: encore-go-cron
 description: >-
-  Schedule periodic / recurring work in Encore Go using `cron.NewJob` from `encore.dev/cron`. Covers `Every: "1h"` interval syntax and `Schedule: "0 9 * * 1"` cron expressions.
+  Schedule periodic / recurring work in Encore.go using `cron.NewJob` from `encore.dev/cron`. Covers `Every: "1h"` interval syntax and `Schedule: "0 9 * * 1"` cron expressions.
 when_to_use: >-
   User wants to run a Go job on a schedule — anything with the words schedule, scheduled, daily, hourly, weekly, periodic, recurring, every N minutes/hours, "at HH:MM UTC", midnight, batch job, aggregation job, nightly, cleanup job, or background work that runs on a timer rather than in response to a request. Trigger phrases: "every day at 02:00 UTC", "daily aggregation", "run hourly", "scheduled task", "cron", "nightly cleanup", "on a schedule".
 ---
 
-# Encore Go Cron Jobs
+# Encore.go Cron Jobs
 
 ## Instructions
 
-A `cron.NewJob` declaration in Encore Go ties a schedule to an existing `//encore:api` endpoint. The endpoint runs at the chosen cadence. Declare the job as a package-level variable — not inside a function.
+A `cron.NewJob` declaration in Encore.go ties a schedule to an existing `//encore:api` endpoint. The endpoint runs at the chosen cadence. Declare the job as a package-level variable — not inside a function.
 
 ```go
 package cleanup

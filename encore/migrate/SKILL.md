@@ -1,13 +1,13 @@
 ---
 name: encore-migrate
-description: Migrate an existing backend application to Encore. Supports any source framework, targets Encore.ts or Encore Go. Drives a structured DISCOVER → PLAN → MIGRATE workflow with `migration-plan.md` tracking.
+description: Migrate an existing backend application to Encore. Supports any source framework, targets Encore.ts or Encore.go. Drives a structured DISCOVER → PLAN → MIGRATE workflow with `migration-plan.md` tracking.
 when_to_use: >-
   User wants to convert an existing app from Express, Fastify, Hono, Koa, NestJS, Restify, gin, Echo, Chi, Fiber, FastAPI, Flask, Django, Rails, Spring Boot, or vanilla Node.js / Go to Encore. Trigger phrases: "convert from Express", "port to Encore", "migrate this Fastify app", "rewrite my Hono backend", "switch from FastAPI to Encore", "I have an existing X app I'd like to convert".
 ---
 
 # Migrate to Encore
 
-This skill guides migrating any existing backend application to Encore, one migration unit at a time. It supports any source language or framework and targets both Encore.ts and Encore Go. A `migration-plan.md` summary file and `migration-plan/` directory of per-unit detail files are created at the Encore project root to track progress across sessions. This skill contains no Encore code examples — it delegates all Encore-specific implementation to the appropriate language-specific skills.
+This skill guides migrating any existing backend application to Encore, one migration unit at a time. It supports any source language or framework and targets both Encore.ts and Encore.go. A `migration-plan.md` summary file and `migration-plan/` directory of per-unit detail files are created at the Encore project root to track progress across sessions. This skill contains no Encore code examples — it delegates all Encore-specific implementation to the appropriate language-specific skills.
 
 ## Phase Detection
 
@@ -34,7 +34,7 @@ Ask the user for:
 
 - **Path to the source system** (the existing codebase being migrated)
 - **Local URL where the source system runs** (if applicable — needed for HTTP comparison validation later)
-- **Target language:** Encore.ts or Encore Go
+- **Target language:** Encore.ts or Encore.go
 
 ### 2. Analyze the Source Codebase
 
@@ -141,7 +141,7 @@ If the user identifies missing entities or wants to adjust chunk boundaries, upd
 
 ### 1. Check for Existing Encore Project
 
-Check if an Encore project already exists at the target path (look for `encore.app` file). If yes, confirm with the user that this is the correct project. If no, help create one by invoking the `encore-getting-started` skill (or `encore-go-getting-started` for Go).
+Check if an Encore project already exists at the target path (look for `encore.app` file). If yes, confirm with the user that this is the correct project. If no, help create one by invoking the `encore-ts-getting-started` skill (or `encore-go-getting-started` for Go).
 
 ### 2. Gather Target Information
 
@@ -198,23 +198,23 @@ For each entity in the unit:
 
 Invoke the appropriate language-specific skill based on the entity type and target language:
 
-| Migrating... | Encore.ts skill | Encore Go skill |
+| Migrating... | Encore.ts skill | Encore.go skill |
 |---|---|---|
-| Service structure | `encore-service` | `encore-go-service` |
-| API endpoints | `encore-api` | `encore-go-api` |
-| Auth | `encore-auth` | `encore-go-auth` |
-| Database + migrations | `encore-database` | `encore-go-database` |
-| Pub/Sub topics & subscriptions | `encore-pubsub` | `encore-go-pubsub` |
-| Cron jobs / scheduled tasks | `encore-cron` | `encore-go-cron` |
-| Object storage / file uploads | `encore-bucket` | `encore-go-bucket` |
-| Caching (Redis) | `encore-cache` | `encore-go-cache` |
-| Secrets / API keys / credentials | `encore-secret` | `encore-go-secret` |
-| Webhooks (Stripe, GitHub, etc.) | `encore-webhook` | `encore-go-webhook` |
-| Tests | `encore-testing` | `encore-go-testing` |
+| Service structure | `encore-ts-service` | `encore-go-service` |
+| API endpoints | `encore-ts-api` | `encore-go-api` |
+| Auth | `encore-ts-auth` | `encore-go-auth` |
+| Database + migrations | `encore-ts-database` | `encore-go-database` |
+| Pub/Sub topics & subscriptions | `encore-ts-pubsub` | `encore-go-pubsub` |
+| Cron jobs / scheduled tasks | `encore-ts-cron` | `encore-go-cron` |
+| Object storage / file uploads | `encore-ts-bucket` | `encore-go-bucket` |
+| Caching (Redis) | `encore-ts-cache` | `encore-go-cache` |
+| Secrets / API keys / credentials | `encore-ts-secret` | `encore-go-secret` |
+| Webhooks (Stripe, GitHub, etc.) | `encore-ts-webhook` | `encore-go-webhook` |
+| Tests | `encore-ts-testing` | `encore-go-testing` |
 
 #### b. Migrate Tests
 
-If the source entity has associated tests, migrate them using the appropriate testing skill (`encore-testing` or `encore-go-testing`). Adapt test assertions to match Encore API patterns. If the source entity has no tests, note this in the detail file.
+If the source entity has associated tests, migrate them using the appropriate testing skill (`encore-ts-testing` or `encore-go-testing`). Adapt test assertions to match Encore API patterns. If the source entity has no tests, note this in the detail file.
 
 #### c. Validate
 
@@ -223,7 +223,7 @@ Three validation layers are applied to each entity before it can be marked as `m
 ##### Layer 1: Test Migration (Primary)
 
 - When migrating an entity, also migrate its associated tests
-- Use the `encore-testing` skill (or `encore-go-testing` for Go) to implement the tests
+- Use the `encore-ts-testing` skill (or `encore-go-testing` for Go) to implement the tests
 - Run the tests — they must pass before the entity can be marked as `migrated`
 - If the source entity had no tests, note "no source tests" in the plan and rely on the other layers
 
@@ -376,7 +376,7 @@ Use this exact template for the summary plan file. Fill in values from the disco
 ## Target System
 - **Path:** <encore project path>
 - **URL:** <encore local URL>
-- **Type:** Encore.ts | Encore Go
+- **Type:** Encore.ts | Encore.go
 
 ## Migration Units
 

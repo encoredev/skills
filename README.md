@@ -1,6 +1,6 @@
 # Encore Skills
 
-Agent skills for building backend applications with [Encore](https://encore.dev), the backend framework for Go and TypeScript.
+Agent skills for building backend applications with [Encore](https://encore.dev) using Encore.ts and Encore.go.
 
 ## What These Skills Do
 
@@ -31,7 +31,7 @@ Works with Cursor, Claude Code, Codex, OpenCode, and 10+ other agents.
 npx add-skill encoredev/skills --list
 
 # Install specific skills
-npx add-skill encoredev/skills --skill encore-getting-started --skill encore-api
+npx add-skill encoredev/skills --skill encore-ts-getting-started --skill encore-ts-api
 
 # Install to specific agents
 npx add-skill encoredev/skills -a cursor -a claude-code
@@ -55,31 +55,36 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 ## Available Skills
 
+### Shared
+
+| Skill | Description |
+|-------|-------------|
+| `encore-frontend` | Connect React, Next.js, and other frontends |
+| `encore-migrate` | Migrate existing backends to Encore |
+
 ### TypeScript
 
 | Skill | Description |
 |-------|-------------|
-| `encore-getting-started` | Bootstrap a brand-new Encore.ts project |
-| `encore-api` | Define typed API endpoints (`api(...)`) |
-| `encore-webhook` | Receive inbound webhooks via `api.raw(...)` |
-| `encore-auth` | Protect endpoints with authentication |
-| `encore-database` | Postgres queries, migrations, ORM integration |
-| `encore-pubsub` | Pub/Sub topics and subscriptions |
-| `encore-cron` | Scheduled / periodic jobs |
-| `encore-bucket` | Object storage (file uploads, images, blobs) |
-| `encore-cache` | Redis-backed caching with typed keyspaces |
-| `encore-secret` | API keys, credentials, signing secrets |
-| `encore-service` | Plan service boundaries and layout |
-| `encore-testing` | Test APIs with Vitest |
-| `encore-frontend` | Connect React/Next.js apps |
-| `encore-code-review` | Review code for best practices |
-| `encore-migrate` | Migrate existing backends to Encore |
+| `encore-ts-getting-started` | Bootstrap a brand-new Encore.ts project |
+| `encore-ts-api` | Define typed API endpoints (`api(...)`) |
+| `encore-ts-webhook` | Receive inbound webhooks via `api.raw(...)` |
+| `encore-ts-auth` | Protect endpoints with authentication |
+| `encore-ts-database` | Postgres queries, migrations, ORM integration |
+| `encore-ts-pubsub` | Pub/Sub topics and subscriptions |
+| `encore-ts-cron` | Scheduled / periodic jobs |
+| `encore-ts-bucket` | Object storage (file uploads, images, blobs) |
+| `encore-ts-cache` | Redis-backed caching with typed keyspaces |
+| `encore-ts-secret` | API keys, credentials, signing secrets |
+| `encore-ts-service` | Plan service boundaries and layout |
+| `encore-ts-testing` | Test APIs with Vitest |
+| `encore-ts-code-review` | Review code for best practices |
 
 ### Go
 
 | Skill | Description |
 |-------|-------------|
-| `encore-go-getting-started` | Bootstrap a brand-new Encore Go project |
+| `encore-go-getting-started` | Bootstrap a brand-new Encore.go project |
 | `encore-go-api` | Define typed API endpoints (`//encore:api`) |
 | `encore-go-webhook` | Receive inbound webhooks via `//encore:api raw` |
 | `encore-go-auth` | Protect endpoints with authentication |
@@ -95,7 +100,8 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 ## References
 
-- [Encore.ts Documentation](https://encore.dev/docs)
+- [Encore.ts Documentation](https://encore.dev/docs/ts)
+- [Encore.go Documentation](https://encore.dev/docs/go)
 - [Encore GitHub](https://github.com/encoredev/encore)
 
 ## License

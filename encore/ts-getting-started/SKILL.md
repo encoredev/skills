@@ -1,8 +1,8 @@
 ---
-name: encore-getting-started
+name: encore-ts-getting-started
 description: Bootstrap a brand-new Encore.ts project from zero. Only for first-time CLI install and `encore app create` — not for architecture or feature questions.
 when_to_use: >-
-  User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create`, scaffold a hello-world app, or run their very first `encore run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features — those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world", "just starting out".
+  User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create`, scaffold a hello-world app, or run their very first `encore run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features — those go to `encore-ts-service`, `encore-ts-api`, `encore-ts-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world", "just starting out".
 ---
 
 # Getting Started with Encore.ts
@@ -141,7 +141,7 @@ CREATE TABLE items (
 
 ### Next Steps
 
-- Add more endpoints (see `encore-api` skill)
-- Add authentication (see `encore-auth` skill)
-- Add Pub/Sub topics (`encore-pubsub`), cron jobs (`encore-cron`), buckets (`encore-bucket`), secrets (`encore-secret`), or caching (`encore-cache`)
+- Add more endpoints (see `encore-ts-api` skill)
+- Add authentication (see `encore-ts-auth` skill)
+- Add Pub/Sub topics (`encore-ts-pubsub`), cron jobs (`encore-ts-cron`), buckets (`encore-ts-bucket`), secrets (`encore-ts-secret`), or caching (`encore-ts-cache`)
 - Deploy to Encore Cloud: `encore app link` then `git push encore`

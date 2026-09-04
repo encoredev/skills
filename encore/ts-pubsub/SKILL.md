@@ -1,5 +1,5 @@
 ---
-name: encore-pubsub
+name: encore-ts-pubsub
 description: Asynchronous messaging in Encore.ts via `Topic` and `Subscription` from `encore.dev/pubsub` — broadcast events, decouple producers from consumers, and run background handlers.
 when_to_use: >-
   User wants to publish/broadcast events, fan out a single event to many handlers, fire-and-forget messages between services, react to something asynchronously, set up a worker that consumes events, configure delivery guarantees (at-least-once, exactly-once), or use ordering attributes. Trigger phrases: "publish an event", "broadcast", "subscribe to", "topic", "Pub/Sub", "pubsub", "event bus", "order_created event", "send to anyone listening", "background event handler", "queue", "fan out".

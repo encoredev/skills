@@ -1,5 +1,5 @@
 ---
-name: encore-testing
+name: encore-ts-testing
 description: Write or run automated tests for Encore.ts code with `encore test` and vitest/jest. Covers isolated per-test databases, calling handlers directly, and `describe`/`it`/`expect`.
 when_to_use: >-
   User wants to add/write/fix a test, write a vitest or jest spec, test an endpoint or service, set up `encore test`, configure isolated test databases, write `beforeEach`/`afterEach` for db cleanup, mock external dependencies, or assert on API request/response behaviour. Trigger phrases: "write a test", "write a vitest test", "add tests for", "vitest", "jest", "encore test", "test the endpoint", "test the service", "integration test", "isolated database".

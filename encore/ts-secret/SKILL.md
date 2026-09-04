@@ -1,5 +1,5 @@
 ---
-name: encore-secret
+name: encore-ts-secret
 description: Manage API keys, credentials, and other secrets in Encore.ts using `secret(...)` from `encore.dev/config`.
 when_to_use: >-
   User wants to load a private credential into the service without committing it to the repo — third-party API keys (Stripe, OpenAI, Twilio, SendGrid), database passwords, signing keys, OAuth client secrets, JWT signing keys, webhook signing secrets. Covers `secret()` declarations, calling the secret as a function to read its value, setting values via `encore secret set`, and `.secrets.local.cue` for local overrides. Trigger phrases: "API key", "third-party token", "credentials", "without committing", "private key", "signing secret", "secret manager", ".env replacement", "encore secret set".
@@ -71,4 +71,4 @@ const openai = new OpenAI({ apiKey: openaiKey() });
 - Read with a function call: `stripeKey()` not `stripeKey`.
 - Set distinct values per environment via `encore secret set --type <env>`.
 - Never commit secret values; use `.secrets.local.cue` for local overrides and gitignore it.
-- For webhook signature secrets specifically, see also the `encore-webhook` skill.
+- For webhook signature secrets specifically, see also the `encore-ts-webhook` skill.

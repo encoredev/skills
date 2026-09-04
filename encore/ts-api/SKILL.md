@@ -1,6 +1,6 @@
 ---
-name: encore-api
-description: Define typed API endpoints in Encore.ts using `api(...)` from `encore.dev/api`. Covers typed request/response interfaces, path/query/header/cookie params, request validation, and `APIError`. For raw endpoints (`api.raw()`) and inbound webhooks, use `encore-webhook` instead.
+name: encore-ts-api
+description: Define typed API endpoints in Encore.ts using `api(...)` from `encore.dev/api`. Covers typed request/response interfaces, path/query/header/cookie params, request validation, and `APIError`. For raw endpoints (`api.raw()`) and inbound webhooks, use `encore-ts-webhook` instead.
 when_to_use: >-
   User wants to define an endpoint, route, or REST handler in their own service — anything with a typed JSON request/response shape. Mentions of an endpoint, GET/POST/PUT/PATCH/DELETE, paths like `/orders` or `/users/:id`, request body, query parameters (`Query<>`), path parameters, headers (`Header<>`), cookies (`Cookie<>`), HTTP status codes (`HttpStatus`), request validation (`Min`, `MaxLen`, `IsEmail`, `IsURL`), `APIError.notFound` / 4xx-5xx errors, or `expose: true`. Trigger phrases: "POST endpoint at /orders", "typed endpoint", "GET /users/:id", "request validation", "return 404", "JSON response shape".
 ---
@@ -267,6 +267,6 @@ export const app = api.static(
 - Define explicit interfaces for type safety
 - Use `expose: true` only for public endpoints
 - Throw `APIError` instead of returning error objects
-- For inbound webhooks (Stripe, GitHub, etc.) use `api.raw` — see the `encore-webhook` skill
+- For inbound webhooks (Stripe, GitHub, etc.) use `api.raw` — see the `encore-ts-webhook` skill
 - Path parameters are automatically extracted from the path pattern
 - Use validation constraints (`Min`, `MaxLen`, etc.) for user input

@@ -11,17 +11,17 @@
     {
       "name": "encore-skills",
       "source": "./encore-skills",
-      "description": "Skills for Go and TypeScript backend development with Encore",
+      "description": "Skills for backend development with Encore.ts and Encore.go",
       "skills": [
-        "./skills/api",
-        "./skills/auth",
-        "./skills/bucket",
-        "./skills/cache",
-        "./skills/code-review",
-        "./skills/cron",
-        "./skills/database",
+        "./skills/ts-api",
+        "./skills/ts-auth",
+        "./skills/ts-bucket",
+        "./skills/ts-cache",
+        "./skills/ts-code-review",
+        "./skills/ts-cron",
+        "./skills/ts-database",
         "./skills/frontend",
-        "./skills/getting-started",
+        "./skills/ts-getting-started",
         "./skills/go-api",
         "./skills/go-auth",
         "./skills/go-bucket",
@@ -36,11 +36,11 @@
         "./skills/go-testing",
         "./skills/go-webhook",
         "./skills/migrate",
-        "./skills/pubsub",
-        "./skills/secret",
-        "./skills/service",
-        "./skills/testing",
-        "./skills/webhook"
+        "./skills/ts-pubsub",
+        "./skills/ts-secret",
+        "./skills/ts-service",
+        "./skills/ts-testing",
+        "./skills/ts-webhook"
       ]
     }
   ]

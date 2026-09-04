@@ -1,6 +1,6 @@
 ---
 name: encore-frontend
-description: Connect a frontend application (React, Next.js, Vue, Svelte, etc.) to an Encore.ts backend.
+description: Connect a frontend application (React, Next.js, Vue, Svelte, etc.) to an Encore.ts or Encore.go backend.
 when_to_use: >-
   User wants to generate a TypeScript API client for the browser (`encore gen client`), call Encore endpoints from React/Next.js/Vue/Svelte/SvelteKit/Remix/Astro, configure CORS in `encore.app`, or wire authentication tokens through a generated client. Trigger phrases: "TypeScript client", "API client", "Next.js frontend", "React frontend", "encore gen client", "CORS", "browser fetch", "SPA", "frontend can call this backend".
 ---

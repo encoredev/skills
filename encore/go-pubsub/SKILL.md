@@ -1,11 +1,11 @@
 ---
 name: encore-go-pubsub
-description: Asynchronous messaging in Encore Go via `pubsub.NewTopic` and `pubsub.NewSubscription` from `encore.dev/pubsub` — broadcast events, decouple producers from consumers, and run background handlers.
+description: Asynchronous messaging in Encore.go via `pubsub.NewTopic` and `pubsub.NewSubscription` from `encore.dev/pubsub` — broadcast events, decouple producers from consumers, and run background handlers.
 when_to_use: >-
   User wants to publish/broadcast events, fan out a single event to many handlers, fire-and-forget messages between Go services, react to something asynchronously, set up a worker that consumes events, configure delivery guarantees (at-least-once, exactly-once), or use ordering attributes. Trigger phrases: "publish an event", "broadcast", "subscribe to", "topic", "Pub/Sub", "pubsub", "event bus", "OrderCreated event", "send to anyone listening", "background event handler", "queue", "fan out".
 ---
 
-# Encore Go Pub/Sub
+# Encore.go Pub/Sub
 
 ## Instructions
 

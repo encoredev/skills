@@ -1,5 +1,5 @@
 ---
-name: encore-cron
+name: encore-ts-cron
 description: >-
   Schedule periodic / recurring work in Encore.ts using `CronJob` from `encore.dev/cron`. Covers `every: "1h"` interval syntax and `schedule: "0 9 * * 1"` cron expressions.
 when_to_use: >-
@@ -60,4 +60,4 @@ const _ = new CronJob("aggregate-daily-orders", {
 - Use `every` for "run on a regular interval" (must divide 24h).
 - Use `schedule` for specific times of day or days of week.
 - Keep endpoint logic idempotent: a cron may fire late or be retried in a redeploy window.
-- For event-driven background work (not time-driven), use the `encore-pubsub` skill instead.
+- For event-driven background work (not time-driven), use the `encore-ts-pubsub` skill instead.

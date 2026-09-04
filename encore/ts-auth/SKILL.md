@@ -1,5 +1,5 @@
 ---
-name: encore-auth
+name: encore-ts-auth
 description: >-
   Protect Encore.ts endpoints with authentication and authorize callers. Covers `authHandler`, `Gateway`, `getAuthData`, and `auth: true`.
 when_to_use: >-

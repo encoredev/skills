@@ -1,5 +1,5 @@
 ---
-name: encore-database
+name: encore-ts-database
 description: Work with PostgreSQL in Encore.ts using `SQLDatabase` from `encore.dev/storage/sqldb` — schema migrations and SQL queries.
 when_to_use: >-
   User wants to add a database table, write a migration, run a SQL query, insert/update/delete rows, set up Drizzle or Prisma against an Encore database, or design a relational schema. Covers `new SQLDatabase(...)`, `db.query`, `db.queryRow`, `db.exec`, the `migrations/` directory, `*.up.sql` files, sequential migration numbering, and ORM integration via `db.connectionString`. Trigger phrases: "Postgres table", "user_sessions table", "SQL", "migration", "queryRow", "INSERT", "SELECT", "schema", "Drizzle", "Prisma".

@@ -1,11 +1,11 @@
 ---
 name: encore-go-webhook
-description: Receive inbound webhooks from external services (Stripe, GitHub, Slack, Twilio, etc.) in Encore Go using `//encore:api raw`. The right skill any time the user names a third-party provider that POSTs events to a URL you own.
+description: Receive inbound webhooks from external services (Stripe, GitHub, Slack, Twilio, etc.) in Encore.go using `//encore:api raw`. The right skill any time the user names a third-party provider that POSTs events to a URL you own.
 when_to_use: >-
   User mentions a webhook, a /webhooks/* path, raw HTTP, `//encore:api raw`, accepting external callbacks, verifying webhook signatures (Stripe-Signature, X-Hub-Signature-256), reading the raw request body, parsing form-encoded payloads, or any time the user names a third-party provider that posts events — Stripe, GitHub, GitLab, Bitbucket, Shopify, Twilio, SendGrid, Mailgun, Auth0, Clerk, Slack, Discord, PayPal, Square. Use `encore-go-api` instead for typed JSON endpoints in your own service. Trigger phrases: "Stripe webhook", "GitHub webhook", "/webhooks/stripe", "raw HTTP endpoint", "raw endpoint", "verify the signature", "inbound webhook", "external callback".
 ---
 
-# Encore Go Webhook Endpoints
+# Encore.go Webhook Endpoints
 
 ## Instructions
 

@@ -1,5 +1,5 @@
 ---
-name: encore-cache
+name: encore-ts-cache
 description: Cache data in Redis from Encore.ts using `CacheCluster` and typed keyspaces from `encore.dev/storage/cache`. Type-safe key/value access with TTLs, atomic increments, and per-keyspace data shapes.
 when_to_use: >-
   User wants to cache values, store ephemeral state, rate-limit by counter, build a leaderboard, speed up a hot read, or store short-lived tokens. Covers `CacheCluster`, `StringKeyspace`, `IntKeyspace`, `FloatKeyspace`, `StructKeyspace`, list and set keyspaces, TTL helpers (`expireIn`, `expireDailyAt`, `neverExpire`, `keepTTL`), atomic `increment`/`decrement`, `setIfNotExists`, `replace`, eviction policies, and `CacheMiss`/`CacheKeyExists` errors. Trigger phrases: "cache this", "Redis", "key-value store", "rate limit", "TTL", "expire after", "in-memory store", "session token store", "leaderboard counter".
@@ -127,4 +127,4 @@ const value = await keyspace.get(key);  // undefined on miss (does not throw)
 - Pick the most specific keyspace type — `IntKeyspace` for counters gives you atomic `increment`/`decrement` for free.
 - `get()` returns `undefined` on miss; `replace()` and `setIfNotExists()` throw on conflict.
 - Local development uses an in-memory Redis with a ~100-key cap — don't load-test it.
-- For durable storage, use `encore-database` (Postgres) or `encore-bucket` (object storage) instead.
+- For durable storage, use `encore-ts-database` (Postgres) or `encore-ts-bucket` (object storage) instead.

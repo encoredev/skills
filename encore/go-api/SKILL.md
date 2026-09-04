@@ -1,15 +1,15 @@
 ---
 name: encore-go-api
-description: Define typed API endpoints in Encore Go using `//encore:api` annotations. Covers typed request/response structs, path/query/header/cookie params, and error returns. For raw endpoints (`//encore:api raw`) and inbound webhooks, use `encore-go-webhook` instead.
+description: Define typed API endpoints in Encore.go using `//encore:api` annotations. Covers typed request/response structs, path/query/header/cookie params, and error returns. For raw endpoints (`//encore:api raw`) and inbound webhooks, use `encore-go-webhook` instead.
 when_to_use: >-
   User wants to define an endpoint, route, or REST handler in their own Go service — anything with a typed JSON request/response shape. Mentions of an endpoint, GET/POST/PUT/PATCH/DELETE, paths like `/orders` or `/users/:id`, request body, query parameters (`query:"name"` tag), path parameters, headers (`header:"Name"` tag), HTTP status codes, request validation, `errs.NotFound` / 4xx-5xx errors, or `//encore:api public`. Trigger phrases: "POST endpoint at /orders", "typed Go endpoint", "GET /users/:id", "request validation", "return 404", "JSON response shape".
 ---
 
-# Encore Go API Endpoints
+# Encore.go API Endpoints
 
 ## Instructions
 
-When creating API endpoints with Encore Go, follow these patterns:
+When creating API endpoints with Encore.go, follow these patterns:
 
 ### 1. Basic API Endpoint
 

@@ -1,8 +1,8 @@
 ---
-name: encore-webhook
+name: encore-ts-webhook
 description: Receive inbound webhooks from external services (Stripe, GitHub, Slack, Twilio, etc.) using `api.raw(...)` from `encore.dev/api`. The right skill any time the user names a third-party provider that POSTs events to a URL you own.
 when_to_use: >-
-  User mentions a webhook, a /webhooks/* path, raw HTTP, `api.raw()`, accepting external callbacks, verifying webhook signatures (Stripe-Signature, X-Hub-Signature-256), reading the raw request body, parsing form-encoded payloads, or any time the user names a third-party provider that posts events — Stripe, GitHub, GitLab, Bitbucket, Shopify, Twilio, SendGrid, Mailgun, Auth0, Clerk, Slack, Discord, PayPal, Square. Use `encore-api` instead for typed JSON endpoints in your own service. Trigger phrases: "Stripe webhook", "GitHub webhook", "/webhooks/stripe", "raw HTTP endpoint", "api.raw", "verify the signature", "inbound webhook", "external callback".
+  User mentions a webhook, a /webhooks/* path, raw HTTP, `api.raw()`, accepting external callbacks, verifying webhook signatures (Stripe-Signature, X-Hub-Signature-256), reading the raw request body, parsing form-encoded payloads, or any time the user names a third-party provider that posts events — Stripe, GitHub, GitLab, Bitbucket, Shopify, Twilio, SendGrid, Mailgun, Auth0, Clerk, Slack, Discord, PayPal, Square. Use `encore-ts-api` instead for typed JSON endpoints in your own service. Trigger phrases: "Stripe webhook", "GitHub webhook", "/webhooks/stripe", "raw HTTP endpoint", "api.raw", "verify the signature", "inbound webhook", "external callback".
 ---
 
 # Encore Webhook Endpoints
@@ -39,7 +39,7 @@ export const stripeWebhook = api.raw(
 
 ### 3. Verify the signature
 
-Most providers sign webhooks. Read the secret with `secret(...)` from `encore.dev/config` (see the `encore-secret` skill) and verify before trusting the payload:
+Most providers sign webhooks. Read the secret with `secret(...)` from `encore.dev/config` (see the `encore-ts-secret` skill) and verify before trusting the payload:
 
 ```typescript
 import { secret } from "encore.dev/config";
@@ -65,7 +65,7 @@ For GitHub, verify the HMAC-SHA256 in the `X-Hub-Signature-256` header against t
 
 ## Always respond quickly
 
-Webhook senders retry on non-2xx or slow responses. Acknowledge with a 2xx as soon as the payload is verified, then enqueue the actual work via Pub/Sub (see `encore-pubsub`) instead of doing it in the request handler.
+Webhook senders retry on non-2xx or slow responses. Acknowledge with a 2xx as soon as the payload is verified, then enqueue the actual work via Pub/Sub (see `encore-ts-pubsub`) instead of doing it in the request handler.
 
 ```typescript
 import { Topic } from "encore.dev/pubsub";
@@ -86,4 +86,4 @@ res.writeHead(200); res.end();
 - Always verify the provider's signature before trusting the payload.
 - Always respond 2xx fast — push slow work onto Pub/Sub.
 - Store the signing secret with `secret(...)`; never inline it.
-- For typed JSON endpoints in your own service, use plain `api(...)` from the `encore-api` skill.
+- For typed JSON endpoints in your own service, use plain `api(...)` from the `encore-ts-api` skill.
