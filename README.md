@@ -60,7 +60,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 | Skill | Description |
 |-------|-------------|
 | `encore-getting-started` | Bootstrap a brand-new Encore.ts project |
-| `encore-logging` | Add useful structured logging |
+| `encore-ts-logging` | Add useful structured logging |
 | `encore-api` | Define typed API endpoints (`api(...)`) |
 | `encore-webhook` | Receive inbound webhooks via `api.raw(...)` |
 | `encore-auth` | Protect endpoints with authentication |
