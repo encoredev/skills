@@ -250,6 +250,8 @@ describe("authenticated endpoints", () => {
 });
 ```
 
+The mock does not reach calls made through `~encore/clients`. To call an `auth: true` endpoint on another service from a test, pass `{ authData: ... }` as the second argument (see "Overriding Auth Data" above).
+
 ## Guidelines
 
 - Auth handlers must be registered with a Gateway
