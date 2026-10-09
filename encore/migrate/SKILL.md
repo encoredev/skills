@@ -18,6 +18,15 @@ Before doing anything, determine which phase to enter:
 - **`migration-plan/` directory exists with pending units** (any unit in the summary with status `pending` or `in progress`) → Resume at **Phase 3: MIGRATE**
 - **All units in the summary are `migrated`, `skipped`, or `manual validation needed`** → Go to **Phase 4: COMPLETE**
 
+### Autonomous Mode
+
+The confirmation stops in this workflow (confirming units in Phase 1, approving the first unit in Phase 2, picking each next unit in Phase 3) are the default. If the user asks to run the migration through without stopping ("just migrate it", "do them all", "don't ask"), skip those stops:
+
+- Pick sensible defaults for open decisions (see "Key Decisions" in Phase 1) and state each one to the user in a short list before writing code
+- Record every default in the `## Decisions` section of `migration-plan.md` so it can be revisited
+- Still ask before side-effecting HTTP calls against the source system, and never modify the source
+- Still validate every entity before marking it `migrated`
+
 ### Resuming a Migration (Phase 3)
 
 When `migration-plan.md` and `migration-plan/` exist with pending units:
@@ -49,6 +58,7 @@ Read the source codebase and inventory all entities:
 | Cron jobs / scheduled tasks | Schedule expressions, handler functions |
 | Auth middleware / handlers | Authentication strategies, token validation, session management |
 | Secrets / environment variables | All referenced env vars and secrets, noting which are sensitive |
+| Global HTTP behavior | CORS settings, global path prefixes, global middleware, custom error filters / error response bodies |
 | Existing tests | Test files, which entities they cover, test framework used |
 | Frontend code | React/Vue/Angular components, static HTML, CSS, client-side JS — these are out of scope |
 
@@ -91,7 +101,15 @@ Based on the user's choice:
 
 **Report to the user:** List all detected frontend directories and the decision made about framework server-side code. Example: "I found a Next.js frontend in `app/` — the React components are out of scope. You chose to migrate 8 of the 12 API routes from `pages/api/` to Encore and keep 4 thin proxy routes in Next.js."
 
-### 4. Group Entities into Migration Units
+### 4. Identify Key Decisions
+
+Some choices affect every unit. Surface them before planning, and record the answers in the `## Decisions` section of `migration-plan.md`:
+
+- **Behavior target:** Older codebases often have bugs (missing ownership checks, fields that are never saved, wrong filters). Ask whether to reproduce the source behavior exactly or fix clear bugs. If the source implements a published API contract (OpenAPI spec, RealWorld, a partner integration), fixing toward that contract is usually right. Whatever is chosen, list each intentional divergence in the unit's Notes column.
+- **Error response format:** Encore's typed `api()` endpoints always return errors as `{code, message, details}`, and request validation failures are always HTTP 400. If clients depend on a different error body (e.g. `{"errors": {...}}`) or status (e.g. 422), the options are: accept Encore's format (field errors can go in `details`), or use `api.raw` for the affected routes, which gives up typed requests and generated clients. Ask which the user prefers.
+- **CORS:** If the source enables CORS, translate it to `global_cors` in `encore.app` rather than leaving it to Encore's defaults.
+
+### 5. Group Entities into Migration Units
 
 Group the discovered entities into migration units using these heuristics in priority order:
 
@@ -106,7 +124,7 @@ Group the discovered entities into migration units using these heuristics in pri
 
 **For monoliths with no clear boundaries:** Fall back to URL path prefix grouping, then ask: "These groupings are based on URL paths — would you like to reorganize them by domain?"
 
-### 5. Present the Migration Units
+### 6. Present the Migration Units
 
 Present the migration units to the user as a summary table:
 
@@ -121,11 +139,11 @@ Include total counts (e.g., "7 migration units covering 42 endpoints, 3 database
 
 Offer to show the detail of any unit if the user wants to inspect what's inside before confirming.
 
-### 6. Show Code Previews
+### 7. Show Code Previews
 
 For 2-3 representative entities (pick a mix of simple and complex from different units), show a short "before and after" preview of what the source code looks like now and what the Encore version will look like. Use the appropriate language-specific skill to inform the preview. Keep previews brief — one endpoint, one query, or one topic declaration is enough per preview.
 
-### 7. Confirm with the User
+### 8. Confirm with the User
 
 Ask the user to confirm the migration units are correct. Specifically ask:
 
@@ -133,7 +151,7 @@ Ask the user to confirm the migration units are correct. Specifically ask:
 - "Would you like to split, merge, or rename any of these migration units?"
 - "Is there anything you want to exclude from the migration?"
 
-### 8. Iterate if Needed
+### 9. Iterate if Needed
 
 If the user identifies missing entities or wants to adjust chunk boundaries, update the units and re-present the summary table. Repeat until the user confirms the migration units are accurate.
 
@@ -241,6 +259,16 @@ When both systems are running locally, call the same endpoint on both the source
 **If a request to either system fails to connect**, ask the user to start the app before retrying. Do not silently skip — the user may have simply forgotten to start it.
 
 **Always ask the user before making any HTTP call that could have side effects.**
+
+##### Layer 2 Alternative: Contract Test Suite
+
+If the source system cannot practically be run (unavailable database engine, toolchain too old to install, external dependencies), or the behavior target intentionally diverges from the source, HTTP comparison against the source is not meaningful. If the API has an external contract test suite (Hurl, Postman/Newman, Bruno, Schemathesis against an OpenAPI spec, a consumer's integration tests), run it against the Encore app instead:
+
+- Run the full suite with failures continuing (e.g. `hurl --test --continue-on-error --report-json`) so every failing assertion is visible, not only the first per file
+- Categorize failures. Separate expected deviations from recorded decisions (such as the error response format) from real behavior gaps, and fix the gaps
+- Record the pass/fail counts and the categories in the Validation Log
+
+Note in the plan why HTTP comparison against the source was skipped.
 
 ##### Layer 3: Verification-Before-Completion Gate
 
@@ -353,6 +381,9 @@ Common issues during migration and how to resolve them:
 | `encore run` errors on infrastructure | Infrastructure declared inside functions | Move all infrastructure declarations to package level |
 | Source and Encore responses differ | Missing business logic or different error handling | Compare response shapes carefully, check edge cases |
 | Cannot validate endpoint | Auth required or side effects | Ask user for test credentials, or mark as `manual validation needed` |
+| Clients expect 422 or a custom error body | Encore's typed endpoints use a fixed error envelope and return 400 for validation errors | Record as a decision: accept Encore's format, or use `api.raw` for those routes |
+| Browser clients fail after migration | Source enabled CORS globally | Add `global_cors` to `encore.app` |
+| Source cannot be run for HTTP comparison | Old toolchain or unavailable infrastructure | Use a contract test suite instead (see Layer 2 Alternative) |
 
 ## migration-plan.md Format
 
@@ -377,6 +408,12 @@ Use this exact template for the summary plan file. Fill in values from the disco
 - **Path:** <encore project path>
 - **URL:** <encore local URL>
 - **Type:** Encore.ts | Encore Go
+
+## Decisions
+- **Behavior target:** <reproduce source exactly | fix bugs toward <contract>>
+- **Error format:** <Encore native | api.raw for <routes>>
+- **CORS:** <source setting → encore.app global_cors>
+- <any other default chosen in autonomous mode>
 
 ## Migration Units
 

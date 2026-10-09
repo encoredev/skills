@@ -143,6 +143,30 @@ describe("error handling", () => {
 });
 ```
 
+### Test Authenticated Endpoints
+
+Mock `getAuthData` to call `auth: true` endpoints directly as a given user:
+
+```typescript
+import { describe, it, expect, vi } from "vitest";
+import * as auth from "~encore/auth";
+import { getProfile } from "./api";
+
+it("returns the caller's profile", async () => {
+  vi.spyOn(auth, "getAuthData").mockImplementation(() => ({ userID: "123" }));
+  const profile = await getProfile();
+  expect(profile.id).toBe("123");
+});
+```
+
+The mock only affects code in the test process that reads `getAuthData()` directly. Calls made through `~encore/clients` go through the Encore runtime, which does not see the mock, so an `auth: true` endpoint called that way fails with "endpoint requires auth but none provided". Pass the auth data explicitly instead:
+
+```typescript
+import { user } from "~encore/clients";
+
+await user.follow({ username: "jake" }, { authData: { userID: "123" } });
+```
+
 ### Test Pub/Sub
 
 ```typescript
@@ -211,8 +235,7 @@ describe("email service", () => {
 Create `vite.config.ts` (required for `~encore` imports):
 
 ```typescript
-/// <reference types="vitest" />
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import path from "path";
 
 export default defineConfig({
