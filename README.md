@@ -61,6 +61,12 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 |-------|-------------|
 | `encore-architecture` | Design service boundaries, data ownership, and communication |
 
+### Deploying
+
+| Skill | Description |
+|-------|-------------|
+| `encore-deploy` | Deploy to Encore Cloud with `git push encore`, deploy again, and fix failed deploys |
+
 ### TypeScript
 
 | Skill | Description |

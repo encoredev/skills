@@ -24,6 +24,8 @@ iwr https://encore.dev/install.ps1 | iex
 
 ### Create a New App
 
+Log in first (`encore auth login`, or `encore auth login --auth-key=<key>` without a browser) so the app is registered on Encore Cloud and gets an `encore` git remote for deploying.
+
 ```bash
 # Interactive - choose from templates
 encore app create my-app
@@ -116,6 +118,7 @@ The dashboard shows:
 | `encore test` | Run tests |
 | `encore db shell <db>` | Open a psql shell to a database |
 | `encore gen client` | Generate API client code |
+| `git push encore` | Deploy committed changes to Encore Cloud |
 | `encore app link` | Link to an existing Encore Cloud app |
 
 ### Add a Database
@@ -144,4 +147,4 @@ CREATE TABLE items (
 - Add more endpoints (see `encore-api` skill)
 - Add authentication (see `encore-auth` skill)
 - Add Pub/Sub topics (`encore-pubsub`), cron jobs (`encore-cron`), buckets (`encore-bucket`), secrets (`encore-secret`), or caching (`encore-cache`)
-- Deploy to Encore Cloud: `encore app link` then `git push encore`
+- Deploy to Encore Cloud: commit, then `git push encore` (see `encore-deploy` skill)
