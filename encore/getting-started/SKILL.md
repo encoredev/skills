@@ -118,7 +118,7 @@ The dashboard shows:
 | `encore test` | Run tests |
 | `encore db shell <db>` | Open a psql shell to a database |
 | `encore gen client` | Generate API client code |
-| `git push encore` | Deploy committed changes to Encore Cloud |
+| `git push encore` | Deploy committed changes (apps using Encore's git) |
 | `encore app link` | Link to an existing Encore Cloud app |
 
 ### Add a Database
@@ -147,4 +147,4 @@ CREATE TABLE items (
 - Add more endpoints (see `encore-api` skill)
 - Add authentication (see `encore-auth` skill)
 - Add Pub/Sub topics (`encore-pubsub`), cron jobs (`encore-cron`), buckets (`encore-bucket`), secrets (`encore-secret`), or caching (`encore-cache`)
-- Deploy to Encore Cloud: commit, then `git push encore` (see `encore-deploy` skill)
+- Deploy to Encore Cloud: commit, then `git push encore`, or push to the linked GitHub repository (see `encore-deploy` skill)

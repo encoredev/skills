@@ -13,7 +13,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | Skill | Trigger Keywords |
 |-------|------------------|
 | `encore-architecture` | architecture, service boundaries, monolith vs microservices, split or merge, API vs Pub/Sub, data ownership |
-| `encore-deploy` | deploy, git push encore, Encore Cloud, staging, deploy again, redeploy, deploy failed, no encore remote, link app, encore app clone |
+| `encore-deploy` | deploy, git push encore, GitHub deploy, Encore Cloud, staging, production, deploy again, redeploy, deploy failed, no encore remote, link app, encore app clone |
 
 ### TypeScript Skills
 

@@ -65,7 +65,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 | Skill | Description |
 |-------|-------------|
-| `encore-deploy` | Deploy to Encore Cloud with `git push encore`, deploy again, and fix failed deploys |
+| `encore-deploy` | Deploy to Encore Cloud from the Encore git remote or GitHub, deploy again, and fix failed deploys |
 
 ### TypeScript
 
