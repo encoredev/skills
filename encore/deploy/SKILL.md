@@ -77,12 +77,7 @@ You can also redeploy from the Cloud Dashboard: **Deployments** > **New Deploy**
 
 ### Link an app
 
-**Logged out:** log in first. Without a browser, use an auth key from the Cloud Dashboard (**App Settings** > **Auth Keys**):
-
-```bash
-encore auth login                      # opens a browser
-encore auth login --auth-key=<key>     # or set ENCORE_AUTH_KEY
-```
+**Logged out:** log in first with `encore auth login`, which opens a browser. Without a browser, create an auth key in the Cloud Dashboard (**App Settings** > **Auth Keys**) and set it in the `ENCORE_AUTH_KEY` environment variable, for example from a secret store. The CLI logs in with it automatically. Don't pass a real key on the command line with `--auth-key`: it ends up in shell history and process listings.
 
 **App created in the Cloud Dashboard:** clone it. The app ID is in the dashboard URL, `app.encore.dev/<app-id>`. If the app is linked to GitHub, `git clone` the GitHub repository instead.
 

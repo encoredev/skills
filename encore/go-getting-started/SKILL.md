@@ -24,7 +24,7 @@ iwr https://encore.dev/install.ps1 | iex
 
 ### Create a New App
 
-Log in first (`encore auth login`, or `encore auth login --auth-key=<key>` without a browser) so the app is registered on Encore Cloud and gets an `encore` git remote for deploying.
+Log in first (`encore auth login`, or without a browser set the `ENCORE_AUTH_KEY` environment variable to an auth key) so the app is registered on Encore Cloud and gets an `encore` git remote for deploying.
 
 ```bash
 # Interactive - choose from templates
