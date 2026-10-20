@@ -21,6 +21,7 @@
         "./skills/code-review",
         "./skills/cron",
         "./skills/database",
+        "./skills/deploy",
         "./skills/frontend",
         "./skills/getting-started",
         "./skills/logging",

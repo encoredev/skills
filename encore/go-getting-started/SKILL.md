@@ -24,6 +24,8 @@ iwr https://encore.dev/install.ps1 | iex
 
 ### Create a New App
 
+Log in first (`encore auth login`, or without a browser set the `ENCORE_AUTH_KEY` environment variable to an auth key) so the app is registered on Encore Cloud and gets an `encore` git remote for deploying.
+
 ```bash
 # Interactive - choose from templates
 encore app create my-app
@@ -106,6 +108,7 @@ The dashboard shows:
 | `encore test` | Run tests (uses `go test` under the hood) |
 | `encore db shell <db>` | Open a psql shell to a database |
 | `encore gen client` | Generate API client code |
+| `git push encore` | Deploy committed changes (apps using Encore's git) |
 | `encore app link` | Link to an existing Encore Cloud app |
 
 ### Add Path Parameters
@@ -175,4 +178,4 @@ func getItem(ctx context.Context, id int) (*Item, error) {
 - Add more endpoints (see `encore-go-api` skill)
 - Add authentication (see `encore-go-auth` skill)
 - Add Pub/Sub topics (`encore-go-pubsub`), cron jobs (`encore-go-cron`), buckets (`encore-go-bucket`), secrets (`encore-go-secret`), or caching (`encore-go-cache`)
-- Deploy to Encore Cloud: `encore app link` then `git push encore`
+- Deploy to Encore Cloud: commit, then `git push encore`, or push to the linked GitHub repository (see `encore-deploy` skill)
