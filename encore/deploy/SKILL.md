@@ -59,7 +59,8 @@ Every new commit pushed to an environment's branch deploys it again. To redeploy
 
 ```bash
 git commit --allow-empty -m "Redeploy"
-git push encore              # or the linked GitHub repository
+git push encore              # Encore-managed git
+git push origin <branch>     # linked GitHub repository
 ```
 
 You can also redeploy from the Cloud Dashboard: **Deployments** > **New Deploy** > **Branch**.
