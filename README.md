@@ -21,23 +21,23 @@ These skills help AI agents use Encore's declarative patterns correctly:
 ## Installation
 
 ```bash
-npx add-skill encoredev/skills
+npx skills add encoredev/skills
 ```
 
 Works with Cursor, Claude Code, Codex, OpenCode, and 10+ other agents.
 
 ```bash
 # List available skills
-npx add-skill encoredev/skills --list
+npx skills add encoredev/skills --list
 
 # Install specific skills
-npx add-skill encoredev/skills --skill encore-getting-started --skill encore-api
+npx skills add encoredev/skills --skill encore-getting-started --skill encore-api
 
 # Install to specific agents
-npx add-skill encoredev/skills -a cursor -a claude-code
+npx skills add encoredev/skills -a cursor -a claude-code
 
 # Global installation
-npx add-skill encoredev/skills -g
+npx skills add encoredev/skills -g
 ```
 
 ### Claude Code Marketplace
