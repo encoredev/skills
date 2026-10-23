@@ -32,6 +32,9 @@ encore app create my-app
 
 # Or start with a blank Go app
 encore app create my-app --example=hello-world
+
+# Local only, without logging in (link it to Encore Cloud later)
+encore app create my-app --lang=go --example=hello-world --platform=false
 ```
 
 ### Project Structure

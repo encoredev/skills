@@ -166,6 +166,19 @@ func transferFunds(ctx context.Context, fromID, toID string, amount int) error {
 }
 ```
 
+## Using an ORM
+
+`db.Stdlib()` returns a `*sql.DB` for libraries that take one. Open it in `initService` and keep using Encore migrations for the schema. For GORM:
+
+```go
+import (
+    "gorm.io/driver/postgres"
+    "gorm.io/gorm"
+)
+
+gdb, err := gorm.Open(postgres.New(postgres.Config{Conn: db.Stdlib()}), &gorm.Config{})
+```
+
 ## Using Scan
 
 The `Scan` method reads columns from query results into variables. Columns are mapped by position, not by name - the order of arguments to `Scan` must match the order of columns in your SELECT statement.

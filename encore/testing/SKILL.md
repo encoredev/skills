@@ -1,6 +1,6 @@
 ---
 name: encore-testing
-description: Write or run automated tests for Encore.ts code with `encore test` and vitest/jest. Covers isolated per-test databases, calling handlers directly, and `describe`/`it`/`expect`.
+description: Write or run automated tests for Encore.ts code with `encore test` and vitest/jest. Covers separate test databases, calling handlers directly, and `describe`/`it`/`expect`.
 when_to_use: >-
   User wants to add/write/fix a test, write a vitest or jest spec, test an endpoint or service, set up `encore test`, configure isolated test databases, write `beforeEach`/`afterEach` for db cleanup, mock external dependencies, or assert on API request/response behaviour. Trigger phrases: "write a test", "write a vitest test", "add tests for", "vitest", "jest", "encore test", "test the endpoint", "test the service", "integration test", "isolated database".
 ---
@@ -54,7 +54,7 @@ npm test
 
 Using `encore test` is recommended because it:
 - Sets up test databases automatically
-- Provides isolated infrastructure per test
+- Runs against separate test databases, not the ones `encore run` uses
 - Handles service dependencies
 
 ### Test with Request Parameters
@@ -283,7 +283,7 @@ Re-enable for CI: `encore test --fileParallelism=true`
 ### Guidelines
 
 - Use `encore test` to run tests with infrastructure setup
-- Each test file gets an isolated database transaction (rolled back after)
+- All test files in a run share one test database, which starts fresh on each `encore test` run. Clean up in `beforeEach` or use unique values so files don't see each other's rows
 - Test API endpoints by calling them directly as functions
 - Service-to-service calls work normally in tests
 - Mock external dependencies (third-party APIs, email services, etc.)
