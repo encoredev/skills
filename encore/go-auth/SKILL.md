@@ -121,8 +121,8 @@ func MyAuthHandler(ctx context.Context, params *Params) (auth.UID, *AuthData, er
 | Scenario | Returns | Result |
 |----------|---------|--------|
 | Valid credentials | `(uid, data, nil)` | Request authenticated |
-| Invalid credentials | `("", nil, err)` with `errs.Unauthenticated` | 401 response |
-| Other error | `("", nil, err)` | Request aborted |
+| Invalid credentials | `("", nil, err)` with `errs.Unauthenticated` | 401 on `auth` endpoints; `public` endpoints run with no auth data |
+| Other error | `("", nil, err)` | Request rejected with that error, on every endpoint |
 
 ## Common Auth Patterns
 

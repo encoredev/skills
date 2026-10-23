@@ -32,6 +32,9 @@ encore app create my-app
 
 # Or start with a blank app
 encore app create my-app --example=ts/hello-world
+
+# Local only, without logging in (link it to Encore Cloud later)
+encore app create my-app --lang=ts --example=ts/hello-world --platform=false
 ```
 
 ### Project Structure

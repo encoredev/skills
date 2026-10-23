@@ -106,6 +106,19 @@ const users = await db.rawQueryAll<User>("SELECT * FROM users WHERE role = $1", 
 await db.rawExec("INSERT INTO users (id, email) VALUES ($1, $2)", id, email);
 ```
 
+## Transactions
+
+Run the queries on the transaction (`tx`), not on `db`. A transaction that is neither committed nor rolled back is rolled back when `tx` goes out of scope.
+
+```typescript
+await using tx = await db.begin();
+
+await tx.exec`UPDATE accounts SET balance = balance - ${amount} WHERE id = ${from}`;
+await tx.exec`UPDATE accounts SET balance = balance + ${amount} WHERE id = ${to}`;
+
+await tx.commit();
+```
+
 ## Database Sharing Across Services
 
 Reference a database owned by another service using `SQLDatabase.named()`:
@@ -226,6 +239,33 @@ await orm.update(users).set({ name }).where(eq(users.id, id));
 // Delete
 await orm.delete(users).where(eq(users.id, id));
 ```
+
+## Prisma Integration
+
+Encore applies the migrations Prisma generates, and Prisma Client connects through the Encore database's connection string.
+
+```typescript
+// db.ts
+import { SQLDatabase } from "encore.dev/storage/sqldb";
+import { PrismaClient } from "./prisma/generated/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+export const db = new SQLDatabase("mydb", {
+  migrations: {
+    path: "./prisma/migrations",
+    source: "prisma",
+  },
+});
+
+export const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: db.connectionString }),
+});
+```
+
+- Point the `datasource` URL in `schema.prisma` at Encore's shadow database (`encore db conn-uri mydb --shadow`), so `prisma migrate dev` never touches the database Encore manages.
+- Generate migrations with `npx prisma migrate dev --name <change>`; Encore applies them on `encore run`, `encore test`, and deploy.
+- Add `"postinstall": "prisma generate"` to `package.json` so deploys build the client.
+- Prisma versions without driver adapters take the URL directly: `new PrismaClient({ datasources: { db: { url: db.connectionString } } })`.
 
 ## SQL Injection Protection
 

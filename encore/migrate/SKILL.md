@@ -1,459 +1,162 @@
 ---
 name: encore-migrate
-description: Migrate an existing backend application to Encore. Supports any source framework, targets Encore.ts or Encore Go. Drives a structured DISCOVER → PLAN → MIGRATE workflow with `migration-plan.md` tracking.
+description: Port an existing backend application to Encore.ts or Encore Go, from any language or framework. Drives a DISCOVER → PLAN → MIGRATE → FINISH workflow with a characterization test suite and a `migration-plan.md` that persists across sessions. Not for database schema migrations.
 when_to_use: >-
-  User wants to convert an existing app from Express, Fastify, Hono, Koa, NestJS, Restify, gin, Echo, Chi, Fiber, FastAPI, Flask, Django, Rails, Spring Boot, or vanilla Node.js / Go to Encore. Trigger phrases: "convert from Express", "port to Encore", "migrate this Fastify app", "rewrite my Hono backend", "switch from FastAPI to Encore", "I have an existing X app I'd like to convert".
+  User wants to move an existing backend to Encore: convert or port an Express, NestJS, Fastify, Hono, Koa, Next.js API routes, gin, Echo, Chi, FastAPI, Flask, Django, Rails, Spring Boot, or plain Node.js / Go server. Also use to resume a migration when `migration-plan.md` exists. Trigger phrases: "migrate this app to Encore", "port to Encore", "convert from Express", "rewrite my FastAPI backend in Encore", "forklift migration", "continue the migration".
 ---
 
 # Migrate to Encore
 
-This skill guides migrating any existing backend application to Encore, one migration unit at a time. It supports any source language or framework and targets both Encore.ts and Encore Go. A `migration-plan.md` summary file and `migration-plan/` directory of per-unit detail files are created at the Encore project root to track progress across sessions. This skill contains no Encore code examples — it delegates all Encore-specific implementation to the appropriate language-specific skills.
+Port an existing backend to Encore in **units**: each unit is one target Encore service, or one slice of a large service, together with its endpoints, tables, topics, cron jobs, and secrets. A **characterization suite** records how the source behaves over HTTP before any code moves and proves each unit afterwards. `migration-plan.md` at the Encore app root holds the state, so any session can resume.
 
-## Phase Detection
+Read [references/encore-concepts.md](references/encore-concepts.md) before planning: it describes how Encore differs from conventional frameworks and where source code usually needs restructuring. The language skills (`encore-api`, `encore-go-database`, and so on) hold the implementation details.
 
-Before doing anything, determine which phase to enter:
+Wherever this skill says to ask and the user has asked you to proceed without questions, choose a sensible default, record it in Decisions, and list every default in your next report.
 
-- **No `migration-plan.md` exists** in the Encore project directory → Start at **Phase 1: DISCOVER**
-- **`migration-plan.md` exists but no `migration-plan/` directory** → Resume at **Phase 2: PLAN** (discovery done, detail files not yet written)
-- **`migration-plan/` directory exists with pending units** (any unit in the summary with status `pending` or `in progress`) → Resume at **Phase 3: MIGRATE**
-- **All units in the summary are `migrated`, `skipped`, or `manual validation needed`** → Go to **Phase 4: COMPLETE**
+## Phase detection
 
-### Autonomous Mode
+Look for `migration-plan.md` in the Encore app (ask for its path if it is not the current directory):
 
-The confirmation stops in this workflow (confirming units in Phase 1, approving the first unit in Phase 2, picking each next unit in Phase 3) are the default. If the user asks to run the migration through without stopping ("just migrate it", "do them all", "don't ask"), skip those stops:
+- **Missing** → Phase 1: Discover.
+- **`## Status: discovering`** → resume at the first section still marked `TODO`.
+- **`## Status: planned`** → show the plan and ask for approval (Phase 2, step 5).
+- **`## Status: migrating`** → Phase 3. Report progress in one line ("3 of 7 units done, next: billing") and continue with the first unit that is `in progress` or `pending`. Once every unit is `done` or `blocked`, go to Phase 4: Finish.
+- **`## Status: finishing`** → Phase 4, at the open items it lists.
+- **`## Status: complete`** → the migration is finished. Report that and stop.
 
-- Pick sensible defaults for open decisions (see "Key Decisions" in Phase 1) and state each one to the user in a short list before writing code
-- Record every default in the `## Decisions` section of `migration-plan.md` so it can be revisited
-- Still ask before side-effecting HTTP calls against the source system, and never modify the source
-- Still validate every entity before marking it `migrated`
+## Phase 1: Discover
 
-### Resuming a Migration (Phase 3)
+### 1. Ask for the basics
 
-When `migration-plan.md` and `migration-plan/` exist with pending units:
+Ask in one message:
 
-1. Read `migration-plan.md` (summary only — do NOT read all detail files)
-2. Report current status to the user — for example: "3 of 7 units migrated, next suggested: billing (all its dependencies are migrated)"
-3. Ask the user what they would like to work on next, offering a suggestion based on the dependency order in the plan
+- Path to the source code, and where the Encore app should live.
+- Target: Encore.ts or Encore Go. Suggest TypeScript for Node.js sources and Go for Go sources. For any other language, say that the business logic gets rewritten, not ported.
+- Whether the source serves production traffic.
 
-## Phase 1 — Discover
+### 2. Inventory the source
 
-### 1. Gather Information
+Read the source and record every entity:
 
-Ask the user for:
+| Category | Record |
+|---|---|
+| Endpoints | Method, path, handler, request and response shape, auth requirement |
+| Data stores | Engine, tables or collections, ORM, existing migration files |
+| Background work | Queues and job workers, scheduled tasks, event publishers and subscribers |
+| Auth | Strategy (session, JWT, API key), where it is enforced, role or ownership checks |
+| Configuration | Every env var and config value, marked sensitive or not |
+| Global HTTP behavior | Middleware chain, CORS, path prefixes, trailing-slash handling, error response bodies, body size limits |
+| Non-JSON surfaces | File uploads, downloads, static files, WebSockets, SSE, redirects, HTML rendering |
+| Process state | In-memory caches, sessions, counters, local disk writes |
+| Tests and contracts | Test suites, OpenAPI specs, Postman/Hurl/Bruno collections |
+| Bugs and quirks | Behavior that looks wrong or surprising (500s on bad input, leaked fields, missing checks); these feed the behavior-target decision |
 
-- **Path to the source system** (the existing codebase being migrated)
-- **Local URL where the source system runs** (if applicable — needed for HTTP comparison validation later)
-- **Target language:** Encore.ts or Encore Go
+Endpoints are the hard part. Trace them from the router setup, not the file names, so that prefixes, mounted sub-routers, and routes added by plugins are not missed. Count them and state the count.
 
-### 2. Analyze the Source Codebase
+### 3. Separate frontend code
 
-Read the source codebase and inventory all entities:
+The migration covers backend code only. Mark frontend directories (React, Vue, Svelte, and so on) out of scope. If a full-stack framework holds server-side routes (Next.js `app/**/route.ts` or `pages/api`, Remix loaders and actions, Nuxt `server/`, SvelteKit `+server.ts`), list them and ask which ones move to Encore. Thin BFF or SSR data-loading routes often stay in the frontend framework.
 
-| Category | What to look for |
-|----------|-----------------|
-| Services / modules / domains | Distinct bounded contexts, separate deployable units, route groupings |
-| API endpoints | Method, path, handler function, request/response shapes |
-| Databases | Type (Postgres, MySQL, etc.), tables, schemas, migration files |
-| Pub/Sub topics and subscriptions | Topic names, publishers, subscribers, message shapes |
-| Cron jobs / scheduled tasks | Schedule expressions, handler functions |
-| Auth middleware / handlers | Authentication strategies, token validation, session management |
-| Secrets / environment variables | All referenced env vars and secrets, noting which are sensitive |
-| Global HTTP behavior | CORS settings, global path prefixes, global middleware, custom error filters / error response bodies |
-| Existing tests | Test files, which entities they cover, test framework used |
-| Frontend code | React/Vue/Angular components, static HTML, CSS, client-side JS — these are out of scope |
+### 4. Get the source running
 
-### 3. Identify Frontend Code
+The characterization suite records from the running source, so make it run locally: install the runtime version it needs (old dependencies often break on current releases), start its databases in disposable containers (or point file databases such as SQLite outside the source tree), and pick free ports. Record the exact start command in the plan. If it cannot be made to run, record why; Phase 2 step 4 covers that case.
 
-Full-stack repos and monorepos often mix backend and frontend code. The migration targets backend only — frontend code is out of scope.
+Then send requests to confirm each suspected bug and quirk from the inventory. Reading the code alone mispredicts some of them.
 
-**Detect frontend directories and mark them as out of scope.** Common indicators:
+### 5. Write the plan file
 
-| Pattern | Examples |
-|---------|----------|
-| Dedicated frontend directories | `frontend/`, `client/`, `web/`, `app/` (when it contains React/Vue/Angular), `src/components/`, `public/` |
-| Frontend config files | `next.config.js`, `vite.config.ts`, `nuxt.config.ts`, `angular.json`, `.svelte-kit/`, `remix.config.js` |
-| Package dependencies | `react`, `vue`, `@angular/core`, `svelte` in `package.json` |
+Create `migration-plan.md` from [references/plan-template.md](references/plan-template.md), with `## Status: discovering`, in the directory that will become the Encore app root. If that directory does not exist yet, create it; the app itself is set up in Phase 3. Fill in Source, Target, and Inventory now, and mark the remaining sections `TODO`. Discovery work survives a session break only once it is in this file.
 
-**Flag framework server-side code that *should* be migrated.** Some frontend frameworks embed backend logic that contains API endpoints, database queries, or server-side business logic:
+## Phase 2: Plan
 
-| Framework | Server-side locations | What to look for |
-|-----------|----------------------|-----------------|
-| Next.js | `pages/api/`, `app/*/route.ts` | API route handlers — these are backend endpoints |
-| Remix | `app/routes/*.tsx` (loader/action exports) | `loader` and `action` functions contain server logic |
-| Nuxt | `server/api/`, `server/routes/` | Server API routes |
-| SvelteKit | `src/routes/+server.ts`, `+page.server.ts` | Server endpoints and load functions |
-| Astro | `src/pages/*.ts` (non-`.astro`) | API endpoints |
+### 1. Choose the strategy
 
-When framework server-side code is found, **ask the user what to do with it.** Not all server-side code should move to Encore — sometimes a thin backend layer (BFF, auth proxy, SSR data fetching) should stay in the frontend framework alongside an Encore backend.
+Pick one and record why in Decisions:
 
-Present the user with what was found and ask:
+- **Forklift** (same language only, Node.js → Encore.ts or Go → Encore Go). Move the source into the Encore app and mount its existing router behind a raw **fallback route**, so every request that no Encore endpoint matches still reaches the old code. Each unit then replaces routes with Encore endpoints. The app runs and can deploy after every unit. Point the old data access at the Encore database's connection string so old and new code share one database. Prefer this whenever it is possible.
+- **Rebuild** (required across languages; also suits small apps). Build the Encore app beside the source. The source keeps serving until the cutover. A fallback route can proxy unmigrated routes to the running source over HTTP only if the two sides never need the same mutable data, because each system has its own database.
 
-> "I found <N> server-side routes in your <framework> app (e.g., `pages/api/users.ts`, `app/billing/route.ts`). These contain backend logic that *could* be migrated to Encore, but some teams prefer to keep a thin server layer in their frontend framework for things like SSR data fetching or BFF proxying. Would you like to:
-> 1. **Migrate all** server-side routes to Encore
-> 2. **Migrate some** — I'll list them and you pick which ones move
-> 3. **Keep all in <framework>** — only migrate the standalone backend code"
+Both are described in [references/encore-concepts.md](references/encore-concepts.md#incremental-migration-with-a-fallback-route).
 
-Based on the user's choice:
+Work in a git branch or a copy that keeps the original source runnable, so that the characterization suite can still record from it. Ask before any change to a source directory that is not under version control.
 
-- **Migrate all:** Extract the backend logic into migration units. Leave frontend rendering code out of scope. Note in the migration plan which source files contain mixed frontend/backend code.
-- **Migrate some:** Present the list of server-side routes and let the user select. Include selected routes in migration units, mark the rest as out of scope.
-- **Keep all:** Mark all framework server-side code as out of scope alongside the frontend. Only standalone backend code (Express routes, standalone API servers, etc.) enters migration units.
+### 2. Design the target services
 
-**Report to the user:** List all detected frontend directories and the decision made about framework server-side code. Example: "I found a Next.js frontend in `app/` — the React components are out of scope. You chose to migrate 8 of the 12 API routes from `pages/api/` to Encore and keep 4 thin proxy routes in Next.js."
+Invoke `encore-architecture` to decide the target services, which service owns each table, and where services communicate through APIs or through Pub/Sub. Start from the source's existing modules but follow the skill's guidance: one service is the right answer for many monoliths. Record the services in the plan.
 
-### 4. Identify Key Decisions
+### 3. Settle the cross-cutting decisions
 
-Some choices affect every unit. Surface them before planning, and record the answers in the `## Decisions` section of `migration-plan.md`:
+Ask about each item that applies, then record every answer in Decisions:
 
-- **Behavior target:** Older codebases often have bugs (missing ownership checks, fields that are never saved, wrong filters). Ask whether to reproduce the source behavior exactly or fix clear bugs. If the source implements a published API contract (OpenAPI spec, RealWorld, a partner integration), fixing toward that contract is usually right. Whatever is chosen, list each intentional divergence in the unit's Notes column.
-- **Error response format:** Encore's typed `api()` endpoints always return errors as `{code, message, details}`, and request validation failures are always HTTP 400. If clients depend on a different error body (e.g. `{"errors": {...}}`) or status (e.g. 422), the options are: accept Encore's format (field errors can go in `details`), or use `api.raw` for the affected routes, which gives up typed requests and generated clients. Ask which the user prefers.
-- **CORS:** If the source enables CORS, translate it to `global_cors` in `encore.app` rather than leaving it to Encore's defaults.
+- **Behavior target.** Default to reproducing the source, so that existing clients keep working, and fixing only clear bugs (500s on bad input, leaked fields, missing ownership checks, wrong counts). If the source claims a published contract (OpenAPI, a partner integration, RealWorld) but differs from it systematically, list the differences and ask before moving toward the contract.
+- **Error responses.** Typed Encore endpoints return `{code, message, details}` and status 400 for validation failures. If clients depend on another body or status (such as 422), choose one: accept Encore's format, keep the source's format on typed endpoints (a middleware in TS, response fields in Go; see [Keeping custom error responses](references/encore-concepts.md#keeping-custom-error-responses)), or use raw endpoints for those routes. Validation failures stay 400 either way, unless the handler does the validation itself.
+- **Data store.** Encore SQL databases are PostgreSQL. A MySQL or SQLite source needs the steps in [Changing the database engine](references/encore-concepts.md#changing-the-database-engine). A store without an Encore primitive (MongoDB, DynamoDB, Elasticsearch) stays external, reached through a secret connection string.
+- **Production data.** Moving existing production data into Encore's databases is outside this skill. If the source holds production data, note in Decisions that a data migration must happen before cutover, and leave its design to the user.
 
-### 5. Group Entities into Migration Units
+### 4. Build the characterization suite
 
-Group the discovered entities into migration units using these heuristics in priority order:
+Write black-box HTTP scenarios that run against a base URL, and store them in the Encore repo under `migration/characterization/`. Follow [references/characterization-suite.md](references/characterization-suite.md) for the layout, the record and verify modes, and normalizing.
 
-1. **Existing service boundaries** — If the source app already has services, modules, or packages, use those as the starting point for chunks
-2. **URL path prefixes** — Group endpoints sharing a path prefix (e.g., `/users/*`, `/billing/*`)
-3. **Shared database tables** — Endpoints that read/write the same tables belong together
-4. **Shared types/models** — Endpoints that share request/response types or domain models
+- Cover every endpoint, with at least one success case and the main error cases (not found, unauthenticated, invalid input).
+- Each scenario creates the data it reads through the API, so that it runs against an empty database on either system.
+- Compare status, the full response body, and the headers clients rely on (`Content-Type`, `Location`, `Set-Cookie`, pagination). Normalize generated values such as IDs and timestamps.
+- Encode each deviation in Decisions as a named override of the source's recorded response (for example, D3: status 404 instead of 500). The suite applies overrides only when it runs against the Encore app, so its target stays at 100% against both systems.
+- Record expected responses from the running source. Recording writes data, so run it against a local instance with a disposable database, and ask before pointing it at anything shared. If the source cannot run, use an existing contract suite (Hurl, Postman/Newman, Schemathesis against an OpenAPI spec). If neither exists, write expected responses from reading the code and tell the user that this is weaker evidence.
 
-**Chunk sizing:** Aim for 5-15 endpoints per migration unit. If a group exceeds ~15 endpoints, suggest splitting it further (e.g., `users-crud` and `users-admin`). If a group has fewer than 3 endpoints, consider merging it with a related chunk.
+Use Vitest for Encore.ts or a Go test for Encore Go. Hurl is a good fit when a dependency is acceptable.
 
-**Cross-cutting concerns** get their own migration units: auth, secrets, and standalone infrastructure (pub/sub topics, cron jobs not tightly coupled to one service) are separate units since they follow different dependency tiers.
+The suite is done when every endpoint in the inventory has a scenario and the suite passes against the source twice in a row.
 
-**For monoliths with no clear boundaries:** Fall back to URL path prefix grouping, then ask: "These groupings are based on URL paths — would you like to reorganize them by domain?"
+### 5. Order the units and get approval
 
-### 6. Present the Migration Units
+Order the units:
 
-Present the migration units to the user as a summary table:
+0. When forklifting, unit 0 sets up the app with only the fallback route. It proves the database, secrets, and router wiring before any endpoint changes.
+1. Auth first, because an Encore app has a single auth handler and protected endpoints depend on it.
+2. Then services that others call or subscribe to, before their callers and subscribers.
+3. Within a tier, the smallest unit first.
 
-| Unit | Endpoints | DB Tables | Other | Complexity |
-|------|-----------|-----------|-------|------------|
+Size units so that one fits in a session. An app with one target service and around 20 endpoints or fewer is a single unit.
 
-Include total counts (e.g., "7 migration units covering 42 endpoints, 3 databases"). For each unit, assess overall migration complexity:
+Set `## Status: planned`. Present the strategy, services, decisions, and unit order in one message, and wait for approval. This is the only required stop. If the user asked you to proceed without questions, present the plan and continue.
 
-- **Low** — direct Encore equivalents exist, straightforward mapping
-- **Medium** — requires restructuring or has partial Encore equivalents
-- **High** — no direct equivalent, needs redesign or custom solution
+On approval, set `## Status: migrating`.
 
-Offer to show the detail of any unit if the user wants to inspect what's inside before confirming.
+## Phase 3: Migrate
 
-### 7. Show Code Previews
+### Set up the app
 
-For 2-3 representative entities (pick a mix of simple and complex from different units), show a short "before and after" preview of what the source code looks like now and what the Encore version will look like. Use the appropriate language-specific skill to inform the preview. Keep previews brief — one endpoint, one query, or one topic declaration is enough per preview.
+If the target directory has no `encore.app` yet:
 
-### 8. Confirm with the User
+- **Forklift:** add Encore to the copied source and mount the old router on the fallback route, following [references/encore-concepts.md](references/encore-concepts.md#incremental-migration-with-a-fallback-route). TS needs `encore.app`, an `encore.service.ts`, and the `encore.dev` dependency. Go needs `encore.app`, a service package in place of `package main`, and the `encore.dev` module. Unit 0 is done when the characterization suite passes through the fallback with `CHAR_TARGET=source`; deviations normally appear only once Encore endpoints replace routes. If source tests stop working because the data layer changed, record that in the unit-0 evidence.
+- **Rebuild:** `encore app create` makes a new directory, so create the app in a temporary directory and move its files into the target: `encore app create <name> --lang=ts --example=ts/hello-world` (Go: `--lang=go --example=hello-world`, then delete the example's `hello` service, whose `/!path` fallback conflicts with your own). Without an Encore Cloud login, add `--platform=false` and link the app later with `encore-deploy`. For a rebuild across languages, check the source behaviors listed in [references/encore-concepts.md](references/encore-concepts.md#behavior-that-lives-in-libraries).
 
-Ask the user to confirm the migration units are correct. Specifically ask:
+### Migrate the units
 
-- "Are there any services, endpoints, or other entities I missed?"
-- "Would you like to split, merge, or rename any of these migration units?"
-- "Is there anything you want to exclude from the migration?"
+For each unit in order:
 
-### 9. Iterate if Needed
+1. Set it to `in progress` in the plan.
+2. Implement it using the language skills: `encore-service`, `encore-api`, `encore-auth`, `encore-database`, `encore-pubsub`, `encore-cron`, `encore-bucket`, `encore-cache`, `encore-secret`, `encore-webhook`, `encore-logging`, or their `encore-go-*` equivalents. When forklifting, delete the replaced routes from the old router so that the fallback no longer serves them.
+3. Port source tests whose assertions describe business behavior, using `encore-testing` or `encore-go-testing`. Tests that exercise framework wiring (routing, DI containers, request mocks) are covered by the characterization suite instead.
+4. Prove the unit. It is `done` only when all of these hold in the current session:
+   - `encore run` starts with no errors.
+   - `encore test` passes.
+   - Every characterization scenario for the unit's endpoints passes against the Encore app, apart from deviations listed in Decisions.
+5. Record the evidence in the unit's section of the plan: commands run, pass counts, and any deviation with the reason. Set the unit to `done`.
 
-If the user identifies missing entities or wants to adjust chunk boundaries, update the units and re-present the summary table. Repeat until the user confirms the migration units are accurate.
+When a unit cannot be proven (missing credentials, an external dependency that cannot run locally, or a decision only the user can make), set it to `blocked` with the reason, and continue with units that do not depend on it.
 
-## Phase 2 — Plan
+Report each finished unit in one line and go on to the next. Pause between units only if the user asked to review each one. Before touching a shared or production instance of the source in any way that has side effects (HTTP calls that write, commands against its databases or queues), ask first. The disposable local instance from Phase 1 needs no permission.
 
-### 1. Check for Existing Encore Project
+## Phase 4: Finish
 
-Check if an Encore project already exists at the target path (look for `encore.app` file). If yes, confirm with the user that this is the correct project. If no, help create one by invoking the `encore-getting-started` skill (or `encore-go-getting-started` for Go).
+Set `## Status: finishing`, and add a `## Finish` section to the plan that lists the open items below.
 
-### 2. Gather Target Information
+1. Run the full characterization suite and `encore test` once more, and report the results.
+2. List every `blocked` unit and every deviation in Decisions. The migration is complete only when the user accepts each one.
+3. When forklifting, check the old router for remaining routes. Once every route has an Encore endpoint, remove the fallback route and the old router. List docs, env templates, CI workflows, and scripts that still describe the old runtime.
+4. If frontend code calls this backend, suggest `encore-frontend` to generate a typed client and update base URLs.
+5. Offer to deploy with `encore-deploy`. Remind the user of any production data migration recorded in Decisions.
+6. Suggest deleting `migration-plan.md` and `migration/characterization/`, or keeping the suite as regression tests.
 
-Ask the user for:
-
-- **Path to the Encore project** (where the migrated code will live)
-- **Local URL where the Encore app will run** (default: `http://localhost:4000`)
-
-### 3. Determine Dependency Order
-
-Order migration units based on dependencies. Follow this tier order:
-
-1. **Secrets / config** — no dependencies, needed by everything
-2. **Databases** — schema and migrations must exist before services can use them
-3. **Auth** — auth handlers are needed before protected endpoints
-4. **Leaf units** — units with no cross-service dependencies
-5. **Dependent units** — units that depend on already-migrated units
-6. **Pub/Sub topics and subscriptions** — often depend on services being in place
-7. **Cron jobs** — typically depend on service endpoints
-
-Within each tier, suggest the simplest unit first (fewest endpoints, smallest schema, least complexity).
-
-### 4. Write migration-plan.md (Summary)
-
-Write the `migration-plan.md` summary file to the Encore project root using the template in the "migration-plan.md Format" section below. Fill in all migration units with status `pending`.
-
-### 5. Write Detail Files
-
-Create a `migration-plan/` directory at the Encore project root. Write one detail file per migration unit using the template in the "Detail File Format" section below. Each file is named `migration-plan/<unit-name>.md`.
-
-### 6. Propose First Unit
-
-Propose the first migration unit, explaining why it should go first based on the dependency order. Wait for user approval before proceeding to Phase 3.
-
-## Phase 3 — Migrate (Loop)
-
-### 1. Identify Next Unit
-
-Read `migration-plan.md` (summary only) and identify the next pending migration unit based on the dependency order.
-
-### 2. Suggest and Confirm
-
-Suggest the next unit to migrate and explain why this one is next (e.g., "This unit has no dependencies on unmigrated units" or "The database must exist before we can migrate the service that uses it"). Ask the user if they want to proceed with this unit or pick a different one.
-
-### 3. Load the Unit Detail
-
-Read the detail file for the chosen unit (`migration-plan/<unit-name>.md`). Do NOT read detail files for other units.
-
-### 4. Migrate Each Entity
-
-For each entity in the unit:
-
-#### a. Implement
-
-Invoke the appropriate language-specific skill based on the entity type and target language:
-
-| Migrating... | Encore.ts skill | Encore Go skill |
-|---|---|---|
-| Service structure | `encore-service` | `encore-go-service` |
-| API endpoints | `encore-api` | `encore-go-api` |
-| Auth | `encore-auth` | `encore-go-auth` |
-| Database + migrations | `encore-database` | `encore-go-database` |
-| Pub/Sub topics & subscriptions | `encore-pubsub` | `encore-go-pubsub` |
-| Cron jobs / scheduled tasks | `encore-cron` | `encore-go-cron` |
-| Object storage / file uploads | `encore-bucket` | `encore-go-bucket` |
-| Caching (Redis) | `encore-cache` | `encore-go-cache` |
-| Secrets / API keys / credentials | `encore-secret` | `encore-go-secret` |
-| Webhooks (Stripe, GitHub, etc.) | `encore-webhook` | `encore-go-webhook` |
-| Tests | `encore-testing` | `encore-go-testing` |
-
-#### b. Migrate Tests
-
-If the source entity has associated tests, migrate them using the appropriate testing skill (`encore-testing` or `encore-go-testing`). Adapt test assertions to match Encore API patterns. If the source entity has no tests, note this in the detail file.
-
-#### c. Validate
-
-Three validation layers are applied to each entity before it can be marked as `migrated`. Every entity must go through all applicable layers.
-
-##### Layer 1: Test Migration (Primary)
-
-- When migrating an entity, also migrate its associated tests
-- Use the `encore-testing` skill (or `encore-go-testing` for Go) to implement the tests
-- Run the tests — they must pass before the entity can be marked as `migrated`
-- If the source entity had no tests, note "no source tests" in the plan and rely on the other layers
-
-##### Layer 2: HTTP Comparison (Endpoints Only, Best-Effort)
-
-When both systems are running locally, call the same endpoint on both the source system and the Encore app, then compare:
-
-- **HTTP status code** — must match
-- **Response body structure** — keys and shape must match (values may differ for dynamic data like timestamps or IDs)
-
-**Skip this layer when:**
-
-- The endpoint requires auth credentials the agent cannot obtain (ask the user — allow skip)
-
-**If a request to either system fails to connect**, ask the user to start the app before retrying. Do not silently skip — the user may have simply forgotten to start it.
-
-**Always ask the user before making any HTTP call that could have side effects.**
-
-##### Layer 2 Alternative: Contract Test Suite
-
-If the source system cannot practically be run (unavailable database engine, toolchain too old to install, external dependencies), or the behavior target intentionally diverges from the source, HTTP comparison against the source is not meaningful. If the API has an external contract test suite (Hurl, Postman/Newman, Bruno, Schemathesis against an OpenAPI spec, a consumer's integration tests), run it against the Encore app instead:
-
-- Run the full suite with failures continuing (e.g. `hurl --test --continue-on-error --report-json`) so every failing assertion is visible, not only the first per file
-- Categorize failures. Separate expected deviations from recorded decisions (such as the error response format) from real behavior gaps, and fix the gaps
-- Record the pass/fail counts and the categories in the Validation Log
-
-Note in the plan why HTTP comparison against the source was skipped.
-
-##### Layer 3: Verification-Before-Completion Gate
-
-Before marking ANY entity as `migrated`, the agent MUST have fresh evidence from the current session:
-
-- Test command output showing pass count and exit code, OR
-- HTTP comparison results showing a match, OR
-- Explicit user approval to skip validation
-
-**Rules:**
-
-- No "should work", "looks correct", or "seems fine" — only evidence-backed claims
-- The agent must state exactly what it verified and what the output was
-- If evidence is insufficient, mark the entity as `manual validation needed`, not `migrated`
-- Stale evidence from a previous session does not count — re-run validation if resuming
-
-#### d. Update the Detail File
-
-Update the entity's status in the unit's detail file (`migration-plan/<unit-name>.md`) and record validation evidence in that file's Validation Log table.
-
-#### e. Update the Summary
-
-When all entities in a unit are complete, update the unit's status in `migration-plan.md` to `migrated`. If some entities are pending, set the unit status to `in progress`.
-
-### 5. Continue or Pause
-
-After completing a unit, ask "What would you like to migrate next?" and suggest the next unit based on dependency order.
-
-### 6. Batching
-
-The default is one unit at a time. If the user says "keep going", "do them all", or similar, batch multiple units but still validate each entity individually before marking it as migrated.
-
-## Phase 4 — Complete
-
-When all units in `migration-plan.md` are `migrated`, `skipped`, or `manual validation needed`:
-
-1. **Present a final summary** from `migration-plan.md`:
-   - Total units migrated
-   - Units marked as `manual validation needed` — read those specific detail files and list the entities that need attention with reasons
-   - Units skipped (list them with reasons)
-2. **Suggest running the full test suite** one final time to catch any integration issues
-3. **Note any manual validation items** that still need human attention
-4. **If the source system had frontend code**, suggest using the `encore-frontend` skill to reconnect the frontend to the new Encore backend (generate a typed API client, configure CORS, update base URLs)
-5. **Suggest removing `migration-plan.md` and `migration-plan/`** from the project once the user is satisfied with the migration
-
-## Asking Questions
-
-Ask the user before acting when:
-
-- **Service boundaries are unclear** — e.g., "These route files could be 1 service or 3 — how would you like to split them?"
-- **No clean Encore equivalent exists** — e.g., Redis caching layer, custom middleware chains, WebSocket handlers
-- **Multiple valid migration strategies exist** — present the options with tradeoffs
-- **Before making any HTTP call that could have side effects** — always ask first
-- **Source code is ambiguous** — when the agent is not confident about what the code does, ask rather than guess
-- **Source system appears to have changed** — if files referenced in a detail file no longer exist or have changed significantly
-
-## Source System Protection
-
-The source system must never be modified during migration. Follow these rules:
-
-- **Never modify source files** — read them, don't edit them
-- **Never delete source files** — even after migration is complete
-- **Never write to the source directory** — all output goes to the Encore project
-- **Never run destructive commands against the source system** (drop tables, delete queues, etc.)
-- **Ask before any HTTP call that mutates state** on the source system (POST, PUT, DELETE)
-
-If the user asks to "clean up" or "remove" the old system, confirm explicitly before taking any action. The source system may still be serving production traffic.
-
-## Edge Cases
-
-### Moving Endpoints Between Units
-
-If the user realizes an endpoint belongs in a different migration unit:
-
-1. Remove the endpoint row from the source unit's detail file
-2. Add it to the target unit's detail file
-3. Update endpoint counts in `migration-plan.md`
-
-### Splitting a Unit Mid-Migration
-
-If a unit turns out to be too large while working on it:
-
-1. Create a new detail file for the split-off portion (`migration-plan/<new-unit>.md`)
-2. Move pending entities to the new file (already-migrated entities stay in the original)
-3. Add the new unit to the `migration-plan.md` summary table
-4. Insert it in the dependency order (same tier, after the original)
-
-### Monolith to Multiple Encore Services
-
-A single migration unit might map to multiple Encore services. The detail file tracks the source grouping, but the "Notes" column can indicate the target Encore service. Ask during migration if the unit maps to one service or should be split across Encore services.
-
-### Source Code Changed Since Discovery
-
-If files referenced in a detail file no longer exist or have changed significantly since discovery:
-
-1. Flag the discrepancy to the user
-2. Ask whether to update the detail file with the new state or skip the affected entities
-3. If updating, re-assess complexity and adjust the plan accordingly
-
-## Troubleshooting
-
-Common issues during migration and how to resolve them:
-
-| Problem | Cause | Resolution |
-|---------|-------|------------|
-| Import errors across services | Direct imports between services | Use `~encore/clients` (TS) or service client packages (Go) instead |
-| Database migration fails | Incompatible SQL syntax | Check Encore uses PostgreSQL — adapt MySQL/SQLite syntax |
-| Pub/Sub messages not received | Subscription not registered | Ensure subscription is declared at package level, not inside a function |
-| Cron job not firing | Invalid schedule expression | Encore uses standard cron expressions — verify syntax |
-| `encore run` errors on infrastructure | Infrastructure declared inside functions | Move all infrastructure declarations to package level |
-| Source and Encore responses differ | Missing business logic or different error handling | Compare response shapes carefully, check edge cases |
-| Cannot validate endpoint | Auth required or side effects | Ask user for test credentials, or mark as `manual validation needed` |
-| Clients expect 422 or a custom error body | Encore's typed endpoints use a fixed error envelope and return 400 for validation errors | Record as a decision: accept Encore's format, or use `api.raw` for those routes |
-| Browser clients fail after migration | Source enabled CORS globally | Add `global_cors` to `encore.app` |
-| Source cannot be run for HTTP comparison | Old toolchain or unavailable infrastructure | Use a contract test suite instead (see Layer 2 Alternative) |
-
-## migration-plan.md Format
-
-Use this exact template for the summary plan file. Fill in values from the discovery phase.
-
-```markdown
-# Migration Plan
-
-## Source System
-- **Path:** <source system path>
-- **URL:** <source system local URL>
-- **Framework:** <detected framework>
-- **Language:** <detected language>
-
-## Frontend (Out of Scope)
-- **Detected:** <Yes/No>
-- **Directories:** <list of frontend directories, or "None">
-- **Framework:** <frontend framework if detected, or "N/A">
-- **Note:** <any framework server-side code that WAS included in migration units>
-
-## Target System
-- **Path:** <encore project path>
-- **URL:** <encore local URL>
-- **Type:** Encore.ts | Encore Go
-
-## Decisions
-- **Behavior target:** <reproduce source exactly | fix bugs toward <contract>>
-- **Error format:** <Encore native | api.raw for <routes>>
-- **CORS:** <source setting → encore.app global_cors>
-- <any other default chosen in autonomous mode>
-
-## Migration Units
-
-| Unit | Endpoints | DB Tables | Other | Complexity | Status |
-|------|-----------|-----------|-------|------------|--------|
-
-## Dependency Order
-1. <ordered list of migration units>
-```
-
-**Status values:** `pending`, `in progress`, `migrated`, `skipped`, `manual validation needed`
-
-**Complexity values:** `Low` (direct equivalent), `Medium` (requires restructuring), `High` (needs redesign)
-
-## Detail File Format
-
-Create one file per migration unit at `migration-plan/<unit-name>.md`. Use this exact template:
-
-```markdown
-# Migration Unit: <unit-name>
-
-## Source
-- **Files:** <list of source files in this unit>
-- **Depends on:** <other migration units, with their current status>
-
-## Endpoints
-| Endpoint | Method | Path | Status | Notes |
-|----------|--------|------|--------|-------|
-
-## Database
-| Table | Complexity | Status | Notes |
-|-------|------------|--------|-------|
-
-## Tests
-- **Source tests:** <test files and count>
-- **Migrated:** <count of migrated tests>
-
-## Validation Log
-| Entity | Tests | HTTP Match | Evidence | Status |
-|--------|-------|------------|----------|--------|
-```
-
-Not all sections are required — omit sections that don't apply to a given unit (e.g., a secrets unit won't have Endpoints or Database sections).
+Once the user accepts every open item, set `## Status: complete`. Leave the status at `finishing` until the user has accepted them; accepting on the user's behalf does not count.
