@@ -70,6 +70,6 @@ Flags: `--port=<n>` changes the API port (default 4000). `--listen=0.0.0.0:4000`
 
 - Prefer `encore check` to confirm a change works. It can't leave a process running.
 - Stop background runs you started.
-- Agents can list services and endpoints, call endpoints, read traces, and query databases through the local Encore MCP server: `encore mcp run --app=<app-id>`.
+- Agents can list services and endpoints, call endpoints, read traces, and query databases through the local Encore MCP server. To set it up, see `encore-mcp`.
 - For automated tests, use `encore-testing` or `encore-go-testing`.
 - Docs: https://encore.dev/docs/cli/cli-reference and https://encore.dev/docs/dev-dash

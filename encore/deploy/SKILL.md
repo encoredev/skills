@@ -51,7 +51,7 @@ If no such line appears, nothing was deployed:
 
 **Pushing to GitHub:** git prints nothing from Encore. Check **Deployments** in the Cloud Dashboard.
 
-Either way, the push returns as soon as the deploy starts. Follow progress in the Cloud Dashboard, or through the Encore Cloud MCP server (`https://api.encore.dev/mcp`), which lists environments, deploys, builds, and their logs. Each environment's API is served at `https://<env>-<app-id>.encr.app`, unless it has a custom domain. `encore logs --env=<env>` streams its logs.
+Either way, the push returns as soon as the deploy starts. Follow progress in the Cloud Dashboard, or through the Encore Cloud MCP server (`https://api.encore.dev/mcp`, set up with `encore-mcp`), which lists environments, deploys, builds, and their logs. Each environment's API is served at `https://<env>-<app-id>.encr.app`, unless it has a custom domain. `encore logs --env=<env>` streams its logs.
 
 ### Deploy again
 

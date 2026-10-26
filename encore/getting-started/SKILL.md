@@ -107,3 +107,4 @@ encore check 'curl /goodbye/world'
 | Add Pub/Sub, cron jobs, buckets, secrets, or caching | `encore-pubsub`, `encore-cron`, `encore-bucket`, `encore-secret`, `encore-cache` |
 | Write tests | `encore-testing` |
 | Deploy: commit, then `git push encore` | `encore-deploy` |
+| Let the agent inspect the app and its deploys through MCP | `encore-mcp` |

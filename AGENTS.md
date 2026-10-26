@@ -16,6 +16,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 | `encore-login` | log in, sign up, encore auth login, not logged in, auth key, ENCORE_AUTH_KEY, CI login |
 | `encore-create-app` | new app, encore app create, scaffold, template, --example, encore app init, encore app clone |
 | `encore-run` | run locally, encore run, encore check, localhost:4000, local dashboard, port in use, background run |
+| `encore-mcp` | MCP, encore mcp, local MCP, Cloud MCP, api.encore.dev/mcp, encore-local, encore-cloud, connect Claude Code or Cursor, API key |
 | `encore-architecture` | architecture, service boundaries, monolith vs microservices, split or merge, API vs Pub/Sub, data ownership |
 | `encore-deploy` | deploy, git push encore, GitHub deploy, Encore Cloud, staging, production, deploy again, redeploy, deploy failed, no encore remote, link app, encore app clone |
 

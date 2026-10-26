@@ -28,6 +28,7 @@
         "./skills/install",
         "./skills/logging",
         "./skills/login",
+        "./skills/mcp",
         "./skills/go-api",
         "./skills/go-auth",
         "./skills/go-bucket",
