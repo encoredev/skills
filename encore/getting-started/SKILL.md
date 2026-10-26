@@ -1,8 +1,8 @@
 ---
 name: encore-getting-started
-description: Take a new Encore.ts project from zero to a running endpoint. Install the CLI, log in, create the app, run it, and add a first endpoint, with a pointer to the skill for each step. Not for architecture or feature questions.
+description: Take a new Encore.ts project from zero to a running endpoint. Install the CLI, log in, create the app, run it, connect Encore's MCP servers, and add a first endpoint, with a pointer to the skill for each step. Not for architecture or feature questions.
 when_to_use: >-
-  User has no Encore project yet and wants to get started with Encore.ts end to end: install, create a hello-world app, and run their very first `encore run`. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, or `encore-run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features. Those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "get started with Encore", "hello world", "just starting out".
+  User has no Encore project yet and wants to get started with Encore.ts end to end: install, create a hello-world app, run their very first `encore run`, and connect Encore's MCP servers. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, or `encore-run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features. Those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "get started with Encore", "hello world", "just starting out".
 ---
 
 # Getting Started with Encore.ts
@@ -57,7 +57,28 @@ encore check 'curl /hello/world'
 
 To keep the app running for the user, start `encore run` in the background, never in the foreground (`encore-run`). The API is at `http://localhost:4000`, and the local development dashboard, with a trace of every request, is at `http://localhost:9400`.
 
-### 5. Add an endpoint
+### 5. Connect Encore's MCP servers
+
+The MCP servers let you inspect and call the app while you build it, and read its deploys once it's on Encore Cloud. If the user created the app with `--llm-rules=<tool>`, the local server may already be configured for that tool: check before adding it again.
+
+1. **Local server:** from the app's root directory, run `encore mcp start`. It prints `MCP stdio Command: encore mcp run --app=<app-id>`. Add that command to the user's tool. In Claude Code:
+
+   ```bash
+   claude mcp add --transport stdio encore-local -- encore mcp run --app=<app-id>
+   ```
+
+2. **Encore Cloud server** (only if you logged in at step 2):
+
+   ```bash
+   claude mcp add --transport http --scope user encore-cloud https://api.encore.dev/mcp
+   ```
+
+   Then ask the user to authenticate: in Claude Code, they run `/mcp`, select `encore-cloud`, and choose **Authenticate**.
+3. **Cursor, VS Code, other tools, or an API key instead of signing in:** see `encore-mcp`.
+
+The user's tool loads the new servers when it restarts. Tell the user, and go on to step 6 in the meantime.
+
+### 6. Add an endpoint
 
 The template has one service, `hello`. A directory with an `encore.service.ts` file is a service, and every file below it belongs to that service:
 
@@ -96,7 +117,7 @@ Check it:
 encore check 'curl /goodbye/world'
 ```
 
-### 6. Next steps
+### 7. Next steps
 
 | To | Load |
 |----|------|
@@ -107,4 +128,3 @@ encore check 'curl /goodbye/world'
 | Add Pub/Sub, cron jobs, buckets, secrets, or caching | `encore-pubsub`, `encore-cron`, `encore-bucket`, `encore-secret`, `encore-cache` |
 | Write tests | `encore-testing` |
 | Deploy: commit, then `git push encore` | `encore-deploy` |
-| Let the agent inspect the app and its deploys through MCP | `encore-mcp` |
