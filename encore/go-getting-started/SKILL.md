@@ -9,6 +9,8 @@ when_to_use: >-
 
 ## Instructions
 
+This guide is for Encore Go. For Encore.ts, use `encore-getting-started`. If the user hasn't said which language they want, ask.
+
 Do the steps in order. Each step says how to tell it worked. If a step fails, load the skill it names.
 
 ### 1. Check the CLI
