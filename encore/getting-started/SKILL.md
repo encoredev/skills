@@ -40,7 +40,9 @@ cd my-app
 ```
 
 - **Ends with `Successfully created app my-app!`:** go to step 4.
-- **Always pass `--example`.** Without it, the CLI creates an empty Go app. For an empty TypeScript app, use `--example=ts/empty`. Other templates and errors: `encore-create-app`.
+- **Keep the `--example` flag.** Without it, the CLI creates a Go app instead of a TypeScript one.
+- **Empty app:** for an app with no services, use `--example=ts/empty` instead.
+- **Other templates and errors:** see `encore-create-app`.
 
 ### 4. Check that it runs
 

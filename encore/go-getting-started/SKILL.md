@@ -40,7 +40,8 @@ cd my-app
 ```
 
 - **Ends with `Successfully created app my-app!`:** go to step 4.
-- **Always pass `--example`.** For an empty app with no services, use `--example=empty`. Other templates and errors: `encore-create-app`.
+- **Empty app:** for an app with no services, use `--example=empty` instead.
+- **Other templates and errors:** see `encore-create-app`.
 
 ### 4. Check that it runs
 
