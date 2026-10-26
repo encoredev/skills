@@ -39,7 +39,7 @@ encore app create my-app --example=hello-world      # Encore.go
 encore app create my-app --example=empty            # Encore.go, empty
 ```
 
-- **Always pass `--example`.** Agents usually run commands without a terminal, so the CLI doesn't prompt. With no `--example`, it creates an empty Go app, even for a TypeScript project.
+- **Always pass `--example`.** In a terminal, the CLI asks for a language and template when it's missing. Without a terminal, which is how agents usually run commands, it can't ask, and creates an empty Go app, even for a TypeScript project.
 - **Name:** lowercase letters, digits, and single dashes, at most 50 characters, not starting or ending with a dash. It becomes the directory, which must not exist yet.
 - **It takes a while:** it downloads the template and runs `npm install` or `go get`. Wait for it to finish.
 

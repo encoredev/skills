@@ -40,7 +40,7 @@ cd my-app
 ```
 
 - **Ends with `Successfully created app my-app!`:** go to step 4.
-- **Keep the `--example` flag.** Without it, the CLI creates a Go app instead of a TypeScript one.
+- **Keep the `--example` flag.** In a terminal, the CLI asks for a language and template when it's missing. Without a terminal, which is how agents usually run commands, it can't ask, and creates an empty Go app instead.
 - **Empty app:** for an app with no services, use `--example=ts/empty` instead.
 - **Other templates and errors:** see `encore-create-app`.
 
