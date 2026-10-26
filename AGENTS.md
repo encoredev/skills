@@ -12,6 +12,10 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 
 | Skill | Trigger Keywords |
 |-------|------------------|
+| `encore-install` | install Encore, encore: command not found, PATH, update CLI, encore version update, Docker not running |
+| `encore-login` | log in, sign up, encore auth login, not logged in, auth key, ENCORE_AUTH_KEY, CI login |
+| `encore-create-app` | new app, encore app create, scaffold, template, --example, encore app init, encore app clone |
+| `encore-run` | run locally, encore run, encore check, localhost:4000, local dashboard, port in use, background run |
 | `encore-architecture` | architecture, service boundaries, monolith vs microservices, split or merge, API vs Pub/Sub, data ownership |
 | `encore-deploy` | deploy, git push encore, GitHub deploy, Encore Cloud, staging, production, deploy again, redeploy, deploy failed, no encore remote, link app, encore app clone |
 
@@ -19,7 +23,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 
 | Skill | Trigger Keywords |
 |-------|------------------|
-| `encore-getting-started` | brand new, first time, install CLI, encore app create, hello world |
+| `encore-getting-started` | brand new, first time, get started, hello world, just starting out |
 | `encore-logging` | structured logging, log.info, log.error, log fields, log levels, noisy logs |
 | `encore-api` | typed endpoint, route, REST, GET/POST, request/response, validation |
 | `encore-webhook` | webhook, /webhooks/*, raw HTTP, api.raw, Stripe, GitHub, signature |
@@ -40,7 +44,7 @@ Encore.ts is a TypeScript backend framework where your code defines infrastructu
 
 | Skill | Trigger Keywords |
 |-------|------------------|
-| `encore-go-getting-started` | brand new Go, first time, install CLI, encore app create, hello world |
+| `encore-go-getting-started` | brand new Go, first time, get started, hello world, just starting out |
 | `encore-go-logging` | go, structured logging, rlog.Info, rlog.Error, log fields, noisy logs |
 | `encore-go-api` | go, typed endpoint, //encore:api, route, REST, GET/POST, request/response |
 | `encore-go-webhook` | go, webhook, /webhooks/*, //encore:api raw, Stripe, GitHub, signature |

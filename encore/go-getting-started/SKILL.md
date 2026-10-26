@@ -1,38 +1,28 @@
 ---
 name: encore-go-getting-started
-description: Bootstrap a brand-new Encore Go project from zero. Only for first-time CLI install and `encore app create` — not for architecture or feature questions.
+description: Walk through a first Encore Go app from zero, from installing the CLI to a running endpoint, with pointers to the skills for each step. Not for architecture or feature questions.
 when_to_use: >-
-  User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create` for a Go app, scaffold a hello-world Go service, or run their very first `encore run`. SKIP if the user already has an Encore Go project and is asking about architecture, services, endpoints, or specific features — those go to `encore-go-service`, `encore-go-api`, `encore-go-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world Go", "just starting out".
+  User has no Encore project yet and wants to get started with Encore Go end to end: install, create a hello-world Go service, and run their very first `encore run`. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, or `encore-run`. SKIP if the user already has an Encore Go project and is asking about architecture, services, endpoints, or specific features — those go to `encore-go-service`, `encore-go-api`, `encore-go-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "get started with Encore Go", "hello world Go", "just starting out".
 ---
 
 # Getting Started with Encore Go
 
 ## Instructions
 
-### Install Encore CLI
+### Set Up
 
-```bash
-# macOS
-brew install encoredev/tap/encore
+Each step has its own skill with the details and error fixes:
 
-# Linux/WSL
-curl -L https://encore.dev/install.sh | bash
+1. **Install the CLI** (`encore-install`): check with `encore version`. Install with `brew install encoredev/tap/encore` on macOS, or `curl -L https://encore.dev/install.sh | bash` on Linux and WSL.
+2. **Log in** (`encore-login`): `encore auth login`, so the app is created on Encore Cloud with an `encore` git remote for deploying. A person approves the login in a browser.
+3. **Create the app** (`encore-create-app`):
 
-# Windows (PowerShell)
-iwr https://encore.dev/install.ps1 | iex
-```
+   ```bash
+   encore app create my-app --example=hello-world
+   ```
 
-### Create a New App
-
-Log in first (`encore auth login`, or without a browser set the `ENCORE_AUTH_KEY` environment variable to an auth key) so the app is registered on Encore Cloud and gets an `encore` git remote for deploying.
-
-```bash
-# Interactive - choose from templates
-encore app create my-app
-
-# Or start with a blank Go app
-encore app create my-app --example=hello-world
-```
+   Always pass `--example`. Without a terminal, `encore app create my-app` creates an empty app with no services.
+4. **Run it** (`encore-run`): `encore check 'curl /hello/world'` starts the app, calls the endpoint, and stops. `encore run` keeps it running.
 
 ### Project Structure
 

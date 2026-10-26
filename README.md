@@ -13,6 +13,8 @@ These skills help AI agents use Encore's declarative patterns correctly:
 - **Service-to-service calls** - automatic type safety across service boundaries
 - **Built-in observability** - tracing, metrics, and logging out of the box
 
+The setup skills take an agent from a machine without Encore to a running app: install the CLI, log in, create the app, and run it. An agent with these skills installed needs no other context to start using Encore.
+
 ### How Infrastructure Works
 
 - **Local development** (`encore run`) - Encore provisions Docker containers automatically (Postgres, Redis, etc.)
@@ -54,6 +56,15 @@ claude plugin install encore-skills@encore-skills
 Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 ## Available Skills
+
+### Setup
+
+| Skill | Description |
+|-------|-------------|
+| `encore-install` | Install, update, and find the Encore CLI, plus Docker and Node.js for local development |
+| `encore-login` | Log in to Encore Cloud, including without a browser using an auth key |
+| `encore-create-app` | Create an app with `encore app create` without prompts, or register or clone an existing one |
+| `encore-run` | Run an app locally, check it with `encore check`, and fix startup errors |
 
 ### Architecture
 
