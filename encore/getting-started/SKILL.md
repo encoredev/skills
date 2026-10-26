@@ -1,11 +1,11 @@
 ---
 name: encore-getting-started
-description: Take a new Encore.ts project from zero to a running endpoint. Install the CLI, log in, create the app, run it, connect Encore's MCP servers, and add a first endpoint, with a pointer to the skill for each step. Not for architecture or feature questions.
+description: Set up Encore.ts from scratch. Install the CLI, log in, create an app, check that it runs, and connect Encore's MCP servers, with a pointer to the skill for each step. Ends where building starts. Not for architecture or feature questions.
 when_to_use: >-
-  User has no Encore project yet and wants to get started with Encore.ts end to end: install, create a hello-world app, run their very first `encore run`, and connect Encore's MCP servers. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, or `encore-run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features. Those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "get started with Encore", "hello world", "just starting out".
+  User has no Encore project yet and wants to get set up with Encore.ts end to end: install the CLI, log in, create a hello-world app, check that it runs, and connect Encore's MCP servers. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, `encore-run`, or `encore-mcp`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features. Those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "set up Encore", "completely new to Encore", "first time", "get started with Encore", "hello world", "just starting out".
 ---
 
-# Getting Started with Encore.ts
+# Setting Up Encore.ts
 
 ## Instructions
 
@@ -43,7 +43,7 @@ cd my-app
 
 - **Ends with `Successfully created app my-app!`:** go to step 4.
 - **Keep the `--example` flag.** In a terminal, the CLI asks for a language and template when it's missing. Without a terminal, which is how agents usually run commands, it can't ask, and creates an empty Go app instead.
-- **Empty app:** for an app with no services, use `--example=ts/empty` instead.
+- **Empty app:** for an app with no services, use `--example=ts/empty` instead, and skip step 4.
 - **Other templates and errors:** see `encore-create-app`.
 
 ### 4. Check that it runs
@@ -73,51 +73,16 @@ The MCP servers let you inspect and call the app while you build it, and read it
    claude mcp add --transport http --scope user encore-cloud https://api.encore.dev/mcp
    ```
 
-   Then ask the user to authenticate: in Claude Code, they run `/mcp`, select `encore-cloud`, and choose **Authenticate**.
 3. **Cursor, VS Code, other tools, or an API key instead of signing in:** see `encore-mcp`.
 
-The user's tool loads the new servers when it restarts. Tell the user, and go on to step 6 in the meantime.
+### 6. Report back
 
-### 6. Add an endpoint
+Setup is done. Tell the user:
 
-The template has one service, `hello`. A directory with an `encore.service.ts` file is a service, and every file below it belongs to that service:
+- **Where the app is:** its directory, and, if it's on Encore Cloud, its Cloud Dashboard at `https://app.encore.dev/<app-id>`.
+- **What's left for them:** their tool loads the new MCP servers when it restarts. If you added `encore-cloud`, they also need to authenticate it once: in Claude Code, `/mcp`, select `encore-cloud`, and choose **Authenticate**.
 
-```
-my-app/
-├── encore.app              # Marks the app root and holds the app ID
-├── package.json
-└── hello/
-    ├── encore.service.ts   # Declares the "hello" service
-    ├── hello.ts            # GET /hello/:name
-    ├── hello.test.ts
-    └── index.ts            # Landing page at /
-```
-
-Add a file to the service:
-
-```typescript
-// hello/goodbye.ts
-import { api } from "encore.dev/api";
-
-interface GoodbyeResponse {
-  message: string;
-}
-
-export const goodbye = api(
-  { expose: true, method: "GET", path: "/goodbye/:name" },
-  async ({ name }: { name: string }): Promise<GoodbyeResponse> => {
-    return { message: `Goodbye ${name}!` };
-  },
-);
-```
-
-Check it:
-
-```bash
-encore check 'curl /goodbye/world'
-```
-
-### 7. Next steps
+To build on the app, load the skill for the task. The hello-world app has one service, `hello`, in `hello/`.
 
 | To | Load |
 |----|------|

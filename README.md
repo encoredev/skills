@@ -84,7 +84,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 | Skill | Description |
 |-------|-------------|
-| `encore-getting-started` | Bootstrap a brand-new Encore.ts project |
+| `encore-getting-started` | Set up Encore.ts from scratch: install, log in, create an app, run it, and connect MCP |
 | `encore-logging` | Add useful structured logging |
 | `encore-api` | Define typed API endpoints (`api(...)`) |
 | `encore-webhook` | Receive inbound webhooks via `api.raw(...)` |
@@ -105,7 +105,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 
 | Skill | Description |
 |-------|-------------|
-| `encore-go-getting-started` | Bootstrap a brand-new Encore Go project |
+| `encore-go-getting-started` | Set up Encore Go from scratch: install, log in, create an app, run it, and connect MCP |
 | `encore-go-logging` | Add useful structured logging |
 | `encore-go-api` | Define typed API endpoints (`//encore:api`) |
 | `encore-go-webhook` | Receive inbound webhooks via `//encore:api raw` |
