@@ -13,6 +13,7 @@ when_to_use: >-
 
 - **The CLI is installed:** `encore version` works. If not, see `encore-install`.
 - **Logged in, to deploy to Encore Cloud:** check with `encore auth whoami`, and log in if needed (see `encore-login`). Logged in, the app is created on Encore Cloud with an `encore` git remote, ready to deploy with `git push encore`. Logged out, the app is local only, and linking it later takes extra steps. If you can't tell whether the user wants to deploy to Encore Cloud, ask before creating a local-only app.
+- **Only an auth key, no person to log in:** an auth key can't create apps. Ask the user to create the app in the Cloud Dashboard (https://app.encore.dev), then clone it with `encore app clone <app-id>` (see [Existing apps and code](#existing-apps-and-code)) instead of running `encore app create`.
 
 ### Create without prompts
 

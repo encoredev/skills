@@ -43,7 +43,7 @@ For CI and unattended agents, use an auth key. Auth keys belong to one app: crea
 
 Don't pass a real key on the command line with `encore auth login --auth-key`: it ends up in shell history and process listings. Never ask the user to paste a key into the chat. Ask them to set the environment variable themselves.
 
-An auth key logs the CLI in as its app, so `encore auth whoami` prints `logged in as app <app-id>`. That's enough to deploy that app with `git push encore`, but not to create apps: `encore app create` and `encore app init` need a person's login.
+An auth key logs the CLI in as its app, so `encore auth whoami` prints `logged in as app <app-id>`. That's enough to clone, link, and deploy that app, but not to create apps: `encore app create` and `encore app init` need a person's login. To start a new app with only an auth key, the user creates the app in the Cloud Dashboard first, and the agent clones it with `encore app clone <app-id>`.
 
 If the key is wrong or was deleted, commands print `warning: ENCORE_AUTH_KEY login failed: <error>`. Create a new key.
 

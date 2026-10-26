@@ -14,7 +14,9 @@ when_to_use: >-
 Each step has its own skill with the details and error fixes:
 
 1. **Install the CLI** (`encore-install`): check with `encore version`. Install with `brew install encoredev/tap/encore` on macOS, or `curl -L https://encore.dev/install.sh | bash` on Linux and WSL.
-2. **Log in** (`encore-login`): `encore auth login`, so the app is created on Encore Cloud with an `encore` git remote for deploying. A person approves the login in a browser.
+2. **Log in** (`encore-login`): `encore auth login`, so the app is created on Encore Cloud with an `encore` git remote for deploying. A person approves the login in a browser, on any device.
+
+   Without a person to approve it, such as in CI, set `ENCORE_AUTH_KEY` to an auth key instead. An auth key belongs to one existing app and can't create apps, so ask the user to create the app in the Cloud Dashboard, then clone it with `encore app clone <app-id>` and skip step 3.
 3. **Create the app** (`encore-create-app`):
 
    ```bash
