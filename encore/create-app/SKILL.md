@@ -54,7 +54,7 @@ Optional flags:
 The output ends with `Successfully created app <name>!`.
 
 - **Logged in:** it also prints `App ID: <app-id>` and `Web URL: https://app.encore.dev/<app-id>`. The app ID can differ from the name. The app has an initial commit and an `encore` git remote, so it's ready to deploy.
-- **Logged out:** `encore.app` has an empty `"id"`, and there's no `encore` remote. To deploy it later, see `encore-deploy`.
+- **Logged out:** `encore.app` has an empty `"id"`, and there's no `encore` remote. To link it to Encore Cloud later, see `encore-link-app`.
 
 Then `cd <name>` and run the app (see `encore-run`).
 

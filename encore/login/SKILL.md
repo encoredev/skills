@@ -52,6 +52,6 @@ This also stops the Encore daemon. It starts again with the next `encore` comman
 ## Guidelines
 
 - Never ask the user to paste an auth key into the chat, and never pass one on the command line with `encore auth login --auth-key`: it ends up in shell history and process listings.
-- Log in before `encore app create` if the app should deploy to Encore Cloud. Linking an app created logged out takes extra steps (see `encore-deploy`).
+- Log in before `encore app create` if the app should deploy to Encore Cloud. Linking an app created logged out takes extra steps (see `encore-link-app`).
 - Next: create an app (`encore-create-app`) or deploy one (`encore-deploy`).
 - Docs: https://encore.dev/docs/cli/cli-reference

@@ -63,6 +63,7 @@ Copy the `SKILL.md` files from `encore/` to your agent's skills directory.
 |-------|-------------|
 | `encore-install` | Install, update, and find the Encore CLI, plus Docker and Node.js for local development |
 | `encore-login` | Log in to Encore Cloud, including without a browser using an auth key |
+| `encore-link-app` | Link a local app to Encore Cloud, or register it as a new Encore Cloud app |
 | `encore-create-app` | Create an app with `encore app create` without prompts, or register or clone an existing one |
 | `encore-run` | Run an app locally, check it with `encore check`, and fix startup errors |
 | `encore-mcp` | Connect an AI tool to Encore's local MCP server and the Encore Cloud MCP server |

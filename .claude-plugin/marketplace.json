@@ -26,6 +26,7 @@
         "./skills/frontend",
         "./skills/getting-started",
         "./skills/install",
+        "./skills/link-app",
         "./skills/logging",
         "./skills/login",
         "./skills/mcp",

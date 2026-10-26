@@ -1,8 +1,8 @@
 ---
 name: encore-deploy
-description: Deploy an Encore.ts or Encore.go app to Encore Cloud by pushing to the Encore git remote or a linked GitHub repository, deploy changes again, and fix deploys that fail or never start. Covers which environments a push deploys to, secrets per environment, and linking an app created logged out or in the Cloud Dashboard.
+description: Deploy an Encore.ts or Encore.go app to Encore Cloud by pushing to the Encore git remote or a linked GitHub repository, deploy changes again, and fix deploys that fail or never start. Covers which environments a push deploys to and secrets per environment. For linking an app first, see `encore-link-app`.
 when_to_use: >-
-  User wants to deploy an Encore app, ship a change, push to Encore Cloud, deploy to staging or production, deploy again, redeploy, check whether a deploy started, or fix a failed deploy. Also use when `git push encore` fails, there is no `encore` git remote, the app is linked to GitHub, the app was created logged out or with `--platform=false`, the app was created in the Cloud Dashboard and needs to be cloned, or a deploy fails with "secret key(s) not defined" or failing tests. SKIP for self-hosting with `encore build docker`. Trigger phrases: "deploy", "deploy my app", "git push encore", "push to Encore Cloud", "deploy to staging", "deploy to production", "deploy again", "redeploy", "deploy failed", "build failed", "no encore remote", "link my app", "encore app clone".
+  User wants to deploy an Encore app, ship a change, push to Encore Cloud, deploy to staging or production, deploy again, redeploy, check whether a deploy started, or fix a failed deploy. Also use when `git push encore` fails, there is no `encore` git remote, the app is linked to GitHub, the app was created logged out or with `--platform=false`, the app was created in the Cloud Dashboard and needs to be cloned, or a deploy fails with "secret key(s) not defined" or failing tests. SKIP for self-hosting with `encore build docker`. Trigger phrases: "deploy", "deploy my app", "git push encore", "push to Encore Cloud", "deploy to staging", "deploy to production", "deploy again", "redeploy", "deploy failed", "build failed", "no encore remote", "encore app clone".
 ---
 
 # Deploying to Encore Cloud
@@ -78,33 +78,11 @@ You can also redeploy from the Cloud Dashboard: **Deployments** > **New Deploy**
 
 ### Link an app
 
-**Logged out:** log in first with `encore auth login`, which opens a browser. Without a browser, create an auth key in the Cloud Dashboard (**App Settings** > **Auth Keys**) and set it in the `ENCORE_AUTH_KEY` environment variable, for example from a secret store. The CLI logs in with it automatically. Don't pass a real key on the command line with `--auth-key`: it ends up in shell history and process listings. An auth key belongs to one app: it can deploy that app, but `encore app init` and `encore app create` need a person's login (see `encore-login`).
-
-**App created in the Cloud Dashboard:** clone it. The app ID is in the dashboard URL, `app.encore.dev/<app-id>`. If the app is linked to GitHub, `git clone` the GitHub repository instead.
-
-```bash
-encore app clone <app-id>              # adds the encore remote
-cd <app-id>
-```
-
-**Local app created logged out or with `--platform=false`:** register it. Copy any settings in `encore.app` other than `id` and `lang` first, and add them back afterwards.
-
-```bash
-rm encore.app
-encore app init my-app --lang ts       # --lang go for Encore.go. Adds the encore remote
-git add -A && git commit -m "Link to Encore Cloud"
-git push encore
-```
-
-`encore app link <app-id>` only links to an app that already exists on Encore Cloud, and only adds the `encore` remote when the repository has no remotes. If the remote is still missing, add it:
-
-```bash
-git remote add encore encore://<app-id>
-```
+If `encore.app` has an empty `"id"`, or there's no `encore` remote and the app doesn't deploy from GitHub, the app isn't linked to Encore Cloud. Link it first (see `encore-link-app`), then come back here. For an app that's on Encore Cloud but not on this machine, clone it with `encore app clone <app-id>`, or `git clone` its GitHub repository if it's linked to GitHub.
 
 ### When a push to `encore` fails
 
-- **`could not get Encore auth token: not logged in`:** run `encore auth login`.
+- **`could not get Encore auth token: not logged in`:** log in (see `encore-login`).
 - **`'encore' does not appear to be a git repository`:** the remote is missing. See [Link an app](#link-an-app).
 - **The push hangs:** `git push encore` uses SSH to `git.encore.dev` on port 22, which some networks block.
 
