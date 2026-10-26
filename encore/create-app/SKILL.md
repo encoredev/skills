@@ -1,82 +1,85 @@
 ---
 name: encore-create-app
-description: Create a new Encore.ts or Encore.go app with `encore app create` without interactive prompts, from a template or empty, on Encore Cloud or local only. Also covers registering existing Encore code with `encore app init` and getting an app that's already on Encore Cloud with `encore app clone`.
+description: Create a new Encore.ts or Encore.go app with `encore app create` without interactive prompts, from a template or empty, on Encore Cloud or local only. Also covers getting an app that's already on Encore Cloud with `encore app clone` and registering existing Encore code with `encore app init`.
 when_to_use: >-
-  User wants a new Encore app or project, to scaffold or bootstrap a backend with Encore, to start from a template or example (hello world, URL shortener, uptime monitor, GraphQL), or to get an existing Encore Cloud app onto this machine. Also use when `encore app create` waits on a prompt, creates a Go app when TypeScript was wanted, or fails with "directory already exists", "this directory already contains Encore code", "specify an app name", or a name error. SKIP when the app already exists and the task is adding services, endpoints, or infrastructure. Trigger phrases: "create an Encore app", "new Encore project", "encore app create", "scaffold a backend", "start from a template", "hello world app", "URL shortener template", "encore app init", "encore app clone".
+  User wants a new Encore app or project, an empty app, to scaffold or bootstrap a backend with Encore, to start from a template or example (hello world, URL shortener, uptime monitor, GraphQL), or to get an existing Encore Cloud app onto this machine. Also use when `encore app create` waits on a prompt, creates a Go app when TypeScript was wanted, or fails with "directory already exists", "this directory already contains Encore code", "specify an app name", or a name error. SKIP when the app already exists and the task is adding services, endpoints, or infrastructure. Trigger phrases: "create an Encore app", "new Encore project", "empty Encore app", "encore app create", "scaffold a backend", "start from a template", "hello world app", "URL shortener template", "encore app init", "encore app clone".
 ---
 
 # Creating an Encore App
 
 ## Instructions
 
-### Before creating
+Do the steps in order.
 
-- **The CLI is installed:** `encore version` works. If not, see `encore-install`.
-- **Logged in, to deploy to Encore Cloud:** check with `encore auth whoami`, and log in if needed (see `encore-login`). Logged in, the app is created on Encore Cloud with an `encore` git remote, ready to deploy with `git push encore`. Logged out, the app is local only, and linking it later takes extra steps. If you can't tell whether the user wants to deploy to Encore Cloud, ask before creating a local-only app.
-- **Only an auth key, no person to log in:** an auth key can't create apps. Ask the user to create the app in the Cloud Dashboard (https://app.encore.dev), then clone it with `encore app clone <app-id>` (see [Existing apps and code](#existing-apps-and-code)) instead of running `encore app create`.
+### 1. Check before creating
 
-### Create without prompts
+- **CLI:** `encore version` prints a version. If not, see `encore-install`.
+- **Login:** if the app should deploy to Encore Cloud, `encore auth whoami` must print `logged in as <email>`. If not, see `encore-login`. Skip the login only if the user wants a local-only app. If you can't tell, ask.
+- **Auth key only** (`logged in as app <app-id>`): don't run `encore app create`, it fails. Ask the user to create the app in the Cloud Dashboard, then follow [Get an existing app](#get-an-existing-app).
+- **Already in an app:** if the current directory or a parent has an `encore.app` file, the app exists. Don't create another one.
 
-In a terminal, `encore app create` asks for a language, a template, AI tool rules, an org, and whether to run the app. Without a terminal, which is how agents usually run commands, it asks nothing and uses the flags. With no `--example`, that's an empty **Go** app, even if the user asked for TypeScript. Always pass `--example`:
+### 2. Pick a template
+
+| The user wants | Encore.ts | Encore.go |
+|----------------|-----------|-----------|
+| A small working app (default) | `ts/hello-world` | `hello-world` |
+| An empty app, no services | `ts/empty` | `empty` |
+| A REST API with a SQL database | `ts/url-shortener` | `url-shortener` |
+| Several services, SQL databases, Pub/Sub, cron jobs | `ts/uptime` | `uptime` |
+| A GraphQL API with a SQL database | | `graphql` |
+
+`--example` also takes any directory in https://github.com/encoredev/examples, or a GitHub URL: `https://github.com/<owner>/<repo>/tree/<branch>/<path>`.
+
+### 3. Create it
 
 ```bash
 encore app create my-app --example=ts/hello-world   # Encore.ts
+encore app create my-app --example=ts/empty         # Encore.ts, empty
 encore app create my-app --example=hello-world      # Encore.go
+encore app create my-app --example=empty            # Encore.go, empty
 ```
 
-| Encore.ts | Encore.go | What you get |
-|-----------|-----------|--------------|
-| `ts/hello-world` | `hello-world` | One service with a REST endpoint. The default choice |
-| `ts/url-shortener` | `url-shortener` | REST API with a SQL database |
-| `ts/uptime` | `uptime` | Several services, SQL databases, Pub/Sub, cron jobs |
-| | `graphql` | GraphQL API, several services, a SQL database |
-| `ts/empty` | `empty` | No services. Add them yourself |
+- **Always pass `--example`.** Agents usually run commands without a terminal, so the CLI doesn't prompt. With no `--example`, it creates an empty Go app, even for a TypeScript project.
+- **Name:** lowercase letters, digits, and single dashes, at most 50 characters, not starting or ending with a dash. It becomes the directory, which must not exist yet.
+- **It takes a while:** it downloads the template and runs `npm install` or `go get`. Wait for it to finish.
 
-`--example` also takes any other directory of https://github.com/encoredev/examples (for example `ts/nextjs-starter`), or a GitHub URL to a repository or a directory in one: `--example=https://github.com/<owner>/<repo>/tree/<branch>/<path>`.
+Optional flags:
 
-Other flags:
-
-- **`--llm-rules=<tool>`:** writes Encore's coding instructions for an AI tool into the app and configures the local Encore MCP server for it. One of `cursor`, `claudecode`, `vscode`, `agentsmd`, or `zed`. In a terminal, it also skips the prompt for it.
-- **`--org=<id-or-slug>`:** creates the app in that org. Without it, a command run without a terminal creates the app in the user's personal account.
+- **`--llm-rules=<tool>`:** adds Encore's coding instructions for an AI tool and configures the local Encore MCP server for it. One of `cursor`, `claudecode`, `vscode`, `agentsmd`, or `zed`.
+- **`--org=<id-or-slug>`:** creates the app in an org instead of the user's personal account.
 - **`--platform=false`:** creates a local-only app even when logged in.
 
-### Pick a name
+### 4. Check the result
 
-The name becomes the directory, which must not exist yet. Use lowercase letters, digits, and single dashes, up to 50 characters, not starting or ending with a dash. On Encore Cloud, the app ID can differ from the name: read it from the output or `encore.app`.
+The output ends with `Successfully created app <name>!`.
 
-### What it does
+- **Logged in:** it also prints `App ID: <app-id>` and `Web URL: https://app.encore.dev/<app-id>`. The app ID can differ from the name. The app has an initial commit and an `encore` git remote, so it's ready to deploy.
+- **Logged out:** `encore.app` has an empty `"id"`, and there's no `encore` remote. To deploy it later, see `encore-deploy`.
 
-1. Creates the directory and downloads the template.
-2. Runs `npm install` (Encore.ts) or `go get encore.dev@latest` (Encore.go). This can take a minute.
-3. When logged in, creates the app on Encore Cloud and writes its ID to `encore.app`. Logged out, `encore.app` has an empty `"id"`.
-4. Makes a git repository with an initial commit. When the app is on Encore Cloud, it adds the `encore` remote that deploys it.
+Then `cd <name>` and run the app (see `encore-run`).
 
-It ends with `Successfully created app <name>!`. For apps on Encore Cloud, the output also has `App ID: <app-id>` and `Web URL: https://app.encore.dev/<app-id>`, the app's Cloud Dashboard.
+## Get an existing app
 
-### Errors
-
-- **`directory <name> already exists`:** pick another name, or ask before removing the directory.
-- **`this directory already contains Encore code but isn't initialized as an app`:** don't create a new app here. Register the code in place with `encore app init` (see below).
-- **`specify an app name`:** pass the name as the first argument.
-- **`name must only contain lowercase letters, digits, or dashes`** (or another name error): fix the name.
-- **`--org requires being logged in and --platform`:** log in, or drop `--org`.
-- **`creating app on encore.dev: ...`:** check `encore auth whoami`. If it prints `logged in as app <app-id>`, the CLI is logged in with an auth key, which can't create apps. A person needs to log in with `encore auth login`.
-- **`npm install` fails or npm isn't installed:** the app is still created, without its dependencies. Install Node.js (see `encore-install`), then run `npm install` in the app.
-
-### Existing apps and code
-
-- **An app that's already on Encore Cloud:** don't create a new one. Clone it with `encore app clone <app-id> [directory]`, which adds the `encore` remote. The app ID is in the Cloud Dashboard URL, `app.encore.dev/<app-id>`. If the app is linked to GitHub, `git clone` the GitHub repository instead.
-- **A repository with an `encore.app` file:** it's already an app. Run it as is (see `encore-run`).
-- **Encore code without an `encore.app` file:** register it in place, from the directory the app should live in. Always pass `--lang`: without it and without a terminal, the `encore.app` it writes has no `"lang": "typescript"`, and Encore treats the app as Go.
+- **On Encore Cloud:** `encore app clone <app-id> [directory]`. It adds the `encore` remote. The app ID is in the Cloud Dashboard URL, `app.encore.dev/<app-id>`. If the app is linked to GitHub, `git clone` the GitHub repository instead.
+- **Code with an `encore.app` file:** it's already an app. Run it (see `encore-run`).
+- **Encore code without an `encore.app` file:** register it in place, from its root directory. Always pass `--lang`, or the app is treated as Go.
 
   ```bash
   encore app init my-app --lang ts   # --lang go for Encore.go
   ```
 
+## Errors
+
+- **`directory <name> already exists`:** pick another name, or ask before removing the directory.
+- **`this directory already contains Encore code but isn't initialized as an app`:** use `encore app init` (see above) instead of creating a new app.
+- **`specify an app name`:** pass the name as the first argument.
+- **`name must only contain lowercase letters, digits, or dashes`, or another name error:** fix the name.
+- **`--org requires being logged in and --platform`:** log in, or drop `--org`.
+- **`creating app on encore.dev: ...`:** run `encore auth whoami`. If it prints `logged in as app <app-id>`, an auth key can't create apps: a person must log in (see `encore-login`).
+- **`npm install` fails:** the app is still created, without dependencies. Install Node.js (see `encore-install`), then run `npm install` in the app.
+
 ## Guidelines
 
-- Always pass `--example` to `encore app create`. Without it, an agent gets an empty Go app.
-- Log in first if the app should deploy to Encore Cloud.
-- Don't run `encore app create` inside an existing Encore app, or to deploy an existing app. It creates a new, separate app.
-- Next steps: run the app (`encore-run`), build it out (`encore-service`, `encore-api`, or the `encore-go-*` skills), and deploy it (`encore-deploy`).
+- Don't run `encore app create` to deploy or link an existing app. It creates a new, separate app.
+- Next: run the app (`encore-run`), build it out (`encore-service` and `encore-api`, or `encore-go-service` and `encore-go-api`), and deploy it (`encore-deploy`).
 - Docs: https://encore.dev/docs/quick-start and https://encore.dev/docs/cli/cli-reference

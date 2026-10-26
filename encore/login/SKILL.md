@@ -1,51 +1,45 @@
 ---
 name: encore-login
-description: Log the Encore CLI in to Encore Cloud, check who is logged in, sign up for an account, and log in without a browser with an auth key. A login is needed to create apps on Encore Cloud and to deploy them.
+description: Log the Encore CLI in to Encore Cloud, check who is logged in, sign up for an account, and log in without a person using an auth key. A login is needed to create apps on Encore Cloud and to deploy them.
 when_to_use: >-
   User wants to log in or sign up to Encore, check which account the CLI uses, or log out. Also use when a command fails with "not logged in" or "could not get Encore auth token", `encore auth whoami` prints "not logged in.", the agent runs without a browser (SSH, container, cloud sandbox, CI), or the user mentions an auth key or `ENCORE_AUTH_KEY`. SKIP for adding login or authentication to the user's own app (auth handlers, JWT, sessions): use `encore-auth` or `encore-go-auth`. Trigger phrases: "log in to Encore", "encore auth login", "sign up for Encore", "Encore account", "not logged in", "auth key", "ENCORE_AUTH_KEY", "log in from CI".
 ---
 
 # Logging in to Encore Cloud
 
-The CLI needs a login to create apps on Encore Cloud and to deploy them. Local development (`encore run`, `encore test`, `encore check`) works logged out. The same steps work for Encore.ts and Encore.go.
+Creating apps on Encore Cloud and deploying need a login. Running locally (`encore run`, `encore test`, `encore check`) doesn't.
 
 ## Instructions
 
-### Check who is logged in
+### 1. Check who is logged in
 
 ```bash
 encore auth whoami
 ```
 
-- **`logged in as <email>`:** a person is logged in. Nothing to do.
-- **`logged in as app <app-id>`:** logged in with an auth key, which only works with that one app. See [Log in without a person](#log-in-without-a-person).
-- **`not logged in.`:** log in.
+- **`logged in as <email>`:** done.
+- **`logged in as app <app-id>`:** logged in with an auth key. It works for that app only, and can't create apps. If you need to create an app, go to step 2.
+- **`not logged in.`:** go to step 2. If no person can approve a login, such as in CI, go to step 3.
 
-### Log in with a browser
+### 2. Log in with a person's approval
 
-A person has to approve the login, so the agent can't finish it alone:
+1. Start `encore auth login` as a background command. It doesn't exit until someone approves the login.
+2. Its output has `Your pairing code is <code>` and a URL. Send both to the user right away. Ask them to open the URL on any device, check that the code matches, and approve. New users can sign up on the same page.
+3. Wait for `Successfully logged in!`, then run `encore auth whoami` to confirm.
 
-```bash
-encore auth login
-```
+This works over SSH, in containers, and in cloud sandboxes too, because the user can open the URL anywhere.
 
-It prints `Your pairing code is <code>` and a URL, then waits until someone approves the code in a browser. It may also open the browser itself.
+### 3. Log in without a person: auth key
 
-1. Run it as a background or long-running command, so it can keep waiting.
-2. Give the user the pairing code and the URL from its output. Ask them to open the URL, check that the code matches, and approve. The URL works from any device, so this also works when the agent runs over SSH, in a container, or in a cloud sandbox.
-3. When they approve, the command prints `Successfully logged in!` and exits. Confirm with `encore auth whoami`.
+1. Ask the user to create an auth key in the Cloud Dashboard (**App Settings** > **Auth Keys**) and set it as the `ENCORE_AUTH_KEY` environment variable for the agent, for example from a secret store.
+2. Run `encore auth whoami`. It should print `logged in as app <app-id>`. Every `encore` command logs in with the key automatically when nobody is logged in.
 
-New users can sign up from the same page. `encore auth signup` runs the same flow.
+Limits of auth keys:
 
-### Log in without a person
-
-For CI and unattended agents, use an auth key. Auth keys belong to one app: create one in the Cloud Dashboard (**App Settings** > **Auth Keys**), and put it in the `ENCORE_AUTH_KEY` environment variable, for example from a secret store. Every `encore` command then logs in with it automatically, as long as nobody is logged in already. If someone is, the CLI ignores the key.
-
-Don't pass a real key on the command line with `encore auth login --auth-key`: it ends up in shell history and process listings. Never ask the user to paste a key into the chat. Ask them to set the environment variable themselves.
-
-An auth key logs the CLI in as its app, so `encore auth whoami` prints `logged in as app <app-id>`. That's enough to clone, link, and deploy that app, but not to create apps: `encore app create` and `encore app init` need a person's login. To start a new app with only an auth key, the user creates the app in the Cloud Dashboard first, and the agent clones it with `encore app clone <app-id>`.
-
-If the key is wrong or was deleted, commands print `warning: ENCORE_AUTH_KEY login failed: <error>`. Create a new key.
+- **One app:** the key can clone, link, and deploy its own app.
+- **No new apps:** `encore app create` and `encore app init` need a person's login. For a new app, ask the user to create it in the Cloud Dashboard, then clone it with `encore app clone <app-id>`.
+- **Ignored when someone is logged in:** run `encore auth logout` first to use the key instead.
+- **`warning: ENCORE_AUTH_KEY login failed: <error>`:** the key is wrong or was deleted. Ask for a new one.
 
 ### Log out
 
@@ -53,12 +47,11 @@ If the key is wrong or was deleted, commands print `warning: ENCORE_AUTH_KEY log
 encore auth logout
 ```
 
-This also stops the Encore daemon, which starts again with the next `encore` command.
+This also stops the Encore daemon. It starts again with the next `encore` command.
 
 ## Guidelines
 
-- Log in before `encore app create` when the app should deploy to Encore Cloud. An app created logged out is local only, and linking it later takes extra steps (see `encore-deploy`).
-- Don't wait silently on `encore auth login`. Show the user the pairing code and URL right away.
-- Keep auth keys out of command lines, files in the repository, and the chat.
-- Next steps: create an app (`encore-create-app`) or deploy one (`encore-deploy`).
+- Never ask the user to paste an auth key into the chat, and never pass one on the command line with `encore auth login --auth-key`: it ends up in shell history and process listings.
+- Log in before `encore app create` if the app should deploy to Encore Cloud. Linking an app created logged out takes extra steps (see `encore-deploy`).
+- Next: create an app (`encore-create-app`) or deploy one (`encore-deploy`).
 - Docs: https://encore.dev/docs/cli/cli-reference

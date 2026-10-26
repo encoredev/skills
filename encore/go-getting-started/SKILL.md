@@ -1,173 +1,104 @@
 ---
 name: encore-go-getting-started
-description: Walk through a first Encore Go app from zero, from installing the CLI to a running endpoint, with pointers to the skills for each step. Not for architecture or feature questions.
+description: Take a new Encore Go project from zero to a running endpoint. Install the CLI, log in, create the app, run it, and add a first endpoint, with a pointer to the skill for each step. Not for architecture or feature questions.
 when_to_use: >-
-  User has no Encore project yet and wants to get started with Encore Go end to end: install, create a hello-world Go service, and run their very first `encore run`. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, or `encore-run`. SKIP if the user already has an Encore Go project and is asking about architecture, services, endpoints, or specific features — those go to `encore-go-service`, `encore-go-api`, `encore-go-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "get started with Encore Go", "hello world Go", "just starting out".
+  User has no Encore project yet and wants to get started with Encore Go end to end: install, create a hello-world Go service, and run their very first `encore run`. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, or `encore-run`. SKIP if the user already has an Encore Go project and is asking about architecture, services, endpoints, or specific features. Those go to `encore-go-service`, `encore-go-api`, `encore-go-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "get started with Encore Go", "hello world Go", "just starting out".
 ---
 
 # Getting Started with Encore Go
 
 ## Instructions
 
-### Set Up
+Do the steps in order. Each step says how to tell it worked. If a step fails, load the skill it names.
 
-Each step has its own skill with the details and error fixes:
+### 1. Check the CLI
 
-1. **Install the CLI** (`encore-install`): check with `encore version`. Install with `brew install encoredev/tap/encore` on macOS, or `curl -L https://encore.dev/install.sh | bash` on Linux and WSL.
-2. **Log in** (`encore-login`): `encore auth login`, so the app is created on Encore Cloud with an `encore` git remote for deploying. A person approves the login in a browser, on any device.
+```bash
+encore version
+```
 
-   Without a person to approve it, such as in CI, set `ENCORE_AUTH_KEY` to an auth key instead. An auth key belongs to one existing app and can't create apps, so ask the user to create the app in the Cloud Dashboard, then clone it with `encore app clone <app-id>` and skip step 3.
-3. **Create the app** (`encore-create-app`):
+- **Prints `encore version v...`:** go to step 2.
+- **Command not found:** install it (`encore-install`), then go to step 2.
 
-   ```bash
-   encore app create my-app --example=hello-world
-   ```
+### 2. Log in
 
-   Always pass `--example`. Without a terminal, `encore app create my-app` creates an empty app with no services.
-4. **Run it** (`encore-run`): `encore check 'curl /hello/world'` starts the app, calls the endpoint, and stops. `encore run` keeps it running.
+Skip this step if the user only wants to run the app locally.
 
-### Project Structure
+```bash
+encore auth whoami
+```
 
-A minimal Encore Go app:
+- **`logged in as <email>`:** go to step 3.
+- **`not logged in.`:** start `encore auth login` in the background. Send the user the pairing code and URL it prints, and ask them to approve it in a browser on any device. Wait for `Successfully logged in!` (`encore-login`).
+- **`logged in as app <app-id>`, or no person can approve a login (CI):** an auth key can't create apps. Ask the user to create the app in the Cloud Dashboard, then run `encore app clone <app-id>`, `cd` into it, and go to step 4.
+
+### 3. Create the app
+
+```bash
+encore app create my-app --example=hello-world
+cd my-app
+```
+
+- **Ends with `Successfully created app my-app!`:** go to step 4.
+- **Always pass `--example`.** For an empty app with no services, use `--example=empty`. Other templates and errors: `encore-create-app`.
+
+### 4. Check that it runs
+
+```bash
+encore check 'curl /hello/world'
+```
+
+- **Prints `"Message": "Hello, world!"` and exits 0:** go to step 5.
+- **Fails:** see `encore-run`.
+
+To keep the app running for the user, start `encore run` in the background, never in the foreground (`encore-run`). The API is at `http://localhost:4000`, and the local development dashboard, with a trace of every request, is at `http://localhost:9400`.
+
+### 5. Add an endpoint
+
+The template has one service, `hello`. A Go package with at least one `//encore:api` endpoint is a service:
 
 ```
 my-app/
-├── encore.app           # App configuration
-├── go.mod               # Go module
-└── hello/               # A service (package with API)
-    └── hello.go         # API endpoints
+├── encore.app        # Marks the app root and holds the app ID
+├── go.mod
+└── hello/
+    ├── hello.go      # GET /hello/:name
+    ├── hello_test.go
+    └── index.go      # Landing page at /
 ```
 
-### The encore.app File
-
-```cue
-// encore.app
-{
-    "id": "my-app"
-}
-```
-
-This file marks the root of your Encore app. The `id` is your app's unique identifier.
-
-### Create Your First API
-
-In Encore Go, any package with an `//encore:api` endpoint becomes a service:
+Add a file to the package:
 
 ```go
-// hello/hello.go
+// hello/goodbye.go
 package hello
 
 import "context"
 
-type Response struct {
-    Message string `json:"message"`
+type GoodbyeResponse struct {
+	Message string `json:"message"`
 }
 
-//encore:api public method=GET path=/hello
-func Hello(ctx context.Context) (*Response, error) {
-    return &Response{Message: "Hello, World!"}, nil
+//encore:api public method=GET path=/goodbye/:name
+func Goodbye(ctx context.Context, name string) (*GoodbyeResponse, error) {
+	return &GoodbyeResponse{Message: "Goodbye, " + name + "!"}, nil
 }
 ```
 
-### Run Your App
+Check it:
 
 ```bash
-# Start the development server
-encore run
-
-# Your API is now available at http://localhost:4000
+encore check 'curl /goodbye/world'
 ```
 
-### Open the Local Dashboard
+### 6. Next steps
 
-```bash
-# Opens the local development dashboard
-encore run
-# Then visit http://localhost:9400
-```
-
-The dashboard shows:
-- All your services and endpoints
-- Request/response logs
-- Database queries
-- Traces and spans
-
-### Common CLI Commands
-
-| Command | Description |
-|---------|-------------|
-| `encore run` | Start the local development server |
-| `encore test` | Run tests (uses `go test` under the hood) |
-| `encore db shell <db>` | Open a psql shell to a database |
-| `encore gen client` | Generate API client code |
-| `git push encore` | Deploy committed changes (apps using Encore's git) |
-| `encore app link` | Link to an existing Encore Cloud app |
-
-### Add Path Parameters
-
-```go
-type GetUserParams struct {
-    ID string
-}
-
-type User struct {
-    ID   string `json:"id"`
-    Name string `json:"name"`
-}
-
-//encore:api public method=GET path=/users/:id
-func GetUser(ctx context.Context, params *GetUserParams) (*User, error) {
-    return &User{ID: params.ID, Name: "John"}, nil
-}
-```
-
-### Add a Database
-
-```go
-// db.go
-package hello
-
-import "encore.dev/storage/sqldb"
-
-var db = sqldb.NewDatabase("mydb", sqldb.DatabaseConfig{
-    Migrations: "./migrations",
-})
-```
-
-Create a migration:
-
-```sql
--- hello/migrations/1_create_table.up.sql
-CREATE TABLE items (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL
-);
-```
-
-### Query the Database
-
-```go
-import "encore.dev/storage/sqldb"
-
-type Item struct {
-    ID   int
-    Name string
-}
-
-func getItem(ctx context.Context, id int) (*Item, error) {
-    item, err := sqldb.QueryRow[Item](ctx, db, `
-        SELECT id, name FROM items WHERE id = $1
-    `, id)
-    if err != nil {
-        return nil, err
-    }
-    return item, nil
-}
-```
-
-### Next Steps
-
-- Add more endpoints (see `encore-go-api` skill)
-- Add authentication (see `encore-go-auth` skill)
-- Add Pub/Sub topics (`encore-go-pubsub`), cron jobs (`encore-go-cron`), buckets (`encore-go-bucket`), secrets (`encore-go-secret`), or caching (`encore-go-cache`)
-- Deploy to Encore Cloud: commit, then `git push encore`, or push to the linked GitHub repository (see `encore-deploy` skill)
+| To | Load |
+|----|------|
+| Add endpoints, validation, and errors | `encore-go-api` |
+| Add services or call one service from another | `encore-go-service` |
+| Add a SQL database | `encore-go-database` |
+| Require login on endpoints | `encore-go-auth` |
+| Add Pub/Sub, cron jobs, buckets, secrets, or caching | `encore-go-pubsub`, `encore-go-cron`, `encore-go-bucket`, `encore-go-secret`, `encore-go-cache` |
+| Write tests | `encore-go-testing` |
+| Deploy: commit, then `git push encore` | `encore-deploy` |

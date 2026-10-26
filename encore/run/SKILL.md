@@ -7,20 +7,23 @@ when_to_use: >-
 
 # Running an Encore App Locally
 
-`encore run` compiles the app, starts the infrastructure it declares, and serves its API at `http://localhost:4000`. SQL databases run in Docker. The command keeps running and rebuilds the app when files change. Run it, or `encore check`, from the app's root directory (the one with `encore.app`) or any directory below it. The same steps work for Encore.ts and Encore.go.
-
 ## Instructions
 
-### Check that it starts and responds
+Run these commands from the app's root directory (the one with `encore.app`) or any directory below it. Pick one:
 
-`encore check` builds the app, starts it with its infrastructure, runs requests against it, prints the results, and shuts it down. It exits 0 when the app starts and every request succeeds, and 1 otherwise. Use it to check a change without a long-running process:
+- **To check that the app starts, or that a change works:** use `encore check` (step 1). It always exits.
+- **To keep the app running,** for the user to try or for many requests: use `encore run` in the background (step 2).
+
+Never run `encore run` in the foreground. It doesn't exit, so the command blocks until it times out.
+
+### 1. Check with `encore check`
 
 ```bash
-encore check                       # does the app start?
-encore check 'curl /hello/world'   # start it and call an endpoint
+encore check                       # start the app and stop it
+encore check 'curl /hello/world'   # start it, call an endpoint, stop it
 ```
 
-For several requests, or requests with JSON bodies, pass a spec on stdin, one request per line:
+For several requests or JSON bodies, pass the requests on stdin, one per line:
 
 ```bash
 encore check <<'EOF'
@@ -30,63 +33,43 @@ curl /admin --no-fail -i
 EOF
 ```
 
-- Each request is `curl <path>` with any curl arguments. Quote arguments as in a shell.
-- A request fails when curl fails or the response status is 400 or above. Add `--no-fail` when you expect an error status, and `-i` to see the status and headers.
-- Results go to stdout, each between a `=== [i/N] curl ... ===` line and a `--- exit: N ---` line. Build errors and app logs go to stderr.
-- `--timeout` sets how long to wait for the app to start (default `1m0s`).
+- **Exit code 0:** the app started, and every request returned a status below 400.
+- **Exit code 1:** stdout has each request's result, between `=== [i/N] curl ... ===` and `--- exit: N ---`. stderr has build errors and app logs. Fix the problem and run it again.
+- **Request arguments:** anything after the path goes to curl. Add `-i` to see the status and headers, and `--no-fail` to a request that should return an error status.
 
-### Run it in the background
+### 2. Run in the background
 
-To keep the app running while you work, for example to call it several times or let the user try it, start `encore run` in the background. Use your tool's background mode if it has one. Otherwise:
+1. Start it, with its output in a log file. If your tool has its own way to run background commands, use that instead.
 
-```bash
-encore run --browser=never > /tmp/encore-run.log 2>&1 &
-echo $! > /tmp/encore-run.pid
-```
+   ```bash
+   encore run --browser=never > /tmp/encore-run.log 2>&1 &
+   echo $! > /tmp/encore-run.pid
+   ```
 
-The app is ready when the log shows:
+2. Wait until the log has `Encore development server running!`. If the process exits first, the log has the error (see [Errors](#errors)).
+3. Call the API at `http://localhost:4000`. The local development dashboard is at `http://localhost:9400`, with an API explorer and a trace of every request.
+4. After each code change, the app rebuilds and restarts. Check the log for build errors.
+5. When you're done, stop it:
 
-```
-  Encore development server running!
+   ```bash
+   kill "$(cat /tmp/encore-run.pid)"
+   ```
 
-  Your API is running at:     http://127.0.0.1:4000
-  Development Dashboard URL:  http://127.0.0.1:9400/<app-id>
-```
+Flags: `--port=<n>` changes the API port (default 4000). `--listen=0.0.0.0:4000` accepts connections from other machines. `--watch=false` turns off rebuilding on changes.
 
-Wait for that line before sending requests, then call the API with `curl http://localhost:4000/<path>`. When files change, the app rebuilds and restarts, so check the log for build errors after each edit. To stop it:
+## Errors
 
-```bash
-kill "$(cat /tmp/encore-run.pid)"
-```
-
-Flags:
-
-| Flag | Description | Default |
-|------|-------------|---------|
-| `--port`, `-p` | Port for the API | `4000` |
-| `--browser` | Open the local development dashboard on startup (`auto`, `never`, `always`) | `auto` |
-| `--watch`, `-w` | Rebuild and restart when files change | `true` |
-| `--listen` | Address to listen on, such as `0.0.0.0:4000` to accept connections from other machines | `127.0.0.1` |
-| `--level`, `-l` | Minimum log level (`trace`, `debug`, `info`, `warn`, `error`) | |
-| `--json` | Print logs as JSON | `false` |
-
-### The local development dashboard
-
-While the app runs, the dashboard at `http://localhost:9400` has an API explorer, a trace of every request with its database queries, calls, and logs, a service catalog, and a database explorer. Point the user to it when they want to see what a request did. Agents can read the same data through the local Encore MCP server: `encore run` prints its `MCP SSE URL`, and `encore mcp run --app=<app-id>` serves it over stdio.
-
-### Errors
-
-- **`no encore.app found in directory (or any of the parent directories)`:** run the command from inside the app. If there's no app yet, see `encore-create-app`.
-- **`The docker daemon is not running. Start it first.`:** start Docker (on macOS, `open -a Docker`), wait until `docker info` succeeds, and run again.
+- **`no encore.app found in directory (or any of the parent directories)`:** `cd` into the app. If there's no app yet, see `encore-create-app`.
+- **`The docker daemon is not running. Start it first.`:** start Docker (macOS: `open -a Docker`), wait until `docker info` succeeds, and run again.
 - **`docker not found: is it installed and in your PATH?`:** the app has a SQL database, which needs Docker. See `encore-install`.
-- **`Failed to run on 127.0.0.1:4000 - port is already in use`:** another process, often an earlier `encore run`, has the port. The next line suggests a free one (`Note: port 4001 is available; specify --port=4001 to use it`). Stop the earlier run, or pass `--port`.
-- **`secrets not defined: <names>`:** the app starts anyway, with those secrets empty. Set local values with `encore secret set --type local <name>`, or in a gitignored `.secrets.local.cue` file for an app that isn't on Encore Cloud (see `encore-secret` or `encore-go-secret`).
-- **Build errors:** the log shows the file and line. Fix the code. With `--watch`, the app rebuilds when you save.
+- **`Failed to run on 127.0.0.1:4000 - port is already in use`:** an earlier `encore run` usually holds the port. Stop it, or use the free port from the next line of output: `Note: port <n> is available; specify --port=<n> to use it`.
+- **`secrets not defined: <names>`:** a warning. The app runs with those secrets empty. Set local values with `encore secret set --type local <name>`, or in a gitignored `.secrets.local.cue` file for an app that isn't on Encore Cloud (see `encore-secret` or `encore-go-secret`).
+- **Build errors:** fix the file and line shown, then run again. A background `encore run` rebuilds on save.
 
 ## Guidelines
 
-- Prefer `encore check` to confirm a change works. It always exits, so it can't leave a process running.
-- Never run `encore run` in the foreground of an agent's shell. It doesn't exit, so the command blocks until it times out.
-- Stop background runs you started when you're done with them.
-- Don't use the local dashboard or `encore run` in place of tests. Write tests with `encore-testing` or `encore-go-testing`.
+- Prefer `encore check` to confirm a change works. It can't leave a process running.
+- Stop background runs you started.
+- Agents can list services and endpoints, call endpoints, read traces, and query databases through the local Encore MCP server: `encore mcp run --app=<app-id>`.
+- For automated tests, use `encore-testing` or `encore-go-testing`.
 - Docs: https://encore.dev/docs/cli/cli-reference and https://encore.dev/docs/dev-dash
