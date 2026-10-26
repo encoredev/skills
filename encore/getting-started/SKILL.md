@@ -1,150 +1,95 @@
 ---
 name: encore-getting-started
-description: Bootstrap a brand-new Encore.ts project from zero. Only for first-time CLI install and `encore app create` — not for architecture or feature questions.
+description: Set up Encore.ts from scratch. Install the CLI, log in, create an app, check that it runs, and connect Encore's MCP servers, with a pointer to the skill for each step. Ends where building starts. Not for architecture or feature questions.
 when_to_use: >-
-  User has no Encore project yet and is asking how to install the Encore CLI, run `encore app create`, scaffold a hello-world app, or run their very first `encore run`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features — those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "completely new to Encore", "first time", "install the CLI", "brew install encoredev", "encore app create", "hello world", "just starting out".
+  User has no Encore project yet and wants to get set up with Encore.ts end to end: install the CLI, log in, create a hello-world app, check that it runs, and connect Encore's MCP servers. For a single step, use `encore-install`, `encore-login`, `encore-create-app`, `encore-run`, or `encore-mcp`. SKIP if the user already has an Encore project and is asking about architecture, services, endpoints, or specific features. Those go to `encore-service`, `encore-api`, `encore-pubsub`, etc. Trigger phrases: "set up Encore", "completely new to Encore", "first time", "get started with Encore", "hello world", "just starting out".
 ---
 
-# Getting Started with Encore.ts
+# Setting Up Encore.ts
 
 ## Instructions
 
-### Install Encore CLI
+This guide is for Encore.ts. For Encore Go, use `encore-go-getting-started`. If the user hasn't said which language they want, ask.
+
+Do the steps in order. Each step says how to tell it worked. If a step fails, load the skill it names.
+
+### 1. Check the CLI
 
 ```bash
-# macOS
-brew install encoredev/tap/encore
-
-# Linux/WSL
-curl -L https://encore.dev/install.sh | bash
-
-# Windows (PowerShell)
-iwr https://encore.dev/install.ps1 | iex
+encore version
 ```
 
-### Create a New App
+- **Prints `encore version v...`:** go to step 2.
+- **Command not found:** install it (`encore-install`), then go to step 2.
 
-Log in first (`encore auth login`, or without a browser set the `ENCORE_AUTH_KEY` environment variable to an auth key) so the app is registered on Encore Cloud and gets an `encore` git remote for deploying.
+### 2. Log in
+
+Skip this step if the user only wants to run the app locally.
 
 ```bash
-# Interactive - choose from templates
-encore app create my-app
+encore auth whoami
+```
 
-# Or start with a blank app
+- **`logged in as <email>`:** go to step 3.
+- **`not logged in.`:** start `encore auth login` in the background. Send the user the pairing code and URL it prints, and ask them to approve it in a browser on any device. Wait for `Successfully logged in!` (`encore-login`).
+- **`logged in as app <app-id>`, or no person can approve a login (CI):** an auth key can't create apps. Ask the user to create the app in the Cloud Dashboard, then run `encore app clone <app-id>`, `cd` into it, and go to step 4.
+
+### 3. Create the app
+
+```bash
 encore app create my-app --example=ts/hello-world
+cd my-app
 ```
 
-### Project Structure
+- **Ends with `Successfully created app my-app!`:** go to step 4.
+- **Keep the `--example` flag.** In a terminal, the CLI asks for a language and template when it's missing. Without a terminal, which is how agents usually run commands, it can't ask, and creates an empty Go app instead.
+- **Empty app:** for an app with no services, use `--example=ts/empty` instead, and skip step 4.
+- **Other templates and errors:** see `encore-create-app`.
 
-A minimal Encore.ts app:
-
-```
-my-app/
-├── encore.app           # App configuration
-├── package.json         # Dependencies
-├── tsconfig.json        # TypeScript config
-├── encore.service.ts    # Service definition
-└── api.ts               # API endpoints
-```
-
-### The encore.app File
-
-```cue
-// encore.app
-{
-    "id": "my-app"
-}
-```
-
-This file marks the root of your Encore app. The `id` is your app's unique identifier.
-
-### Define a Service
-
-Create `encore.service.ts` to define a service:
-
-```typescript
-// encore.service.ts
-import { Service } from "encore.dev/service";
-
-export default new Service("my-service");
-```
-
-### Create Your First API
-
-```typescript
-// api.ts
-import { api } from "encore.dev/api";
-
-interface HelloResponse {
-  message: string;
-}
-
-export const hello = api(
-  { method: "GET", path: "/hello", expose: true },
-  async (): Promise<HelloResponse> => {
-    return { message: "Hello, World!" };
-  }
-);
-```
-
-### Run Your App
+### 4. Check that it runs
 
 ```bash
-# Start the development server
-encore run
-
-# Your API is now available at http://localhost:4000
+encore check 'curl /hello/world'
 ```
 
-### Open the Local Dashboard
+- **Prints `{"message":"Hello world!"}` and exits 0:** go to step 5.
+- **Fails:** see `encore-run`.
 
-```bash
-# Opens the local development dashboard
-encore run
-# Then visit http://localhost:9400
-```
+To keep the app running for the user, start `encore run` in the background, never in the foreground (`encore-run`). The API is at `http://localhost:4000`, and the local development dashboard, with a trace of every request, is at `http://localhost:9400`.
 
-The dashboard shows:
-- All your services and endpoints
-- Request/response logs
-- Database queries
-- Traces and spans
+### 5. Connect Encore's MCP servers
 
-### Common CLI Commands
+The MCP servers let you inspect and call the app while you build it, and read its deploys once it's on Encore Cloud. If the user created the app with `--llm-rules=<tool>`, the local server may already be configured for that tool: check before adding it again.
 
-| Command | Description |
-|---------|-------------|
-| `encore run` | Start the local development server |
-| `encore test` | Run tests |
-| `encore db shell <db>` | Open a psql shell to a database |
-| `encore gen client` | Generate API client code |
-| `git push encore` | Deploy committed changes (apps using Encore's git) |
-| `encore app link` | Link to an existing Encore Cloud app |
+1. **Local server:** from the app's root directory, run `encore mcp start`. It prints `MCP stdio Command: encore mcp run --app=<app-id>`. Add that command to the user's tool. In Claude Code:
 
-### Add a Database
+   ```bash
+   claude mcp add --transport stdio encore-local -- encore mcp run --app=<app-id>
+   ```
 
-```typescript
-// db.ts
-import { SQLDatabase } from "encore.dev/storage/sqldb";
+2. **Encore Cloud server** (only if you logged in at step 2):
 
-const db = new SQLDatabase("mydb", {
-  migrations: "./migrations",
-});
-```
+   ```bash
+   claude mcp add --transport http --scope user encore-cloud https://api.encore.dev/mcp
+   ```
 
-Create a migration:
+3. **Cursor, VS Code, other tools, or an API key instead of signing in:** see `encore-mcp`.
 
-```sql
--- migrations/1_create_table.up.sql
-CREATE TABLE items (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL
-);
-```
+### 6. Report back
 
-### Next Steps
+Setup is done. Tell the user:
 
-- Add more endpoints (see `encore-api` skill)
-- Add authentication (see `encore-auth` skill)
-- Add Pub/Sub topics (`encore-pubsub`), cron jobs (`encore-cron`), buckets (`encore-bucket`), secrets (`encore-secret`), or caching (`encore-cache`)
-- Deploy to Encore Cloud: commit, then `git push encore`, or push to the linked GitHub repository (see `encore-deploy` skill)
+- **Where the app is:** its directory, and, if it's on Encore Cloud, its Cloud Dashboard at `https://app.encore.dev/<app-id>`.
+- **What's left for them:** their tool loads the new MCP servers when it restarts. If you added `encore-cloud`, they also need to authenticate it once: in Claude Code, `/mcp`, select `encore-cloud`, and choose **Authenticate**.
+
+To build on the app, load the skill for the task. The hello-world app has one service, `hello`, in `hello/`.
+
+| To | Load |
+|----|------|
+| Add endpoints, validation, and errors | `encore-api` |
+| Add services or call one service from another | `encore-service` |
+| Add a SQL database | `encore-database` |
+| Require login on endpoints | `encore-auth` |
+| Add Pub/Sub, cron jobs, buckets, secrets, or caching | `encore-pubsub`, `encore-cron`, `encore-bucket`, `encore-secret`, `encore-cache` |
+| Write tests | `encore-testing` |
+| Deploy: commit, then `git push encore` | `encore-deploy` |
